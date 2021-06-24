@@ -21,20 +21,22 @@
     var CONFIG = {"hostname":"alanchans.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":5,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="主要涉及开发技能为C&#x2F;C++、单片机、嵌入式ARM、Linux、QT、FFMPEG">
-<meta property="og:type" content="website">
-<meta property="og:title" content="categories">
-<meta property="og:url" content="http://alanchans.github.io/categories/index.html">
+  <meta name="description" content="进程、线程 1、什么是进程、线程进程是一个程序被加载到内存执行的过程，它是一个动态的概念。线程是程序执行中一个单一的顺序控制流程，是程序执行流的最小单元。进程是操作系统分配资源的最小单位，线程是操作系统调度执行的最小单位。打个比喻，操作系统是好像一个大工厂，工厂里面的一条条流水线就是一个个的进程，然后流水线上的工人负责整个流水作业的全部或者一小部分，这就叫线程。进程是真正的“打工人”，干活的实体。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="进程、线程">
+<meta property="og:url" content="http://alanchans.github.io/2021/06/25/threadDescription/index.html">
 <meta property="og:site_name" content="中单打野我都行">
-<meta property="og:description" content="主要涉及开发技能为C&#x2F;C++、单片机、嵌入式ARM、Linux、QT、FFMPEG">
+<meta property="og:description" content="进程、线程 1、什么是进程、线程进程是一个程序被加载到内存执行的过程，它是一个动态的概念。线程是程序执行中一个单一的顺序控制流程，是程序执行流的最小单元。进程是操作系统分配资源的最小单位，线程是操作系统调度执行的最小单位。打个比喻，操作系统是好像一个大工厂，工厂里面的一条条流水线就是一个个的进程，然后流水线上的工人负责整个流水作业的全部或者一小部分，这就叫线程。进程是真正的“打工人”，干活的实体。">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2021-06-23T13:06:11.000Z">
-<meta property="article:modified_time" content="2021-06-23T13:07:46.585Z">
+<meta property="article:published_time" content="2021-06-24T18:35:39.000Z">
+<meta property="article:modified_time" content="2021-06-24T18:49:53.496Z">
 <meta property="article:author" content="AlanChan">
-<meta property="article:tag" content="技术宅、攻城狮、史蒂芬库里、金州拉文">
+<meta property="article:tag" content="线程">
+<meta property="article:tag" content="进程">
+<meta property="article:tag" content="线程进程">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://alanchans.github.io/categories/">
+<link rel="canonical" href="http://alanchans.github.io/2021/06/25/threadDescription/">
 
 
 <script id="page-configurations">
@@ -42,13 +44,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>categories | 中单打野我都行
-</title>
+  <title>进程、线程 | 中单打野我都行</title>
   
 
 
@@ -189,55 +190,197 @@
       <div class="main-inner">
         <div class="content-wrap">
           
-  
-  
 
-          <div class="content page posts-expand">
+          <div class="content post posts-expand">
             
 
     
-    
-    
-    <div class="post-block" lang="zh-CN">
-      <header class="post-header">
-
-<h1 class="post-title" itemprop="name headline">categories
-</h1>
-
-<div class="post-meta">
   
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://alanchans.github.io/2021/06/25/threadDescription/">
 
-</div>
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/android-chrome-512x512.png">
+      <meta itemprop="name" content="AlanChan">
+      <meta itemprop="description" content="主要涉及开发技能为C/C++、单片机、嵌入式ARM、Linux、QT、FFMPEG">
+    </span>
 
-</header>
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="中单打野我都行">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          进程、线程
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-06-25 02:35:39 / 修改时间：02:49:53" itemprop="dateCreated datePublished" datetime="2021-06-25T02:35:39+08:00">2021-06-25</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BA%BF%E7%A8%8B%E8%BF%9B%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">线程进程</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-      
-      
-      <div class="post-body">
-          <div class="category-all-page">
-            <div class="category-all-title">
-              目前共计 1 个分类
-            </div>
-            <div class="category-all">
-              <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%BA%BF%E7%A8%8B%E8%BF%9B%E7%A8%8B/">线程进程</a><span class="category-list-count">1</span></li></ul>
-            </div>
-          </div>
-        
-      </div>
-      
-      
-      
+        <h1 id="进程、线程"><a href="#进程、线程" class="headerlink" title="进程、线程"></a>进程、线程</h1><hr>
+<h3 id="1、什么是进程、线程"><a href="#1、什么是进程、线程" class="headerlink" title="1、什么是进程、线程"></a>1、什么是进程、线程</h3><p>进程是一个程序被加载到内存执行的过程，它是一个动态的概念。线程是程序执行中一个单一的顺序控制流程，是程序执行流的最小单元。进程是操作系统分配资源的最小单位，线程是操作系统调度执行的最小单位。打个比喻，操作系统是好像一个大工厂，工厂里面的一条条流水线就是一个个的进程，然后流水线上的工人负责整个流水作业的全部或者一小部分，这就叫线程。进程是真正的“打工人”，干活的实体。</p>
+<hr>
+<h3 id="2、进程和线程的区别"><a href="#2、进程和线程的区别" class="headerlink" title="2、进程和线程的区别"></a>2、进程和线程的区别</h3><ul>
+<li>进程有自己独立的地址空间（每个进程都有拥有4GBytes的虚拟地址空间），多个线程共用同一个地址空间。</li>
+<li>同一进程内的每个线程共享代码段(.text)，堆区(heap)，全局数据区(.data.bss)，文件描述符表。</li>
+<li>同一进程内的每个线程独享自己的栈、寄存器。</li>
+</ul>
+<hr>
+<h3 id="3、进程线程的特点"><a href="#3、进程线程的特点" class="headerlink" title="3、进程线程的特点"></a>3、进程线程的特点</h3><ul>
+<li><p>进程</p>
+<ul>
+<li>进程拥有自己的地址空间，各进程间相互独立，一个进程挂死，不会影响到其他进程。</li>
+</ul>
+</li>
+<li><p>线程</p>
+<ul>
+<li><p>线程占更小的系统资源，线程的上下文切换比进程要快的多。</p>
+<blockquote>
+<p>上下文切换：进程 / 线程分时复用 CPU 时间片，在切换之前会将上一个任务的状态进行保存，下次切换回这个任务的时候，加载这个状态继续运行，任务从保存到再次加载这个过程就是一次上下文切换。</p>
+</blockquote>
+</li>
+<li><p>线程启动速度快，退出也快，对系统资源的冲击小。</p>
+</li>
+<li><p>一个进程内的某一个线程挂掉，那么整个进程就会挂掉。</p>
+</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="4、进程间的通讯方式"><a href="#4、进程间的通讯方式" class="headerlink" title="4、进程间的通讯方式"></a>4、进程间的通讯方式</h3><ol>
+<li>管道pipe。半双工，数据只能单向流动，而且只能在具有亲缘关系的进程间使用，常见于父子进程。</li>
+<li>有名管道FIFO。半双工，数据只能单向流动，允许无亲缘关系进程间的通信。</li>
+<li>消息队列MessageQueue。消息队列是由消息的链表，存放在内核中并由消息队列标识符标识。消息队列克服了信号传递信息少、管道只能承载无格式字节流以及缓冲区大小受限等缺点。</li>
+<li>信号量Semaphore：信号量是一个计数器，可以用来控制多个进程对共享资源的访问，防止多进程访问共享资源时产生竞争。是进程同步的一种手段。</li>
+<li>套接字Socket：用于不同机器间的进程通信，网络通信少不了它。</li>
+<li>信号 Signal： 段错误、kill -9 的时候就是这种信号。</li>
+</ol>
+<hr>
+<h3 id="5、线程间通信方式"><a href="#5、线程间通信方式" class="headerlink" title="5、线程间通信方式"></a>5、线程间通信方式</h3><blockquote>
+<p>线程间的通信目的主要是用于线程同步，所以线程没有像进程通信中的用于数据交换的通信机制。</p>
+</blockquote>
+<ol>
+<li>锁机制：包括互斥锁、条件变量、读写锁。<ul>
+<li>互斥锁提供了以排他方式防止数据结构被并发修改的方法，常用于多线程间对共享资源的访问保护。</li>
+<li>读写锁允许多个线程同时读共享数据，而对写操作是互斥的。</li>
+<li>条件变量可以以原子的方式阻塞进程，直到某个特定条件为真为止。对条件的测试是在互斥锁的保护下进行的。条件变量始终与互斥锁一起使用。</li>
+</ul>
+</li>
+<li>信号量机制(Semaphore)：信号量既是是进程同步的一种手段，也是线程同步的一种手段。</li>
+<li>信号机制(Signal)：类似进程间的信号处理。线程间的通信目的主要是用于线程同步，所以线程没有像进程通信中的用于数据交换的通信机制。</li>
+</ol>
+
     </div>
-    
 
     
     
     
+        
+
+  <div class="followme">
+    <p>欢迎关注我的其它发布渠道</p>
+
+    <div class="social-list">
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="/images/wechat_channel.jpg">
+            <span class="icon">
+              <i class="fab fa-weixin"></i>
+            </span>
+
+            <span class="label">WeChat</span>
+          </a>
+        </div>
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+        </div>
+    </div>
+  </div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/%E7%BA%BF%E7%A8%8B/" rel="tag"><i class="fa fa-tag"></i> 线程</a>
+              <a href="/tags/%E8%BF%9B%E7%A8%8B/" rel="tag"><i class="fa fa-tag"></i> 进程</a>
+              <a href="/tags/%E7%BA%BF%E7%A8%8B%E8%BF%9B%E7%A8%8B/" rel="tag"><i class="fa fa-tag"></i> 线程进程</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/06/23/hello-world/" rel="prev" title="Hello World">
+      <i class="fa fa-chevron-left"></i> Hello World
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+  
+  
+  <div style="text-align:center;color: #ccc;font-size:16px;">-------------Amazing,你居然看完了 <i class="fa fa-heart"></i> 感谢阅读-------------</div>
+  
 
 
           </div>
           
+    <div class="comments" id="gitalk-container"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -284,6 +427,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E3%80%81%E7%BA%BF%E7%A8%8B"><span class="nav-number">1.</span> <span class="nav-text">进程、线程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E4%BB%80%E4%B9%88%E6%98%AF%E8%BF%9B%E7%A8%8B%E3%80%81%E7%BA%BF%E7%A8%8B"><span class="nav-number">1.0.1.</span> <span class="nav-text">1、什么是进程、线程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81%E8%BF%9B%E7%A8%8B%E5%92%8C%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.0.2.</span> <span class="nav-text">2、进程和线程的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B%E7%9A%84%E7%89%B9%E7%82%B9"><span class="nav-number">1.0.3.</span> <span class="nav-text">3、进程线程的特点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4%E3%80%81%E8%BF%9B%E7%A8%8B%E9%97%B4%E7%9A%84%E9%80%9A%E8%AE%AF%E6%96%B9%E5%BC%8F"><span class="nav-number">1.0.4.</span> <span class="nav-text">4、进程间的通讯方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5%E3%80%81%E7%BA%BF%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F"><span class="nav-number">1.0.5.</span> <span class="nav-text">5、线程间通信方式</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -500,6 +644,25 @@
 
   
 
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '39005aac8dd53f2f9f3b',
+      clientSecret: '40bf5b48d7f39338a880e10e9279ea4ba73730ee',
+      repo        : 'alanchans.github.io',
+      owner       : 'AlanChans',
+      admin       : ['AlanChans'],
+      id          : '405eec3fa9ebe315869fd514d23fed24',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
 
 
   
