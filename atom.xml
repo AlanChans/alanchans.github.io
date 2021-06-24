@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title>Alan&#39;s Blog</title>
+  <title>中单打野我都行</title>
   
-  <subtitle>一个沉迷技术的骚年</subtitle>
+  <subtitle>为中华崛起而读书</subtitle>
   <link href="http://alanchans.github.io/atom.xml" rel="self"/>
   
   <link href="http://alanchans.github.io/"/>
-  <updated>2021-06-23T12:51:01.040Z</updated>
+  <updated>2021-06-22T17:50:48.426Z</updated>
   <id>http://alanchans.github.io/</id>
   
   <author>
@@ -15,36 +15,6 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
-  
-  <entry>
-    <title>Hexo博客框架搭建实战</title>
-    <link href="http://alanchans.github.io/2021/06/23/firstArticle/"/>
-    <id>http://alanchans.github.io/2021/06/23/firstArticle/</id>
-    <published>2021-06-23T10:39:03.000Z</published>
-    <updated>2021-06-23T12:51:01.040Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="科技让生活更美好！"><a href="#科技让生活更美好！" class="headerlink" title="科技让生活更美好！"></a>科技让生活更美好！</h1><h2 id="雷布斯"><a href="#雷布斯" class="headerlink" title="雷布斯"></a>雷布斯</h2><p>欢迎来到Alan的博客！下面先来给大家介绍一下我的出生经历吧。</p>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;h1 id=&quot;科技让生活更美好！&quot;&gt;&lt;a href=&quot;#科技让生活更美好！&quot; class=&quot;headerlink&quot; title=&quot;科技让生活更美好！&quot;&gt;&lt;/a&gt;科技让生活更美好！&lt;/h1&gt;&lt;h2 id=&quot;雷布斯&quot;&gt;&lt;a href=&quot;#雷布斯&quot; class=&quot;headerlink</summary>
-      
-    
-    
-    
-    <category term="分类1" scheme="http://alanchans.github.io/categories/%E5%88%86%E7%B1%BB1/"/>
-    
-    <category term="分类2" scheme="http://alanchans.github.io/categories/%E5%88%86%E7%B1%BB1/%E5%88%86%E7%B1%BB2/"/>
-    
-    
-    <category term="标签1" scheme="http://alanchans.github.io/tags/%E6%A0%87%E7%AD%BE1/"/>
-    
-    <category term="标签2" scheme="http://alanchans.github.io/tags/%E6%A0%87%E7%AD%BE2/"/>
-    
-    <category term="标签3" scheme="http://alanchans.github.io/tags/%E6%A0%87%E7%AD%BE3/"/>
-    
-  </entry>
   
   <entry>
     <title>Hello World</title>
