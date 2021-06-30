@@ -1280,14 +1280,9 @@ pre .javascript .function {
   position: fixed;
   top: 0;
 }
-@media (max-width: 991px) {
-  .sidebar {
-    display: none;
-  }
-}
 .sidebar-inner {
   color: #999;
-  padding: 18px 10px;
+  padding: 25px 10px;
   text-align: center;
 }
 .cc-license {
@@ -1346,7 +1341,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #ff55db;
+  background: #5e9104;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -1465,7 +1460,6 @@ pre .javascript .function {
   .sidebar-toggle {
     left: 20px;
     opacity: 0.8;
-    display: none;
   }
 }
 .sidebar-toggle:hover .toggle-line {
@@ -2532,7 +2526,7 @@ ul.breadcrumb li + li:last-child {
   box-shadow: initial;
   box-sizing: border-box;
   padding: 40px;
-  width: calc(100% - 252px);
+  width: calc(100% - 260px);
 }
 @media (max-width: 991px) {
   .content-wrap {
@@ -2684,7 +2678,7 @@ ul.breadcrumb li + li:last-child {
 }
 .sidebar-inner.affix {
   position: fixed;
-  top: 12px;
+  top: 20px;
 }
 .sidebar-inner.affix-bottom {
   position: absolute;

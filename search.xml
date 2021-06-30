@@ -2,7 +2,7 @@
 <search>
   <entry>
     <title>Hello World</title>
-    <url>/2021/06/23/hello-world/</url>
+    <url>/blog/2021/06/23/hello-world/</url>
     <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
 <h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
 <p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
@@ -16,7 +16,7 @@
   </entry>
   <entry>
     <title>Linux下线程的使用</title>
-    <url>/2021/06/25/linuxPthread/</url>
+    <url>/blog/2021/06/25/linuxPthread/</url>
     <content><![CDATA[<h1 id="Linux下线程的使用"><a href="#Linux下线程的使用" class="headerlink" title="Linux下线程的使用"></a>Linux下线程的使用</h1><h2 id="1、Linux线程"><a href="#1、Linux线程" class="headerlink" title="1、Linux线程"></a>1、Linux线程</h2><ul>
 <li><p>在早期的类Unix系统中是没有“线程”概念的，这是后面需求的才延伸出来的，它借助了进程机制实现出了线程的概念。因此在这类系统中，进程和线程关系密切。在Linux环境下的线程本质上还是进程，属于轻量级的进程（LWP：light weight process）。</p>
 </li>
@@ -125,7 +125,7 @@
   </entry>
   <entry>
     <title>进程、线程</title>
-    <url>/2021/06/25/threadDescription/</url>
+    <url>/blog/2021/06/25/threadDescription/</url>
     <content><![CDATA[<h1 id="进程、线程"><a href="#进程、线程" class="headerlink" title="进程、线程"></a>进程、线程</h1><hr>
 <h3 id="1、什么是进程、线程"><a href="#1、什么是进程、线程" class="headerlink" title="1、什么是进程、线程"></a>1、什么是进程、线程</h3><p>进程是一个程序被加载到内存执行的过程，它是一个动态的概念。线程是程序执行中一个单一的顺序控制流程，是程序执行流的最小单元。进程是操作系统分配资源的最小单位，线程是操作系统调度执行的最小单位。打个比喻，操作系统是好像一个大工厂，工厂里面的一条条流水线就是一个个的进程，然后流水线上的工人负责整个流水作业的全部或者一小部分，这就叫线程。进程是真正的“打工人”，干活的实体。</p>
 <hr>
@@ -190,7 +190,7 @@
   </entry>
   <entry>
     <title>进程间通信IPC</title>
-    <url>/2021/06/29/ipc/</url>
+    <url>/blog/2021/06/29/ipc/</url>
     <content><![CDATA[<h1 id="进程间通信IPC"><a href="#进程间通信IPC" class="headerlink" title="进程间通信IPC"></a>进程间通信IPC</h1><p>IPC（Inter-Process Communication，进程间通信）。进程间通信是指两个进程的数据之间产生交互。</p>
 <h2 id="1、管道"><a href="#1、管道" class="headerlink" title="1、管道"></a>1、管道</h2><h3 id="1-1基本概念"><a href="#1-1基本概念" class="headerlink" title="1.1基本概念"></a>1.1基本概念</h3><p>管道是一种最基本的IPC机制，作用于有血缘关系的进程之间，完成数据传递。调用pipe系统函数即可创建一个管道。</p>
 <ul>
