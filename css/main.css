@@ -1341,7 +1341,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #98ede3;
+  background: #756af9;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -2762,4 +2762,8 @@ canvas {
   height: auto;
   width: auto;
   z-index: -1;
+}
+body {
+  cursor: url("https://cdn.jsdelivr.net/gh/TRHX/CDN-for-itrhx.com@2.1.6/images/mouse.cur"), auto;
+  background-color: ;
 }
