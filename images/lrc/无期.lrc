@@ -1,0 +1,103 @@
+core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:145 {data: Array(10), code: 200}
+inject.js:1 PiP worker render
+song:2879 GET https://img3.126.net/kaola/dsp1f/js/ntes-ad-cloud.min.js?v=1.0 net::ERR_ABORTED 404 (Not Found)
+pt_song_index_b77a61aac67f731e8b87f16213ed15c5.js?b77a61aac67f731e8b87f16213ed15c5:5 GET https://iad.g.163.com/wa/ad_check?site=netease&affiliate=music&cat=detail&type=logo200x220&location=1&callback=g_cbfWolP net::ERR_ABORTED 404 (Not Found)
+b1x.cAN5S @ pt_song_index_b77a61aac67f731e8b87f16213ed15c5.js?b77a61aac67f731e8b87f16213ed15c5:5
+b1x.bo1x @ pt_song_index_b77a61aac67f731e8b87f16213ed15c5.js?b77a61aac67f731e8b87f16213ed15c5:5
+P1x.cP2x.B1x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:18
+b1x.bJ2x @ pt_song_index_b77a61aac67f731e8b87f16213ed15c5.js?b77a61aac67f731e8b87f16213ed15c5:12
+rl7e.cz2x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:82
+(anonymous) @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:1
+(anonymous) @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:1
+(anonymous) @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:1
+(anonymous) @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:1
+(anonymous) @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:1
+(anonymous) @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:1
+gh3x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:1
+(anonymous) @ pt_song_index_b77a61aac67f731e8b87f16213ed15c5.js?b77a61aac67f731e8b87f16213ed15c5:12
+(anonymous) @ pt_song_index_b77a61aac67f731e8b87f16213ed15c5.js?b77a61aac67f731e8b87f16213ed15c5:12
+song:2879 GET https://img3.126.net/kaola/dsp1f/js/ntes-ad-cloud.min.js?v=1.0 net::ERR_ABORTED 404 (Not Found)
+pt_song_index_b77a61aac67f731e8b87f16213ed15c5.js?b77a61aac67f731e8b87f16213ed15c5:10 (35) [span.j-delete-comment, span.j-delete-comment, span.j-delete-comment, span.j-delete-comment, span.j-delete-comment, span.j-delete-comment, span.j-delete-comment, span.j-delete-comment, span.j-delete-comment, span.j-delete-comment, span.j-delete-comment, span.j-delete-comment, span.j-delete-comment, span.j-delete-comment, span.j-delete-comment, span.j-delete-comment, span.j-delete-comment, span.j-delete-comment, span.j-delete-comment, span.j-delete-comment, span.j-delete-comment, span.j-delete-comment, span.j-delete-comment, span.j-delete-comment, span.j-delete-comment, span.j-delete-comment, span.j-delete-comment, span.j-delete-comment, span.j-delete-comment, span.j-delete-comment, span.j-delete-comment, span.j-delete-comment, span.j-delete-comment, span.j-delete-comment, span.j-delete-comment]
+VM540 watchman.min.js:155 
+watchman.min.js:155 
+VM542 watchman.min.js:155 
+watchman.min.js:155 
+core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:144 Uncaught (in promise) DOMException: The play() request was interrupted by a new load request. https://goo.gl/LdLk22
+selectPLayType @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:144
+(anonymous) @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:144
+(anonymous) @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:1
+cab2x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:35
+BH3x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:35
+(anonymous) @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:1
+qf6Z.z1x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:18
+b1x.xo2x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:20
+Zi0x.gO3x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:21
+(anonymous) @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:1
+_onreadystatechange @ musicfrontencryptvalidator.min.js:1
+XMLHttpRequest.send (async)
+XMLHttpRequest.send @ musicfrontencryptvalidator.min.js:1
+(anonymous) @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:21
+b1x.bkA3x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:20
+(anonymous) @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:35
+u1x.be1x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:92
+ABTest @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:144
+MediaWrap.setSrc @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:144
+b1x.bld3x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:145
+b1x.bNF0x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:145
+(anonymous) @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:1
+cab2x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:35
+BH3x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:35
+(anonymous) @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:1
+qf6Z.z1x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:18
+b1x.xo2x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:20
+Zi0x.gO3x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:21
+(anonymous) @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:1
+_onreadystatechange @ musicfrontencryptvalidator.min.js:1
+XMLHttpRequest.send (async)
+XMLHttpRequest.send @ musicfrontencryptvalidator.min.js:1
+(anonymous) @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:21
+b1x.bkA3x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:20
+(anonymous) @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:35
+u1x.be1x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:92
+b1x.bkD3x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:145
+b1x.ez3x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:145
+b1x.cgc4g @ pt_frame_index_cacf06b982e82d8251418d5bef8e8e15.js?cacf06b982e82d8251418d5bef8e8e15:6
+(anonymous) @ pt_frame_index_cacf06b982e82d8251418d5bef8e8e15.js?cacf06b982e82d8251418d5bef8e8e15:16
+(anonymous) @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:1
+bga2x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:130
+cnp3x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:130
+qf6Z.z1x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:18
+(anonymous) @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:1
+(anonymous) @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:65
+j1x.bf1x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:17
+oc6W.bmr3x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:65
+b1x.cDQ6K @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:66
+(anonymous) @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:1
+BH3x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:68
+(anonymous) @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:1
+cab2x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:35
+BH3x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:35
+(anonymous) @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:1
+qf6Z.z1x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:18
+b1x.xo2x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:20
+Zi0x.gO3x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:21
+(anonymous) @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:1
+_onreadystatechange @ musicfrontencryptvalidator.min.js:1
+XMLHttpRequest.send (async)
+XMLHttpRequest.send @ musicfrontencryptvalidator.min.js:1
+(anonymous) @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:21
+b1x.bkA3x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:20
+(anonymous) @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:35
+u1x.be1x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:92
+(anonymous) @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:68
+(anonymous) @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:68
+(anonymous) @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:68
+b1x.bpU5Z @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:68
+(anonymous) @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:1
+qf6Z.z1x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:18
+(anonymous) @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:66
+bRs1x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:130
+yp2x @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:130
+(anonymous) @ core_6455ce6e055589f9abaf01ba2a9da6a4.js?6455ce6e055589f9abaf01ba2a9da6a4:1
+a={"sgc":true,"sfy":false,"qfy":false,"lrc":{"version":17,"lyric":"[00:00.000] 作词 : 光头华夏\n[00:01.000] 作曲 : 光头华夏\n[00:06.44]制作人：段小林\n[00:10.06]编曲：王东宇/林逸航\n[00:13.84]混音：李石\n[00:17.38]封面：程广艳\n[00:20.85]录音：张明懂\n[00:24.44]录音棚：好听音乐录音棚\n[00:27.84]出品：北京泊柏宇希文化有限公司\n[00:29.03]夜半风雨声\n[00:32.25]惊醒梦中人\n[00:35.97]谁在立秋之后\n[00:38.55]时常来叩门\n[00:42.09]若终其一生\n[00:46.10]仍为情所困\n[00:49.65]宁愿开始\n[00:52.59]就只一个人\n[00:56.97]清晨一盏灯\n[01:00.60]照亮了前尘\n[01:03.79]谁在大雪之前\n[01:06.63]以手来赶针\n[01:10.54]若心有余温\n[01:14.73]从不感觉冷\n[01:18.23]虽然最终\n[01:21.00]都还一个人\n[01:25.32]前路漫漫雨纷纷\n[01:28.71]谁在痴痴等\n[01:32.22]任其心头千般恨\n[01:35.75]不做负心人\n[01:39.25]若爱得越真\n[01:42.79]就陷得越深\n[01:46.26]断了缘分\n[01:49.21]就只剩离分\n[01:52.56]\n[02:21.48]清晨一盏灯\n[02:25.15]照亮了前尘\n[02:28.70]谁在大雪之前\n[02:31.68]以手来赶针\n[02:35.46]若心有余温\n[02:39.03]从不感觉冷\n[02:42.56]虽然最终\n[02:45.61]都还一个人\n[02:49.53]前路漫漫雨纷纷\n[02:53.20]谁在痴痴等\n[02:56.80]任其心头千般恨\n[03:00.33]不做负心人\n[03:03.79]若爱得越真\n[03:07.18]就陷得越深\n[03:10.80]断了缘分\n[03:13.76]就只剩离分\n[03:18.21]回程无期夜无声\n[03:21.43]回头也无人\n[03:24.93]只闻身后一阵阵\n[03:28.54]莫名的心疼\n[03:32.17]若是有来生\n[03:35.50]你是否虔诚\n[03:38.99]苦守一生\n[03:42.10]只为她转身\n[03:46.42]若是有来生\n[03:49.91]你是否虔诚\n[03:53.47]苦守一生\n[03:56.01]只为她转身\n[04:00.31]只是今生\n[04:03.35]劝你别再等\n[04:08.87]\n"},"tlyric":{"version":0,"lyric":""},"code":200}
+{sgc: true, sfy: false, qfy: false, lrc: {…}, tlyric: {…}, …}code: 200lrc: {version: 17, lyric: "[00:00.000] 作词 : 光头华夏\n[00:01.000] 作曲 : 光头华夏\n[00:06…]只为她转身\n[04:00.31]只是今生\n[04:03.35]劝你别再等\n[04:08.87]\n"}qfy: falsesfy: falsesgc: truetlyric: lyric: ""version: 0__proto__: Objectconstructor: ƒ Object()hasOwnProperty: ƒ hasOwnProperty()isPrototypeOf: ƒ isPrototypeOf()propertyIsEnumerable: ƒ propertyIsEnumerable()toLocaleString: ƒ toLocaleString()toString: ƒ toString()valueOf: ƒ valueOf()__defineGetter__: ƒ __defineGetter__()__defineSetter__: ƒ __defineSetter__()__lookupGetter__: ƒ __lookupGetter__()__lookupSetter__: ƒ __lookupSetter__()get __proto__: ƒ __proto__()set __proto__: ƒ __proto__()__proto__: Objectconstructor: ƒ Object()hasOwnProperty: ƒ hasOwnProperty()isPrototypeOf: ƒ isPrototypeOf()propertyIsEnumerable: ƒ propertyIsEnumerable()toLocaleString: ƒ toLocaleString()toString: ƒ toString()valueOf: ƒ valueOf()__defineGetter__: ƒ __defineGetter__()__defineSetter__: ƒ __defineSetter__()__lookupGetter__: ƒ __lookupGetter__()__lookupSetter__: ƒ __lookupSetter__()get __proto__: ƒ __proto__()set __proto__: ƒ __proto__()
