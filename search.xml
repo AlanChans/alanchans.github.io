@@ -2,15 +2,19 @@
 <search>
   <entry>
     <title>Hello World</title>
-    <url>/2021/07/01/hello-world/</url>
+    <url>/2021/07/02/hello-world/</url>
     <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post."></a>Create a new post.</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post."></a>Create a new post.</h3><pre class=" language-lang-bash"><code class="language-lang-bash">$ hexo new "My New Post"
+</code></pre>
 <p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><pre class=" language-lang-bash"><code class="language-lang-bash">$ hexo server
+</code></pre>
 <p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><pre class=" language-lang-bash"><code class="language-lang-bash">$ hexo generate
+</code></pre>
 <p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><pre class=" language-lang-bash"><code class="language-lang-bash">$ hexo deploy
+</code></pre>
 <p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
 ]]></content>
   </entry>
@@ -30,8 +34,10 @@
 <p>2、编译时链接线程库(线程库的名字叫pthread, 全名: libpthread.so libptread.a) -pthread</p>
 </blockquote>
 <h3 id="2-1获取线程ID（对应进程中-getpid-函数）"><a href="#2-1获取线程ID（对应进程中-getpid-函数）" class="headerlink" title="2.1获取线程ID（对应进程中 getpid() 函数）"></a>2.1获取线程ID（对应进程中 getpid() 函数）</h3><p>每一个线程都对应一个唯一的线程 ID（两个进程间，线程ID允许相同），ID 类型为 pthread_t，这个 ID 是一个无符号长整形数(%lu)，如果想要获取当前线程的线程 ID，可以调用如下函数：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">pthread_t</span> <span class="title">pthread_self</span><span class="params">(<span class="keyword">void</span>)</span></span>;	<span class="comment">// 返回当前线程的线程ID，man说这个函数总会执行成功</span></span><br></pre></td></tr></table></figure>
-<h3 id="2-2创建线程函数（对应进程中fork-函数）"><a href="#2-2创建线程函数（对应进程中fork-函数）" class="headerlink" title="2.2创建线程函数（对应进程中fork() 函数）"></a>2.2创建线程函数（对应进程中fork() 函数）</h3><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">pthread_create</span><span class="params">(<span class="keyword">pthread_t</span> *thread, <span class="keyword">const</span> <span class="keyword">pthread_attr_t</span> *attr, <span class="keyword">void</span> *(*start_routine) (<span class="keyword">void</span> *), <span class="keyword">void</span> *arg)</span></span>;</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-c"><code class="language-lang-c">pthread_t pthread_self(void);    // 返回当前线程的线程ID，man说这个函数总会执行成功
+</code></pre>
+<h3 id="2-2创建线程函数（对应进程中fork-函数）"><a href="#2-2创建线程函数（对应进程中fork-函数）" class="headerlink" title="2.2创建线程函数（对应进程中fork() 函数）"></a>2.2创建线程函数（对应进程中fork() 函数）</h3><pre class=" language-lang-c"><code class="language-lang-c">int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_routine) (void *), void *arg);
+</code></pre>
 <ul>
 <li><p>参数：</p>
 <ul>
@@ -44,26 +50,127 @@
 <li><p>返回值：成功返回0； 失败返回错误号。具体错误可通过strerror()函数输出。</p>
 </li>
 </ul>
-<h3 id="2-3实例"><a href="#2-3实例" class="headerlink" title="2.3实例"></a>2.3实例</h3><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// my_pthread_create.c </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;pthread.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Test</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> num;</span><br><span class="line">    <span class="keyword">int</span> age;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="keyword">void</span> * <span class="title">mytask</span><span class="params">(<span class="keyword">void</span> * arg)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;子线程：i = %d\n&quot;</span>, i);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;子线程TID：%ld\n&quot;</span>, pthread_self());</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">Test</span> * <span class="title">pt</span> =</span> (struct Test *)arg;</span><br><span class="line">    pt-&gt;num = <span class="number">1000</span>;</span><br><span class="line">    pt-&gt;age = <span class="number">99</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">pthread_t</span> tid;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">Test</span> <span class="title">test</span>;</span></span><br><span class="line"></span><br><span class="line">    pthread_create(&amp;tid, <span class="literal">NULL</span>, mytask, &amp;test);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;子线程创建成功, 线程TID: %ld\n&quot;</span>, tid);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;主线程TID：%ld\n&quot;</span>, pthread_self());</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-3实例"><a href="#2-3实例" class="headerlink" title="2.3实例"></a>2.3实例</h3><pre class=" language-lang-c"><code class="language-lang-c">// my_pthread_create.c 
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <pthread.h>
+
+struct Test
+&#123;
+    int num;
+    int age;
+&#125;;
+void * mytask(void * arg)
+&#123;
+    for (int i = 0; i < 5; i++)
+    &#123;
+        printf("子线程：i = %d\n", i);
+    &#125;
+    printf("子线程TID：%ld\n", pthread_self());
+
+    struct Test * pt = (struct Test *)arg;
+    pt->num = 1000;
+    pt->age = 99;
+
+    return NULL;
+&#125;
+int main()
+&#123;
+    pthread_t tid;
+    struct Test test;
+
+    pthread_create(&tid, NULL, mytask, &test);
+    printf("子线程创建成功, 线程TID: %ld\n", tid);
+    printf("主线程TID：%ld\n", pthread_self());
+
+    return 0;
+&#125;
+</code></pre>
 <p>执行命令编译程序，<code>-lpthread</code>的意思是链接<code>pthread</code>线程库，要用线程相关函数除了包含头文件<code>#include &lt;pthread.h&gt;</code>以外，编译的时候还得指定链接线程库，否则编译失败。<code>-o app</code>的意思是指定输出的可执行文件名为<code>app</code>。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">gcc my_pthread_create.c -lpthread -o app</span><br></pre></td></tr></table></figure>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">root@iZwz94euuu9omhoocm3l5uZ:~/07_article# gcc my_pthread_create.c -lpthread -o app</span><br><span class="line">root@iZwz94euuu9omhoocm3l5uZ:~/07_article# ls</span><br><span class="line">app  my_pthread_create.c</span><br><span class="line">root@iZwz94euuu9omhoocm3l5uZ:~/07_article# ./app </span><br><span class="line">子线程创建成功, 线程TID: 139769949230848</span><br><span class="line">主线程TID：139769949235008</span><br><span class="line">root@iZwz94euuu9omhoocm3l5uZ:~/07_article#</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-shell"><code class="language-lang-shell">gcc my_pthread_create.c -lpthread -o app
+</code></pre>
+<pre class=" language-lang-shell"><code class="language-lang-shell">root@iZwz94euuu9omhoocm3l5uZ:~/07_article# gcc my_pthread_create.c -lpthread -o app
+root@iZwz94euuu9omhoocm3l5uZ:~/07_article# ls
+app  my_pthread_create.c
+root@iZwz94euuu9omhoocm3l5uZ:~/07_article# ./app 
+子线程创建成功, 线程TID: 139769949230848
+主线程TID：139769949235008
+root@iZwz94euuu9omhoocm3l5uZ:~/07_article#
+</code></pre>
 <p>编译执行后发现子线程虽然创建成功，但是子线程任务函数里面的打印并没有输出，原因是：</p>
 <p>主线程一直在运行，执行期间创建出了子线程，接下来主线程和子线程“并发”，分道扬镳，各自执行自己的函数。子线程刚被创建出来，需要去抢CPU时间片，抢到了CPU时间片子线程的任务函数才能运行。</p>
 <p>很明显，此时此刻，子线程并没有抢到CPU时间片，而主线程却抢到了。然后主线程去执行printf，执行完后发现没有工作要做了就直接返回退出了。</p>
 <p>但主线程退出了, 虚拟地址空间就被释放了, 子线程就一并被销毁了，这样子线程任务函数里的printf就肯定没法运行了。</p>
 <h2 id="3、Linux线程退出"><a href="#3、Linux线程退出" class="headerlink" title="3、Linux线程退出"></a>3、Linux线程退出</h2><p>在多线程进程中，要让主线程退出不导致虚拟地址空间的释放，剩下的子线程继续正常运行，可以在主线程中调用线程退出函数。线程退出函数会让当前线程马上退出，而且不会释放虚拟地址空间，不会影响到其他线程的正常运行。线程退出函数可以在子线程或者主线程中都使用。</p>
-<h3 id="3-1线程退出函数"><a href="#3-1线程退出函数" class="headerlink" title="3.1线程退出函数"></a>3.1线程退出函数</h3><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">pthread_exit</span><span class="params">(<span class="keyword">void</span> *retval)</span></span>;</span><br></pre></td></tr></table></figure>
+<h3 id="3-1线程退出函数"><a href="#3-1线程退出函数" class="headerlink" title="3.1线程退出函数"></a>3.1线程退出函数</h3><pre class=" language-lang-c"><code class="language-lang-c">void pthread_exit(void *retval);
+</code></pre>
 <ul>
 <li>参数：线程退出的时候携带的数据，当前子线程的主线程会得到该数据。如果不需要使用，指定为 NULL。一般使用的这个线程退出带出数据的功能的时候，需要在线程创建的时候把一块堆内存的指针传进去。</li>
 </ul>
-<h3 id="3-2实例"><a href="#3-2实例" class="headerlink" title="3.2实例"></a>3.2实例</h3><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;pthread.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Test</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> num;</span><br><span class="line">    <span class="keyword">int</span> age;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="keyword">void</span> * <span class="title">mytask</span><span class="params">(<span class="keyword">void</span> * arg)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;子线程：i = %d\n&quot;</span>, i);</span><br><span class="line">        <span class="keyword">if</span>(i == <span class="number">7</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            pthread_exit(<span class="literal">NULL</span>); <span class="comment">// 直接退出子线程</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;子线程TID：%ld\n&quot;</span>, pthread_self());</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">Test</span> * <span class="title">pt</span> =</span> (struct Test *)arg;</span><br><span class="line">    pt-&gt;num = <span class="number">1000</span>;</span><br><span class="line">    pt-&gt;age = <span class="number">99</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">pthread_t</span> tid;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">Test</span> <span class="title">test</span>;</span></span><br><span class="line"></span><br><span class="line">    pthread_create(&amp;tid, <span class="literal">NULL</span>, mytask, &amp;test);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;子线程创建成功, 线程TID: %ld\n&quot;</span>, tid);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;主线程TID：%ld\n&quot;</span>, pthread_self());</span><br><span class="line"></span><br><span class="line">    pthread_exit(<span class="literal">NULL</span>); <span class="comment">// 主线程退出，不会释放虚拟地址空间，不影响子线程运行</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3-2实例"><a href="#3-2实例" class="headerlink" title="3.2实例"></a>3.2实例</h3><pre class=" language-lang-c"><code class="language-lang-c">#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <pthread.h>
+
+struct Test
+&#123;
+    int num;
+    int age;
+&#125;;
+void * mytask(void * arg)
+&#123;
+    for (int i = 0; i < 10; i++)
+    &#123;
+        printf("子线程：i = %d\n", i);
+        if(i == 7)
+        &#123;
+            pthread_exit(NULL); // 直接退出子线程
+        &#125;
+    &#125;
+    printf("子线程TID：%ld\n", pthread_self());
+
+    struct Test * pt = (struct Test *)arg;
+    pt->num = 1000;
+    pt->age = 99;
+
+    return NULL;
+&#125;
+int main()
+&#123;
+    pthread_t tid;
+    struct Test test;
+
+    pthread_create(&tid, NULL, mytask, &test);
+    printf("子线程创建成功, 线程TID: %ld\n", tid);
+    printf("主线程TID：%ld\n", pthread_self());
+
+    pthread_exit(NULL); // 主线程退出，不会释放虚拟地址空间，不影响子线程运行
+    return 0;
+&#125;
+</code></pre>
 <p>编译执行结果：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">root@iZwz94euuu9omhoocm3l5uZ:~/07_article# gcc my_pthread_create.c -lpthread -o app</span><br><span class="line">root@iZwz94euuu9omhoocm3l5uZ:~/07_article# ./app </span><br><span class="line">子线程创建成功, 线程TID: 139901666547456</span><br><span class="line">主线程TID：139901666551616</span><br><span class="line">子线程：i = 0</span><br><span class="line">子线程：i = 1</span><br><span class="line">子线程：i = 2</span><br><span class="line">子线程：i = 3</span><br><span class="line">子线程：i = 4</span><br><span class="line">子线程：i = 5</span><br><span class="line">子线程：i = 6</span><br><span class="line">子线程：i = 7</span><br><span class="line">root@iZwz94euuu9omhoocm3l5uZ:~/07_article# </span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-shell"><code class="language-lang-shell">root@iZwz94euuu9omhoocm3l5uZ:~/07_article# gcc my_pthread_create.c -lpthread -o app
+root@iZwz94euuu9omhoocm3l5uZ:~/07_article# ./app 
+子线程创建成功, 线程TID: 139901666547456
+主线程TID：139901666551616
+子线程：i = 0
+子线程：i = 1
+子线程：i = 2
+子线程：i = 3
+子线程：i = 4
+子线程：i = 5
+子线程：i = 6
+子线程：i = 7
+root@iZwz94euuu9omhoocm3l5uZ:~/07_article#
+</code></pre>
 <p>上面的程序执行结果说明，主线程执行<code>printf</code>就先退出了，此时虚拟地址空间还没有被释放，子线程继续执行<code>printf</code>，直到子线程执行到<code>pthread_exit</code>子线程就退出了，然后虚拟地址空间被释放，进程退出。</p>
 <h2 id="4、Linux线程回收"><a href="#4、Linux线程回收" class="headerlink" title="4、Linux线程回收"></a>4、Linux线程回收</h2><p>子线程在一般情况下都是由主线程创建并启动的，如果子线程相对主线程而言要进行大量的耗时的运算，那么主线程就会先于子线程结束，就好比如<code>3.2实例</code>。但是如果主线程处理完其他的事务后，需要用到子线程的处理结果，也就是主线程需要等待子线程执行完成之后再结束线程和进程，这种情况该怎么处理呢？</p>
 <p>这就是线程回收函数 <code>pthread_join</code>的应用场景了，这个函数是一个阻塞函数，如果子线程还在运行，该函数就会一直阻塞，子线程退出函数解除阻塞进行资源的回收。函数被调用一次，只能回收一个子线程，如果有多个子线程则需要循环进行回收。</p>
-<h3 id="4-1线程回收函数（对应进程中-waitpid-函数）"><a href="#4-1线程回收函数（对应进程中-waitpid-函数）" class="headerlink" title="4.1线程回收函数（对应进程中 waitpid() 函数）"></a>4.1线程回收函数（对应进程中 waitpid() 函数）</h3><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 这是一个阻塞函数, 由主线程调用，然后就阻塞在这，直到thread子线程退出，然后返回。</span></span><br><span class="line"><span class="comment">// 回收对应的子线程资源</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">pthread_join</span><span class="params">(<span class="keyword">pthread_t</span> thread, <span class="keyword">void</span> **retval)</span></span>;</span><br></pre></td></tr></table></figure>
+<h3 id="4-1线程回收函数（对应进程中-waitpid-函数）"><a href="#4-1线程回收函数（对应进程中-waitpid-函数）" class="headerlink" title="4.1线程回收函数（对应进程中 waitpid() 函数）"></a>4.1线程回收函数（对应进程中 waitpid() 函数）</h3><pre class=" language-lang-c"><code class="language-lang-c">// 这是一个阻塞函数, 由主线程调用，然后就阻塞在这，直到thread子线程退出，然后返回。
+// 回收对应的子线程资源
+int pthread_join(pthread_t thread, void **retval);
+</code></pre>
 <ul>
 <li>参数：<ul>
 <li>thread：要被回收的子线程的线程 ID</li>
@@ -71,13 +178,78 @@
 </ul>
 </li>
 </ul>
-<h3 id="4-2实例"><a href="#4-2实例" class="headerlink" title="4.2实例"></a>4.2实例</h3><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;pthread.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Test</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> num;</span><br><span class="line">    <span class="keyword">int</span> age;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="keyword">void</span> * <span class="title">mytask</span><span class="params">(<span class="keyword">void</span> * arg)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">Test</span> * <span class="title">pt</span> =</span> (struct Test *)arg;</span><br><span class="line">    pt-&gt;num = <span class="number">1000</span>;</span><br><span class="line">    pt-&gt;age = <span class="number">99</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;子线程：i = %d\n&quot;</span>, i);</span><br><span class="line">        <span class="keyword">if</span>(i == <span class="number">7</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            pthread_exit(pt); <span class="comment">// 直接退出子线程</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;子线程TID：%ld\n&quot;</span>, pthread_self());</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">pthread_t</span> tid;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">Test</span> <span class="title">test</span>;</span></span><br><span class="line">	</span><br><span class="line">    <span class="comment">// 子线程用到了主线程的栈空间test，所以主线程必须等子线程退出后再退出</span></span><br><span class="line">    pthread_create(&amp;tid, <span class="literal">NULL</span>, mytask, &amp;test);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;子线程创建成功, 线程TID: %ld\n&quot;</span>, tid);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;主线程TID：%ld\n&quot;</span>, pthread_self());</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">void</span>* ptr = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="comment">// ptr是一个传出参数, 子线程回收资源被存放在此</span></span><br><span class="line">    <span class="comment">// 这个内存地址就是pthread_exit() 参数指向的内存</span></span><br><span class="line">    <span class="comment">// 阻塞等待子线程退出</span></span><br><span class="line">    pthread_join(tid, &amp;ptr);</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">Test</span>* <span class="title">tmp</span> =</span> (struct Test*)ptr;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;子线程返回数据: age: %d, num: %d\n&quot;</span>, tmp-&gt;age, tmp-&gt;num);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;子线程资源被成功回收...\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="4-2实例"><a href="#4-2实例" class="headerlink" title="4.2实例"></a>4.2实例</h3><pre class=" language-lang-c"><code class="language-lang-c">#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <pthread.h>
+
+struct Test
+&#123;
+    int num;
+    int age;
+&#125;;
+void * mytask(void * arg)
+&#123;
+    struct Test * pt = (struct Test *)arg;
+    pt->num = 1000;
+    pt->age = 99;
+    for (int i = 0; i < 10; i++)
+    &#123;
+        printf("子线程：i = %d\n", i);
+        if(i == 7)
+        &#123;
+            pthread_exit(pt); // 直接退出子线程
+        &#125;
+    &#125;
+    printf("子线程TID：%ld\n", pthread_self());
+
+    return NULL;
+&#125;
+int main()
+&#123;
+    pthread_t tid;
+    struct Test test;
+
+    // 子线程用到了主线程的栈空间test，所以主线程必须等子线程退出后再退出
+    pthread_create(&tid, NULL, mytask, &test);
+    printf("子线程创建成功, 线程TID: %ld\n", tid);
+    printf("主线程TID：%ld\n", pthread_self());
+
+    void* ptr = NULL;
+    // ptr是一个传出参数, 子线程回收资源被存放在此
+    // 这个内存地址就是pthread_exit() 参数指向的内存
+    // 阻塞等待子线程退出
+    pthread_join(tid, &ptr);
+
+    struct Test* tmp = (struct Test*)ptr;
+    printf("子线程返回数据: age: %d, num: %d\n", tmp->age, tmp->num);
+    printf("子线程资源被成功回收...\n");
+
+    return 0;
+&#125;
+</code></pre>
 <p>编译执行结果：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">root@iZwz94euuu9omhoocm3l5uZ:~/07_article# gcc my_pthread_create.c -lpthread -o app</span><br><span class="line">root@iZwz94euuu9omhoocm3l5uZ:~/07_article# ./app </span><br><span class="line">子线程创建成功, 线程TID: 140123287721728</span><br><span class="line">主线程TID：140123287725888</span><br><span class="line">子线程：i = 0</span><br><span class="line">子线程：i = 1</span><br><span class="line">子线程：i = 2</span><br><span class="line">子线程：i = 3</span><br><span class="line">子线程：i = 4</span><br><span class="line">子线程：i = 5</span><br><span class="line">子线程：i = 6</span><br><span class="line">子线程：i = 7</span><br><span class="line">子线程返回数据: age: 99, num: 1000</span><br><span class="line">子线程资源被成功回收...</span><br><span class="line">root@iZwz94euuu9omhoocm3l5uZ:~/07_article# </span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-shell"><code class="language-lang-shell">root@iZwz94euuu9omhoocm3l5uZ:~/07_article# gcc my_pthread_create.c -lpthread -o app
+root@iZwz94euuu9omhoocm3l5uZ:~/07_article# ./app 
+子线程创建成功, 线程TID: 140123287721728
+主线程TID：140123287725888
+子线程：i = 0
+子线程：i = 1
+子线程：i = 2
+子线程：i = 3
+子线程：i = 4
+子线程：i = 5
+子线程：i = 6
+子线程：i = 7
+子线程返回数据: age: 99, num: 1000
+子线程资源被成功回收...
+root@iZwz94euuu9omhoocm3l5uZ:~/07_article#
+</code></pre>
 <p>注意：虽然每个线程都有属于自己的栈区空间，但是位于同一个地址空间的多个线程是可以相互访问对方的栈空间上的数据的。当然，线程创建函数<code>pthread_create</code>的参数<code>arg</code>也可以是全局变量或者堆存的内存。</p>
 <h2 id="5、Linux线程分离"><a href="#5、Linux线程分离" class="headerlink" title="5、Linux线程分离"></a>5、Linux线程分离</h2><p>有时候，进程中的主线程也有自己的业务处理流程，如果还是让主线程负责子线程的资源回收，调用 <code>pthread_join</code>后，只要子线程不退出主线程就会一直被阻塞，主线程就没办法执行自己的业务处理流程了。</p>
 <p>这就是线程分离函数<code>pthread_detach</code>的应用场景了，调用线程分离函数之后指定的子线程就可以和主线程分离，当子线程退出的时候，其占用的内核资源会被系统的其他进程接管并回收了。线程分离之后在主线程中使用 <code>pthread_join</code>是回收不到子线程资源了的。</p>
-<h3 id="5-1线程分离函数"><a href="#5-1线程分离函数" class="headerlink" title="5.1线程分离函数"></a>5.1线程分离函数</h3><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">pthread_detach</span><span class="params">(<span class="keyword">pthread_t</span> thread)</span></span>;</span><br></pre></td></tr></table></figure>
+<h3 id="5-1线程分离函数"><a href="#5-1线程分离函数" class="headerlink" title="5.1线程分离函数"></a>5.1线程分离函数</h3><pre class=" language-lang-c"><code class="language-lang-c">int pthread_detach(pthread_t thread);
+</code></pre>
 <ul>
 <li><p>参数：</p>
 <ul>
@@ -87,11 +259,61 @@
 <li><p>返回值：成功返回0，失败返回错误码。</p>
 </li>
 </ul>
-<h3 id="5-2实例"><a href="#5-2实例" class="headerlink" title="5.2实例"></a>5.2实例</h3><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;pthread.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> * <span class="title">mytask</span><span class="params">(<span class="keyword">void</span> * arg)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;子线程：i = %d\n&quot;</span>, i);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;子线程TID：%ld\n&quot;</span>, pthread_self());</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">pthread_t</span> tid;</span><br><span class="line"></span><br><span class="line">    pthread_create(&amp;tid, <span class="literal">NULL</span>, mytask, <span class="literal">NULL</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;子线程创建成功, 线程TID: %ld\n&quot;</span>, tid);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;主线程TID：%ld\n&quot;</span>, pthread_self());</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 主线程子线程分离</span></span><br><span class="line">    pthread_detach(tid);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 主线程你自己先退出吧，不用管我，我一个“人”很好</span></span><br><span class="line">    pthread_exit(<span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="5-2实例"><a href="#5-2实例" class="headerlink" title="5.2实例"></a>5.2实例</h3><pre class=" language-lang-c"><code class="language-lang-c">#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <pthread.h>
+
+void * mytask(void * arg)
+&#123;
+
+    for (int i = 0; i < 10; i++)
+    &#123;
+        printf("子线程：i = %d\n", i);
+
+    &#125;
+    printf("子线程TID：%ld\n", pthread_self());
+
+    return NULL;
+&#125;
+int main()
+&#123;
+    pthread_t tid;
+
+    pthread_create(&tid, NULL, mytask, NULL);
+    printf("子线程创建成功, 线程TID: %ld\n", tid);
+    printf("主线程TID：%ld\n", pthread_self());
+
+    // 主线程子线程分离
+    pthread_detach(tid);
+
+    // 主线程你自己先退出吧，不用管我，我一个“人”很好
+    pthread_exit(NULL);
+
+    return 0;
+&#125;
+</code></pre>
 <p>程序编译运行结果：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">root@iZwz94euuu9omhoocm3l5uZ:~/07_article# gcc my_pthread_create.c -lpthread -o app</span><br><span class="line">root@iZwz94euuu9omhoocm3l5uZ:~/07_article# ./app </span><br><span class="line">子线程创建成功, 线程TID: 139791846512384</span><br><span class="line">主线程TID：139791846516544</span><br><span class="line">子线程：i = 0</span><br><span class="line">子线程：i = 1</span><br><span class="line">子线程：i = 2</span><br><span class="line">子线程：i = 3</span><br><span class="line">子线程：i = 4</span><br><span class="line">子线程：i = 5</span><br><span class="line">子线程：i = 6</span><br><span class="line">子线程：i = 7</span><br><span class="line">子线程：i = 8</span><br><span class="line">子线程：i = 9</span><br><span class="line">子线程TID：139791846512384</span><br><span class="line">root@iZwz94euuu9omhoocm3l5uZ:~/07_article# </span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-shell"><code class="language-lang-shell">root@iZwz94euuu9omhoocm3l5uZ:~/07_article# gcc my_pthread_create.c -lpthread -o app
+root@iZwz94euuu9omhoocm3l5uZ:~/07_article# ./app 
+子线程创建成功, 线程TID: 139791846512384
+主线程TID：139791846516544
+子线程：i = 0
+子线程：i = 1
+子线程：i = 2
+子线程：i = 3
+子线程：i = 4
+子线程：i = 5
+子线程：i = 6
+子线程：i = 7
+子线程：i = 8
+子线程：i = 9
+子线程TID：139791846512384
+root@iZwz94euuu9omhoocm3l5uZ:~/07_article#
+</code></pre>
 <h2 id="6、Linux其它线程函数"><a href="#6、Linux其它线程函数" class="headerlink" title="6、Linux其它线程函数"></a>6、Linux其它线程函数</h2><h3 id="6-1线程取消函数（对应进程中-kill-函数）"><a href="#6-1线程取消函数（对应进程中-kill-函数）" class="headerlink" title="6.1线程取消函数（对应进程中 kill() 函数）"></a>6.1线程取消函数（对应进程中 kill() 函数）</h3><p>杀死（取消）线程 其作用。但不会立刻杀死（取消）进程，只有当<code>thread</code>进行了一次系统调用（从用户区切换到内核区），才会死掉。</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">pthread_cancel</span><span class="params">(<span class="keyword">pthread_t</span> thread)</span></span>;</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-c"><code class="language-lang-c">int pthread_cancel(pthread_t thread);
+</code></pre>
 <ul>
 <li><p>参数：</p>
 <ul>
@@ -101,7 +323,8 @@
 <li><p>返回值：成功返回0，失败返回错误码。</p>
 </li>
 </ul>
-<h3 id="6-2线程ID是否相同函数"><a href="#6-2线程ID是否相同函数" class="headerlink" title="6.2线程ID是否相同函数"></a>6.2线程ID是否相同函数</h3><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">pthread_equal</span><span class="params">(<span class="keyword">pthread_t</span> t1, <span class="keyword">pthread_t</span> t2)</span></span>;</span><br></pre></td></tr></table></figure>
+<h3 id="6-2线程ID是否相同函数"><a href="#6-2线程ID是否相同函数" class="headerlink" title="6.2线程ID是否相同函数"></a>6.2线程ID是否相同函数</h3><pre class=" language-lang-c"><code class="language-lang-c">int pthread_equal(pthread_t t1, pthread_t t2);
+</code></pre>
 <ul>
 <li><p>参数：两个要比较的线程ID。</p>
 </li>
@@ -208,14 +431,81 @@
 <li>只能在有公共祖先的进程间使用。</li>
 </ul>
 <p>查看系统用户所有限制值的命令：<code>ulimit -a</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">root@iZwz94euuu9omhoocm3l5uZ:~# ulimit -a</span><br><span class="line">core file size          (blocks, -c) 0</span><br><span class="line">data seg size           (kbytes, -d) unlimited</span><br><span class="line">scheduling priority             (-e) 0</span><br><span class="line">file size               (blocks, -f) unlimited</span><br><span class="line">pending signals                 (-i) 7725</span><br><span class="line">max locked memory       (kbytes, -l) 65536</span><br><span class="line">max memory size         (kbytes, -m) unlimited</span><br><span class="line">open files                      (-n) 65535</span><br><span class="line">pipe size            (512 bytes, -p) 8</span><br><span class="line">POSIX message queues     (bytes, -q) 819200</span><br><span class="line">real-time priority              (-r) 0</span><br><span class="line">stack size              (kbytes, -s) 8192</span><br><span class="line">cpu time               (seconds, -t) unlimited</span><br><span class="line">max user processes              (-u) 7725</span><br><span class="line">virtual memory          (kbytes, -v) unlimited</span><br><span class="line">file locks                      (-x) unlimited</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-shell"><code class="language-lang-shell">root@iZwz94euuu9omhoocm3l5uZ:~# ulimit -a
+core file size          (blocks, -c) 0
+data seg size           (kbytes, -d) unlimited
+scheduling priority             (-e) 0
+file size               (blocks, -f) unlimited
+pending signals                 (-i) 7725
+max locked memory       (kbytes, -l) 65536
+max memory size         (kbytes, -m) unlimited
+open files                      (-n) 65535
+pipe size            (512 bytes, -p) 8
+POSIX message queues     (bytes, -q) 819200
+real-time priority              (-r) 0
+stack size              (kbytes, -s) 8192
+cpu time               (seconds, -t) unlimited
+max user processes              (-u) 7725
+virtual memory          (kbytes, -v) unlimited
+file locks                      (-x) unlimited
+</code></pre>
 <p><code>pipe size = 512bytes * 8 = 4KBytes</code>    ,512bytes为磁盘的一个扇区大小。</p>
-<h3 id="1-2pipe函数"><a href="#1-2pipe函数" class="headerlink" title="1.2pipe函数"></a>1.2pipe函数</h3><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/wait.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">pipe</span><span class="params">(<span class="keyword">int</span> pipefd[<span class="number">2</span>])</span></span>;</span><br></pre></td></tr></table></figure>
+<h3 id="1-2pipe函数"><a href="#1-2pipe函数" class="headerlink" title="1.2pipe函数"></a>1.2pipe函数</h3><pre class=" language-lang-c"><code class="language-lang-c">#include <sys/wait.h>
+int pipe(int pipefd[2]);
+</code></pre>
 <ul>
 <li>参数：<code>pipefd[0]</code>为读端，<code>pipefd[1]</code>为写端</li>
 <li>返回值：成功：0；失败：-1，设置errno</li>
 </ul>
-<h3 id="1-3例子"><a href="#1-3例子" class="headerlink" title="1.3例子"></a>1.3例子</h3><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/wait.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> fd[<span class="number">2</span>];</span><br><span class="line">  <span class="keyword">pid_t</span> pid;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">int</span> ret = pipe(fd);</span><br><span class="line">  <span class="keyword">if</span>(ret == <span class="number">-1</span>)</span><br><span class="line">  &#123;</span><br><span class="line">    perror(<span class="string">&quot;pipe error:&quot;</span>);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  pid = fork();</span><br><span class="line">  <span class="keyword">if</span>(pid == <span class="number">-1</span>)</span><br><span class="line">  &#123;</span><br><span class="line">    perror(<span class="string">&quot;fork error:&quot;</span>);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span> <span class="keyword">if</span>(pid == <span class="number">0</span>) <span class="comment">// 子进程 读数据</span></span><br><span class="line">  &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">char</span> buf[<span class="number">1024</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    close(fd[<span class="number">1</span>]);</span><br><span class="line">    ret = read(fd[<span class="number">0</span>], buf, <span class="keyword">sizeof</span>(buf));</span><br><span class="line">    <span class="keyword">if</span>(ret == <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">&quot;----\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    write(STDOUT_FILENO, buf, ret);</span><br><span class="line">    close(fd[<span class="number">0</span>]);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span> <span class="comment">// 父进程 写数据</span></span><br><span class="line">  &#123;</span><br><span class="line">    close(fd[<span class="number">0</span>]);</span><br><span class="line">    <span class="keyword">char</span> *data = <span class="string">&quot;hello pipe\n&quot;</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;len = %ld\n&quot;</span>, <span class="keyword">sizeof</span>(data));</span><br><span class="line">    write(fd[<span class="number">1</span>], data, <span class="built_in">strlen</span>(data));</span><br><span class="line">    wait(<span class="literal">NULL</span>); <span class="comment">// 阻塞回收子线程资源，避免子进程成为僵尸进程</span></span><br><span class="line">    close(fd[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="1-3例子"><a href="#1-3例子" class="headerlink" title="1.3例子"></a>1.3例子</h3><pre class=" language-lang-c"><code class="language-lang-c">#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/wait.h>
+int main(void)
+&#123;
+  int fd[2];
+  pid_t pid;
+
+  int ret = pipe(fd);
+  if(ret == -1)
+  &#123;
+    perror("pipe error:");
+    exit(1);
+  &#125;
+  pid = fork();
+  if(pid == -1)
+  &#123;
+    perror("fork error:");
+    exit(1);
+  &#125;
+  else if(pid == 0) // 子进程 读数据
+  &#123;
+
+    char buf[1024] = &#123;0&#125;;
+    close(fd[1]);
+    ret = read(fd[0], buf, sizeof(buf));
+    if(ret == 0)
+    &#123;
+      printf("----\n");
+    &#125;
+    write(STDOUT_FILENO, buf, ret);
+    close(fd[0]);
+  &#125;
+  else // 父进程 写数据
+  &#123;
+    close(fd[0]);
+    char *data = "hello pipe\n";
+    printf("len = %ld\n", sizeof(data));
+    write(fd[1], data, strlen(data));
+    wait(NULL); // 阻塞回收子线程资源，避免子进程成为僵尸进程
+    close(fd[1]);
+
+  &#125;
+
+  return 0;
+&#125;
+</code></pre>
 <h3 id="1-4读写管道的特点"><a href="#1-4读写管道的特点" class="headerlink" title="1.4读写管道的特点"></a>1.4读写管道的特点</h3><ul>
 <li><p>读管道：</p>
 <ul>
@@ -251,7 +541,9 @@
 <li>一般和信号量一起使用，信号量用来同步对共享内存的访问。</li>
 </ul>
 <h3 id="2-2相关函数"><a href="#2-2相关函数" class="headerlink" title="2.2相关函数"></a>2.2相关函数</h3><p><strong>创建共享内存映射</strong>：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/mman.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> *<span class="title">mmap</span><span class="params">(<span class="keyword">void</span> *addr, <span class="keyword">size_t</span> length, <span class="keyword">int</span> prot, <span class="keyword">int</span> flags, <span class="keyword">int</span> fd, <span class="keyword">off_t</span> offset)</span></span>;</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-c"><code class="language-lang-c">#include <sys/mman.h>
+void *mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset);
+</code></pre>
 <p>参数：</p>
 <ul>
 <li><p>addr：建立映射区的首地址，由Linux内核指定。使用时，写NULL即可。</p>
@@ -271,7 +563,9 @@
 </ul>
 <p>返回值：成功返回创建的映射区首地址；失败返回<code>MAP_FAILED</code>宏。</p>
 <p><strong>解除共享内存映射</strong>：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/mman.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">munmap</span><span class="params">(<span class="keyword">void</span> *addr, <span class="keyword">size_t</span> length)</span></span>;</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-c"><code class="language-lang-c">#include <sys/mman.h>
+int munmap(void *addr, size_t length);
+</code></pre>
 <p>参数：</p>
 <ul>
 <li>addr：映射区的首地址。</li>
@@ -288,10 +582,154 @@
 <li>如果文件偏移量必须为4k的整数倍。</li>
 <li><code>mmap</code>创建的映射区出错概率非常高，一定要检查返回值，确保映射区建立成功后才进行后续操作。</li>
 </ol>
-<h3 id="2-3例子"><a href="#2-3例子" class="headerlink" title="2.3例子"></a>2.3例子</h3><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/mman.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/wait.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MY_MMAP_SIZE 20</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MY_MMAP_FILE <span class="meta-string">&quot;temp&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> *p = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">pid_t</span> pid;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> fd;</span><br><span class="line">    fd = open(MY_MMAP_FILE, O_RDWR|O_CREAT|O_TRUNC, <span class="number">0644</span>);</span><br><span class="line">    <span class="keyword">if</span>(fd &lt; <span class="number">0</span>)&#123;</span><br><span class="line">        perror(<span class="string">&quot;open error&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    unlink(MY_MMAP_FILE);        <span class="comment">//删除临时文件目录项</span></span><br><span class="line">    ftruncate(fd, MY_MMAP_SIZE);</span><br><span class="line">    p = (<span class="keyword">char</span> *)mmap(<span class="literal">NULL</span>, MY_MMAP_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">if</span>(p == MAP_FAILED) &#123; <span class="comment">// 注意，不是 p == NULL</span></span><br><span class="line">        perror(<span class="string">&quot;mmap error&quot;</span>);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    close(fd);                   <span class="comment">//映射区建立完毕,即可关闭文件</span></span><br><span class="line"></span><br><span class="line">    pid = fork();                               <span class="comment">//创建子进程</span></span><br><span class="line">    <span class="keyword">if</span>(pid == <span class="number">0</span>)&#123;</span><br><span class="line">       <span class="keyword">char</span> *data = <span class="string">&quot;child hello!\n&quot;</span>;</span><br><span class="line">        <span class="built_in">strncpy</span>(p, data, <span class="built_in">strlen</span>(data) + <span class="number">1</span>);</span><br><span class="line">       <span class="comment">// *p = 1234;</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;son, *p = %s\n&quot;</span>, p);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        sleep(<span class="number">1</span>);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;parent, *p = %s\n&quot;</span>, p);</span><br><span class="line">        wait(<span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> ret = munmap(p, MY_MMAP_SIZE);                 <span class="comment">//释放映射区</span></span><br><span class="line">        <span class="keyword">if</span> (ret == <span class="number">-1</span>) &#123;</span><br><span class="line">            perror(<span class="string">&quot;munmap error&quot;</span>);</span><br><span class="line">            <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 匿名映射方式，不要创建临时文件temp</span></span><br><span class="line"><span class="comment">// MAP_ANONYMOUS linux下才有此宏，类unix系统没有</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/mman.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/wait.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MY_MMAP_SIZE 20</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> *p = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">pid_t</span> pid;</span><br><span class="line"></span><br><span class="line">    p = (<span class="keyword">char</span> *)mmap(<span class="literal">NULL</span>, MY_MMAP_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, <span class="number">-1</span>, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">if</span>(p == MAP_FAILED) &#123; <span class="comment">// 注意，不是 p == NULL</span></span><br><span class="line">        perror(<span class="string">&quot;mmap error&quot;</span>);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    pid = fork();                               <span class="comment">//创建子进程</span></span><br><span class="line">    <span class="keyword">if</span>(pid == <span class="number">0</span>)&#123;</span><br><span class="line">       <span class="keyword">char</span> *data = <span class="string">&quot;child hello!\n&quot;</span>;</span><br><span class="line">        <span class="built_in">strncpy</span>(p, data, <span class="built_in">strlen</span>(data) + <span class="number">1</span>);</span><br><span class="line">       <span class="comment">// *p = 1234;</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;son, *p = %s\n&quot;</span>, p);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        sleep(<span class="number">1</span>);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;parent, *p = %s\n&quot;</span>, p);</span><br><span class="line">        wait(<span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> ret = munmap(p, MY_MMAP_SIZE);                 <span class="comment">//释放映射区</span></span><br><span class="line">        <span class="keyword">if</span> (ret == <span class="number">-1</span>) &#123;</span><br><span class="line">            perror(<span class="string">&quot;munmap error&quot;</span>);</span><br><span class="line">            <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 类unix系统的匿名映射方法，Linux也可以使用</span><br><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &lt;stdlib.h&gt;</span><br><span class="line">#include &lt;unistd.h&gt;</span><br><span class="line">#include &lt;fcntl.h&gt;</span><br><span class="line">#include &lt;sys/mman.h&gt;</span><br><span class="line">#include &lt;sys/wait.h&gt;</span><br><span class="line">#include &lt;string.h&gt;</span><br><span class="line"></span><br><span class="line">#define MY_MMAP_SIZE 20</span><br><span class="line">#define MY_MMAP_FILE &quot;/dev/zero&quot;</span><br><span class="line"></span><br><span class="line">int main(void)</span><br><span class="line">&#123;</span><br><span class="line">    char *p = NULL;</span><br><span class="line">    pid_t pid;</span><br><span class="line"></span><br><span class="line">    int fd;</span><br><span class="line">    fd = open(MY_MMAP_FILE, O_RDWR);</span><br><span class="line">    if(fd &lt; 0)&#123;</span><br><span class="line">        perror(&quot;open error&quot;);</span><br><span class="line">        exit(1);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    p = (char *)mmap(NULL, MY_MMAP_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);</span><br><span class="line">    if(p == MAP_FAILED) &#123; // 注意，不是 p == NULL</span><br><span class="line">        perror(&quot;mmap error&quot;);</span><br><span class="line">    exit(1);</span><br><span class="line">    &#125;</span><br><span class="line">    close(fd);                   //映射区建立完毕,即可关闭文件</span><br><span class="line"></span><br><span class="line">    pid = fork();                               //创建子进程</span><br><span class="line">    if(pid == 0)&#123;</span><br><span class="line">       char *data = &quot;child hello!\n&quot;;</span><br><span class="line">        strncpy(p, data, strlen(data) + 1);</span><br><span class="line">       // *p = 1234;</span><br><span class="line">        printf(&quot;son, *p = %s\n&quot;, p);</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        sleep(1);</span><br><span class="line">        printf(&quot;parent, *p = %s\n&quot;, p);</span><br><span class="line">        wait(NULL);</span><br><span class="line"></span><br><span class="line">        int ret = munmap(p, MY_MMAP_SIZE);                 //释放映射区</span><br><span class="line">        if (ret == -1) &#123;</span><br><span class="line">            perror(&quot;munmap error&quot;);</span><br><span class="line">            exit(1);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
+<h3 id="2-3例子"><a href="#2-3例子" class="headerlink" title="2.3例子"></a>2.3例子</h3><pre class=" language-lang-c"><code class="language-lang-c">#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <sys/wait.h>
+#include <string.h>
+
+#define MY_MMAP_SIZE 20
+#define MY_MMAP_FILE "temp"
+
+int main(void)
+&#123;
+    char *p = NULL;
+    pid_t pid;
+
+    int fd;
+    fd = open(MY_MMAP_FILE, O_RDWR|O_CREAT|O_TRUNC, 0644);
+    if(fd < 0)&#123;
+        perror("open error");
+        exit(1);
+    &#125;
+    unlink(MY_MMAP_FILE);        //删除临时文件目录项
+    ftruncate(fd, MY_MMAP_SIZE);
+    p = (char *)mmap(NULL, MY_MMAP_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
+    if(p == MAP_FAILED) &#123; // 注意，不是 p == NULL
+        perror("mmap error");
+    exit(1);
+    &#125;
+    close(fd);                   //映射区建立完毕,即可关闭文件
+
+    pid = fork();                               //创建子进程
+    if(pid == 0)&#123;
+       char *data = "child hello!\n";
+        strncpy(p, data, strlen(data) + 1);
+       // *p = 1234;
+        printf("son, *p = %s\n", p);
+    &#125; else &#123;
+        sleep(1);
+        printf("parent, *p = %s\n", p);
+        wait(NULL);
+
+        int ret = munmap(p, MY_MMAP_SIZE);                 //释放映射区
+        if (ret == -1) &#123;
+            perror("munmap error");
+            exit(1);
+        &#125;
+    &#125;
+
+    return 0;
+&#125;
+</code></pre>
+<pre class=" language-lang-c"><code class="language-lang-c">// 匿名映射方式，不要创建临时文件temp
+// MAP_ANONYMOUS linux下才有此宏，类unix系统没有
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <sys/wait.h>
+#include <string.h>
+
+#define MY_MMAP_SIZE 20
+
+int main(void)
+&#123;
+    char *p = NULL;
+    pid_t pid;
+
+    p = (char *)mmap(NULL, MY_MMAP_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    if(p == MAP_FAILED) &#123; // 注意，不是 p == NULL
+        perror("mmap error");
+    exit(1);
+    &#125;
+
+    pid = fork();                               //创建子进程
+    if(pid == 0)&#123;
+       char *data = "child hello!\n";
+        strncpy(p, data, strlen(data) + 1);
+       // *p = 1234;
+        printf("son, *p = %s\n", p);
+    &#125; else &#123;
+        sleep(1);
+        printf("parent, *p = %s\n", p);
+        wait(NULL);
+
+        int ret = munmap(p, MY_MMAP_SIZE);                 //释放映射区
+        if (ret == -1) &#123;
+            perror("munmap error");
+            exit(1);
+        &#125;
+    &#125;
+
+    return 0;
+&#125;
+</code></pre>
+<pre><code>// 类unix系统的匿名映射方法，Linux也可以使用
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;sys/mman.h&gt;
+#include &lt;sys/wait.h&gt;
+#include &lt;string.h&gt;
+
+#define MY_MMAP_SIZE 20
+#define MY_MMAP_FILE &quot;/dev/zero&quot;
+
+int main(void)
+&#123;
+    char *p = NULL;
+    pid_t pid;
+
+    int fd;
+    fd = open(MY_MMAP_FILE, O_RDWR);
+    if(fd &lt; 0)&#123;
+        perror(&quot;open error&quot;);
+        exit(1);
+    &#125;
+
+    p = (char *)mmap(NULL, MY_MMAP_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
+    if(p == MAP_FAILED) &#123; // 注意，不是 p == NULL
+        perror(&quot;mmap error&quot;);
+    exit(1);
+    &#125;
+    close(fd);                   //映射区建立完毕,即可关闭文件
+
+    pid = fork();                               //创建子进程
+    if(pid == 0)&#123;
+       char *data = &quot;child hello!\n&quot;;
+        strncpy(p, data, strlen(data) + 1);
+       // *p = 1234;
+        printf(&quot;son, *p = %s\n&quot;, p);
+    &#125; else &#123;
+        sleep(1);
+        printf(&quot;parent, *p = %s\n&quot;, p);
+        wait(NULL);
+
+        int ret = munmap(p, MY_MMAP_SIZE);                 //释放映射区
+        if (ret == -1) &#123;
+            perror(&quot;munmap error&quot;);
+            exit(1);
+        &#125;
+    &#125;
+
+    return 0;
+&#125;
+</code></pre><ul>
 <li><code>/dev/zero</code>：在类UNIX 操作系统中, <code>/dev/zero</code> 是一个伪文件。<ul>
 <li>产生连续不断的null的流 （二进制的零流，而不是ASCII型的）。</li>
 <li>写入它的输出会丢失不见 。</li>
@@ -307,8 +745,124 @@
 </ul>
 </li>
 </ul>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// mmap_wr.c</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/stat.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/mman.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">STU</span>&#123;</span></span><br><span class="line">    <span class="keyword">int</span> id;</span><br><span class="line">    <span class="keyword">char</span> name[<span class="number">20</span>];</span><br><span class="line">    <span class="keyword">char</span> sex;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">sys_err</span><span class="params">(<span class="keyword">char</span> *str)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    perror(str);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc,<span class="keyword">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> fd;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">STU</span> <span class="title">student</span> =</span> &#123;<span class="number">10</span>, <span class="string">&quot;xiaoming&quot;</span>, <span class="string">&#x27;m&#x27;</span>&#125;;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">STU</span> *<span class="title">mm</span>;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(argc &lt; <span class="number">2</span>)&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;./a.out file_shared\n&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    fd = open(argv[<span class="number">1</span>],O_RDWR | O_CREAT, <span class="number">0664</span>);</span><br><span class="line">    ftruncate(fd,<span class="keyword">sizeof</span>(student));</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    mm = mmap(<span class="literal">NULL</span>, <span class="keyword">sizeof</span>(student), PROT_READ|PROT_WRITE, MAP_SHARED, fd, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">if</span> (mm == MAP_FAILED)</span><br><span class="line">        sys_err(<span class="string">&quot;mmap error&quot;</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    close(fd);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">        <span class="built_in">memcpy</span>(mm, &amp;student, <span class="keyword">sizeof</span>(student));</span><br><span class="line">        student.id++;</span><br><span class="line">        sleep(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    munmap(mm, <span class="keyword">sizeof</span>(student));</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// mmap_rd.c</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/stat.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/mman.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">STU</span>&#123;</span></span><br><span class="line">    <span class="keyword">int</span> id;</span><br><span class="line">    <span class="keyword">char</span> name[<span class="number">20</span>];</span><br><span class="line">    <span class="keyword">char</span> sex;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">sys_err</span><span class="params">(<span class="keyword">char</span> *str)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    perror(str);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc,<span class="keyword">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> fd;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">STU</span> <span class="title">student</span>;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">STU</span> *<span class="title">mm</span>;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(argc &lt; <span class="number">2</span>)&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;./a.out file_shared\n&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    fd = open(argv[<span class="number">1</span>],O_RDONLY);</span><br><span class="line">    <span class="keyword">if</span> (fd == <span class="number">-1</span>)</span><br><span class="line">    sys_err(<span class="string">&quot;open error&quot;</span>);</span><br><span class="line"></span><br><span class="line">    mm = mmap(<span class="literal">NULL</span>,<span class="keyword">sizeof</span>(student),PROT_READ,MAP_SHARED,fd,<span class="number">0</span>);</span><br><span class="line">    <span class="keyword">if</span> (mm == MAP_FAILED)</span><br><span class="line">        sys_err(<span class="string">&quot;mmap error&quot;</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    close(fd);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;id=%d\tname=%s\t%c\n&quot;</span>, mm-&gt;id, mm-&gt;name, mm-&gt;sex);</span><br><span class="line">        sleep(<span class="number">2</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    munmap(mm, <span class="keyword">sizeof</span>(student));</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-c"><code class="language-lang-c">// mmap_wr.c
+#include<stdio.h>
+#include<sys/stat.h>
+#include<fcntl.h>
+#include<unistd.h>
+#include<string.h>
+#include<stdlib.h>
+#include<sys/mman.h>
+
+
+struct STU&#123;
+    int id;
+    char name[20];
+    char sex;
+&#125;;
+
+
+void sys_err(char *str)
+&#123;
+    perror(str);
+    exit(1);
+&#125;
+
+int main(int argc,char *argv[])
+&#123;
+    int fd;
+    struct STU student = &#123;10, "xiaoming", 'm'&#125;;
+    struct STU *mm;
+
+
+    if(argc < 2)&#123;
+        printf("./a.out file_shared\n");
+        exit(-1);
+    &#125;
+
+
+    fd = open(argv[1],O_RDWR | O_CREAT, 0664);
+    ftruncate(fd,sizeof(student));
+
+
+    mm = mmap(NULL, sizeof(student), PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
+    if (mm == MAP_FAILED)
+        sys_err("mmap error");
+
+
+    close(fd);
+
+
+    while (1) &#123;
+        memcpy(mm, &student, sizeof(student));
+        student.id++;
+        sleep(1);
+    &#125;
+
+
+    munmap(mm, sizeof(student));
+    return 0;
+&#125;
+</code></pre>
+<pre class=" language-lang-c"><code class="language-lang-c">// mmap_rd.c
+#include<stdio.h>
+#include<sys/stat.h>
+#include<fcntl.h>
+#include<unistd.h>
+#include<string.h>
+#include<stdlib.h>
+#include<sys/mman.h>
+
+
+struct STU&#123;
+    int id;
+    char name[20];
+    char sex;
+&#125;;
+
+
+void sys_err(char *str)
+&#123;
+    perror(str);
+    exit(1);
+&#125;
+
+
+int main(int argc,char *argv[])
+&#123;
+    int fd;
+    struct STU student;
+    struct STU *mm;
+
+
+    if(argc < 2)&#123;
+        printf("./a.out file_shared\n");
+        exit(-1);
+    &#125;
+
+
+    fd = open(argv[1],O_RDONLY);
+    if (fd == -1)
+    sys_err("open error");
+
+    mm = mmap(NULL,sizeof(student),PROT_READ,MAP_SHARED,fd,0);
+    if (mm == MAP_FAILED)
+        sys_err("mmap error");
+
+
+    close(fd);
+
+
+    while (1) &#123;
+        printf("id=%d\tname=%s\t%c\n", mm->id, mm->name, mm->sex);
+        sleep(2);
+    &#125;
+    munmap(mm, sizeof(student));
+    return 0;
+
+
+&#125;
+</code></pre>
 <h2 id="3、套接字（socket）"><a href="#3、套接字（socket）" class="headerlink" title="3、套接字（socket）"></a>3、套接字（socket）</h2><h3 id="3-1基本概念"><a href="#3-1基本概念" class="headerlink" title="3.1基本概念"></a>3.1基本概念</h3><p><code>socket</code>套接字本身是为网络通信而设计的，但后来在<code>socket</code>的框架上发展出一种<code>IPC</code>机制，就是<code>Unix Domain Socket</code>。使用<code>Unix Domain Socket</code>的过程跟网络<code>socket</code>十分相似，也要先调用<code>socket()</code>创建一个<code>socket</code>文件描述符，<code>address_family</code>指定为<code>AF_UNIX</code>，<code>type</code>可以选择<code>SOCK_DGRAM</code>或者<code>SOCK_STREAM</code>，<code>protocol</code>参数仍然指定为0即可。</p>
 <p><code>Unix Domain Socket</code>与网络<code>socket</code>编程的区别。</p>
 <ul>
@@ -317,10 +871,16 @@
 <li><p>地址格式结构体为<code>sockaddr_un</code>，<code>un</code>表示Unix。</p>
 </li>
 <li><p>地址是一个<code>socket</code>类型的文件在文件系统中的路径，这个<code>socket</code>文件由<code>bind()</code>调用创建，如果调用<code>bind()</code>时该文件已存在，则<code>bind()</code>错误返回。</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_un</span> &#123;</span></span><br><span class="line">   __kernel_sa_family sun_family;   <span class="comment">/* AF_UNIX */</span>  地址结构类型</span><br><span class="line">   <span class="keyword">char</span> sun_path[UNIX_PATH_MAX];	<span class="comment">/* pathname */</span> socket文件名（含路径）</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-c"><code class="language-lang-c">struct sockaddr_un &#123;
+   __kernel_sa_family sun_family;   /* AF_UNIX */  地址结构类型
+   char sun_path[UNIX_PATH_MAX];    /* pathname */ socket文件名（含路径）
+&#125;;
+</code></pre>
 </li>
 <li><p>将<code>Unix Domain socket</code>绑定到一个地址。</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">size = offsetof(struct sockaddr_un, sunpath) + <span class="built_in">strlen</span>(un.sun_path);</span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> offsetof(type, member) ((int)&amp;((type *)0)-&gt;MEMBER)</span></span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-c"><code class="language-lang-c">size = offsetof(struct sockaddr_un, sunpath) + strlen(un.sun_path);
+#define offsetof(type, member) ((int)&((type *)0)->MEMBER)
+</code></pre>
 </li>
 </ul>
 </li>
@@ -331,16 +891,237 @@
 <li><p>地址格式结构体为<code>sockaddr_in</code>，<code>in</code>表示Internet。</p>
 </li>
 <li><p>地址是IP地址加上端口号。</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> &#123;</span></span><br><span class="line">    <span class="keyword">__kernel_sa_family_t</span> sin_family; <span class="comment">/* Address family */</span>  地址结构类型</span><br><span class="line">    __be16 sin_port;                 <span class="comment">/* Port number */</span>     端口号</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">in_addr</span> <span class="title">sin_addr</span>;</span>         <span class="comment">/* Internet address */</span>ip地址</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-c"><code class="language-lang-c">struct sockaddr_in &#123;
+    __kernel_sa_family_t sin_family; /* Address family */  地址结构类型
+    __be16 sin_port;                 /* Port number */     端口号
+    struct in_addr sin_addr;         /* Internet address */ip地址
+&#125;;
+</code></pre>
 </li>
 </ul>
 </li>
 </ul>
-<h3 id="3-2例子"><a href="#3-2例子" class="headerlink" title="3.2例子"></a>3.2例子</h3><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// socket_server.c</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/socket.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;strings.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;ctype.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/un.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;wrap.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SERVER_ADDR <span class="meta-string">&quot;server.socket&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SERVER_CONNECT_MAX 20</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> rdbuf_size 4096</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> lfd, cfd, len, size;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_un</span> <span class="title">serveraddr</span>, <span class="title">clientaddr</span>;</span></span><br><span class="line">  <span class="keyword">char</span> rdbuf[rdbuf_size] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line"></span><br><span class="line">  lfd = Socket(AF_UNIX, SOCK_STREAM, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">  bzero(&amp;serveraddr, <span class="keyword">sizeof</span>(serveraddr));</span><br><span class="line">  serveraddr.sun_family = AF_UNIX;</span><br><span class="line">  <span class="built_in">strncpy</span>(serveraddr.sun_path, SERVER_ADDR, <span class="keyword">sizeof</span>(SERVER_ADDR));</span><br><span class="line"></span><br><span class="line">  len = offsetof(struct sockaddr_un, sun_path) + <span class="built_in">strlen</span>(serveraddr.sun_path); <span class="comment">// serveraddr total len</span></span><br><span class="line">  </span><br><span class="line">  unlink(SERVER_ADDR);    <span class="comment">// 确保bind之前 server.socket 文件不存在，bind() 会创建该文件</span></span><br><span class="line">  Bind(lfd, (struct sockaddr *)&amp;serveraddr, len); <span class="comment">// 参3不能是 sizeof(serveraddr)</span></span><br><span class="line"></span><br><span class="line">  Listen(lfd, SERVER_CONNECT_MAX);</span><br><span class="line"></span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;Accept...\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">while</span>(<span class="number">1</span>)</span><br><span class="line">  &#123;</span><br><span class="line">    len = <span class="keyword">sizeof</span>(clientaddr); <span class="comment">// 好像不用这句也行</span></span><br><span class="line">    cfd = Accept(lfd, (struct sockaddr *)&amp;clientaddr, (<span class="keyword">socklen_t</span> *)&amp;len);</span><br><span class="line"></span><br><span class="line">    len -= offsetof(struct sockaddr_un, sun_path); <span class="comment">// 等到文件名的长度</span></span><br><span class="line">    clientaddr.sun_path[len] = <span class="string">&#x27;\0&#x27;</span>; <span class="comment">// 确保打印时没有乱码</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;client bind filename %s \n&quot;</span>, clientaddr.sun_path);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span>((size = read(cfd, rdbuf, rdbuf_size)) &gt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; size; i++)</span><br><span class="line">              rdbuf[i] = <span class="built_in">toupper</span>(rdbuf[i]);</span><br><span class="line">      <span class="keyword">int</span> tmp = size;</span><br><span class="line">      <span class="keyword">do</span> &#123;</span><br><span class="line">        <span class="keyword">int</span> tmp2 = write(cfd, rdbuf, tmp);</span><br><span class="line">        <span class="keyword">if</span>(tmp2 == <span class="number">-1</span>)</span><br><span class="line">        &#123;</span><br><span class="line">                perror(<span class="string">&quot;write error:&quot;</span>);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        tmp -= tmp2; </span><br><span class="line">      &#125; <span class="keyword">while</span>(tmp &gt; <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    close(cfd);</span><br><span class="line">  &#125;</span><br><span class="line">  close(lfd);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// socket_client.c</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/socket.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;strings.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;ctype.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/un.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;wrap.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SERVER_ADDR <span class="meta-string">&quot;server.socket&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> CLIENT_ADDR <span class="meta-string">&quot;client.socket&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FGETS_BUF_SIZE 4096</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> cfd, len;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_un</span> <span class="title">serveraddr</span>, <span class="title">clientaddr</span>;</span></span><br><span class="line">  <span class="keyword">char</span> buf[FGETS_BUF_SIZE] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line"></span><br><span class="line">  cfd = Socket(AF_UNIX, SOCK_STREAM, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">  bzero(&amp;clientaddr, <span class="keyword">sizeof</span>(clientaddr));</span><br><span class="line">  clientaddr.sun_family = AF_UNIX;</span><br><span class="line">  <span class="built_in">strncpy</span>(clientaddr.sun_path, CLIENT_ADDR, <span class="keyword">sizeof</span>(CLIENT_ADDR));</span><br><span class="line"></span><br><span class="line">  len = offsetof(struct sockaddr_un, sun_path) + <span class="built_in">strlen</span>(clientaddr.sun_path); <span class="comment">// 计算客户端地质结构有效长度</span></span><br><span class="line"></span><br><span class="line">  unlink(CLIENT_ADDR);</span><br><span class="line">  Bind(cfd, (struct sockaddr *)&amp;clientaddr, len); <span class="comment">// 客户端也需要bind，不能依赖自动绑定</span></span><br><span class="line"></span><br><span class="line">  bzero(&amp;serveraddr, <span class="keyword">sizeof</span>(serveraddr));  <span class="comment">// 构造server地址</span></span><br><span class="line">  serveraddr.sun_family = AF_UNIX;</span><br><span class="line">  <span class="built_in">strncpy</span>(serveraddr.sun_path, SERVER_ADDR, <span class="keyword">sizeof</span>(SERVER_ADDR));</span><br><span class="line"></span><br><span class="line">  len = offsetof(struct sockaddr_un, sun_path) + <span class="built_in">strlen</span>(serveraddr.sun_path); <span class="comment">//计算服务器地址结构有效长度</span></span><br><span class="line"></span><br><span class="line">  Connect(cfd, (struct sockaddr *)&amp;serveraddr, len);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">while</span>(fgets(buf, <span class="keyword">sizeof</span>(buf), <span class="built_in">stdin</span>) != <span class="literal">NULL</span>)</span><br><span class="line">  &#123;</span><br><span class="line">    write(cfd, buf, <span class="built_in">strlen</span>(buf));</span><br><span class="line">    len = read(cfd, buf, <span class="keyword">sizeof</span>(buf));</span><br><span class="line">    write(STDOUT_FILENO, buf, len);</span><br><span class="line">  </span><br><span class="line">  &#125;</span><br><span class="line">  close(cfd);</span><br><span class="line">        </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// wrap.c 这里是socket的包裹函数</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;wrap.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">err_sys</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* x)</span> </span></span><br><span class="line"><span class="function"></span>&#123; </span><br><span class="line">    perror(x); </span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">1</span>); </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Socket</span><span class="params">(<span class="keyword">int</span> domain, <span class="keyword">int</span> type, <span class="keyword">int</span> protocol)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> n;</span><br><span class="line">  <span class="keyword">if</span> ((n = socket(domain, type, protocol)) &lt; <span class="number">0</span>)</span><br><span class="line">    err_sys(<span class="string">&quot;socket error&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> (n);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Bind</span><span class="params">(<span class="keyword">int</span> sockfd, <span class="keyword">const</span> struct sockaddr *addr, <span class="keyword">socklen_t</span> addrlen)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> n;</span><br><span class="line">  <span class="keyword">if</span> ((n = bind(sockfd, addr, addrlen)) &lt; <span class="number">0</span>)</span><br><span class="line">    err_sys(<span class="string">&quot;bind error&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> (n);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Listen</span><span class="params">(<span class="keyword">int</span> sockfd, <span class="keyword">int</span> backlog)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> n;</span><br><span class="line">  <span class="keyword">if</span> ((n = listen(sockfd, backlog)) &lt; <span class="number">0</span>)</span><br><span class="line">    err_sys(<span class="string">&quot;listen error&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> (n);</span><br><span class="line">  </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Accept</span><span class="params">(<span class="keyword">int</span> sockfd, struct sockaddr *addr, <span class="keyword">socklen_t</span> *addrlen)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> n;</span><br><span class="line">  <span class="keyword">if</span> ((n = accept(sockfd, addr, addrlen)) &lt; <span class="number">0</span>)</span><br><span class="line">    err_sys(<span class="string">&quot;accept error&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> (n);</span><br><span class="line">  </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Connect</span><span class="params">(<span class="keyword">int</span> sockfd, <span class="keyword">const</span> struct sockaddr *addr, <span class="keyword">socklen_t</span> addrlen)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> n;</span><br><span class="line">  <span class="keyword">if</span> ((n = connect(sockfd, addr, addrlen)) &lt; <span class="number">0</span>)</span><br><span class="line">    err_sys(<span class="string">&quot;connect error&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> (n);</span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// wrap.h</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> __WRAP_H</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> __WRAP_H</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span>          <span class="comment">/* See NOTES */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/socket.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> offsetof(type, member) ((int)&amp;((type *)0)-&gt;member)</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Socket</span><span class="params">(<span class="keyword">int</span> domain, <span class="keyword">int</span> type, <span class="keyword">int</span> protocol)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Bind</span><span class="params">(<span class="keyword">int</span> sockfd, <span class="keyword">const</span> struct sockaddr *addr, <span class="keyword">socklen_t</span> addrlen)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Listen</span><span class="params">(<span class="keyword">int</span> sockfd, <span class="keyword">int</span> backlog)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Accept</span><span class="params">(<span class="keyword">int</span> sockfd, struct sockaddr *addr, <span class="keyword">socklen_t</span> *addrlen)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Connect</span><span class="params">(<span class="keyword">int</span> sockfd, <span class="keyword">const</span> struct sockaddr *addr, <span class="keyword">socklen_t</span> addrlen)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure>
-<figure class="highlight makefile"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 这个makefile写不是很好，有待整改</span></span><br><span class="line">all : socket_client socket_server</span><br><span class="line">.PHONY : all</span><br><span class="line"></span><br><span class="line">RM_TARGET = socket_client socket_server</span><br><span class="line"></span><br><span class="line">CLIENT_OBJS = socket_client.o wrap.o</span><br><span class="line">SERVER_OBJS = socket_server.o wrap.o</span><br><span class="line"></span><br><span class="line"><span class="comment"># LIBS := -lpthread</span></span><br><span class="line">CFLAGS = -I. -g</span><br><span class="line">CC = gcc</span><br><span class="line">CXX = g++</span><br><span class="line"></span><br><span class="line">socket_client : <span class="variable">$(CLIENT_OBJS)</span></span><br><span class="line">	<span class="variable">$(CC)</span> -o socket_client <span class="variable">$(CLIENT_OBJS)</span> <span class="variable">$(CFLAGS)</span> <span class="variable">$(LIBS)</span></span><br><span class="line"></span><br><span class="line">socket_server : <span class="variable">$(SERVER_OBJS)</span></span><br><span class="line">	<span class="variable">$(CC)</span> -o socket_server <span class="variable">$(SERVER_OBJS)</span> <span class="variable">$(CFLAGS)</span> <span class="variable">$(LIBS)</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$(CLIENT_OBJS)</span> : %.o : %.c</span><br><span class="line">	<span class="variable">$(CC)</span> -c <span class="variable">$(CFLAGS)</span> <span class="variable">$&lt;</span> -o <span class="variable">$@</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$(SERVER_OBJS)</span> : %.o : %.c</span><br><span class="line">	<span class="variable">$(CC)</span> -c <span class="variable">$(CFLAGS)</span> <span class="variable">$&lt;</span> -o <span class="variable">$@</span></span><br><span class="line"></span><br><span class="line">.PHONY : clean</span><br><span class="line">clean :</span><br><span class="line">	-<span class="variable">$(RM)</span> socket_server socket_client  <span class="variable">$(CLIENT_OBJS)</span> <span class="variable">$(SERVER_OBJS)</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="3-2例子"><a href="#3-2例子" class="headerlink" title="3.2例子"></a>3.2例子</h3><pre class=" language-lang-c"><code class="language-lang-c">// socket_server.c
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <string.h>
+#include <strings.h>
+#include <ctype.h>
+#include <sys/un.h>
+#include <stdlib.h>
+#include "wrap.h"
+#define SERVER_ADDR "server.socket"
+#define SERVER_CONNECT_MAX 20
+
+#define rdbuf_size 4096
+
+int main(void)
+&#123;
+  int lfd, cfd, len, size;
+  struct sockaddr_un serveraddr, clientaddr;
+  char rdbuf[rdbuf_size] = &#123;0&#125;;
+
+  lfd = Socket(AF_UNIX, SOCK_STREAM, 0);
+
+  bzero(&serveraddr, sizeof(serveraddr));
+  serveraddr.sun_family = AF_UNIX;
+  strncpy(serveraddr.sun_path, SERVER_ADDR, sizeof(SERVER_ADDR));
+
+  len = offsetof(struct sockaddr_un, sun_path) + strlen(serveraddr.sun_path); // serveraddr total len
+
+  unlink(SERVER_ADDR);    // 确保bind之前 server.socket 文件不存在，bind() 会创建该文件
+  Bind(lfd, (struct sockaddr *)&serveraddr, len); // 参3不能是 sizeof(serveraddr)
+
+  Listen(lfd, SERVER_CONNECT_MAX);
+
+  printf("Accept...\n");
+
+  while(1)
+  &#123;
+    len = sizeof(clientaddr); // 好像不用这句也行
+    cfd = Accept(lfd, (struct sockaddr *)&clientaddr, (socklen_t *)&len);
+
+    len -= offsetof(struct sockaddr_un, sun_path); // 等到文件名的长度
+    clientaddr.sun_path[len] = '\0'; // 确保打印时没有乱码
+
+    printf("client bind filename %s \n", clientaddr.sun_path);
+
+    while((size = read(cfd, rdbuf, rdbuf_size)) > 0)
+    &#123;
+      for(int i = 0; i < size; i++)
+              rdbuf[i] = toupper(rdbuf[i]);
+      int tmp = size;
+      do &#123;
+        int tmp2 = write(cfd, rdbuf, tmp);
+        if(tmp2 == -1)
+        &#123;
+                perror("write error:");
+                break;
+        &#125;
+        tmp -= tmp2; 
+      &#125; while(tmp > 0);
+    &#125;
+    close(cfd);
+  &#125;
+  close(lfd);
+
+  return 0;
+
+&#125;
+</code></pre>
+<pre class=" language-lang-c"><code class="language-lang-c">// socket_client.c
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <string.h>
+#include <strings.h>
+#include <ctype.h>
+#include <sys/un.h>
+#include "wrap.h"
+
+#define SERVER_ADDR "server.socket"
+#define CLIENT_ADDR "client.socket"
+#define FGETS_BUF_SIZE 4096
+
+
+int main(void)
+&#123;
+  int cfd, len;
+  struct sockaddr_un serveraddr, clientaddr;
+  char buf[FGETS_BUF_SIZE] = &#123;0&#125;;
+
+  cfd = Socket(AF_UNIX, SOCK_STREAM, 0);
+
+  bzero(&clientaddr, sizeof(clientaddr));
+  clientaddr.sun_family = AF_UNIX;
+  strncpy(clientaddr.sun_path, CLIENT_ADDR, sizeof(CLIENT_ADDR));
+
+  len = offsetof(struct sockaddr_un, sun_path) + strlen(clientaddr.sun_path); // 计算客户端地质结构有效长度
+
+  unlink(CLIENT_ADDR);
+  Bind(cfd, (struct sockaddr *)&clientaddr, len); // 客户端也需要bind，不能依赖自动绑定
+
+  bzero(&serveraddr, sizeof(serveraddr));  // 构造server地址
+  serveraddr.sun_family = AF_UNIX;
+  strncpy(serveraddr.sun_path, SERVER_ADDR, sizeof(SERVER_ADDR));
+
+  len = offsetof(struct sockaddr_un, sun_path) + strlen(serveraddr.sun_path); //计算服务器地址结构有效长度
+
+  Connect(cfd, (struct sockaddr *)&serveraddr, len);
+
+  while(fgets(buf, sizeof(buf), stdin) != NULL)
+  &#123;
+    write(cfd, buf, strlen(buf));
+    len = read(cfd, buf, sizeof(buf));
+    write(STDOUT_FILENO, buf, len);
+
+  &#125;
+  close(cfd);
+
+&#125;
+</code></pre>
+<pre class=" language-lang-c"><code class="language-lang-c">// wrap.c 这里是socket的包裹函数
+#include <stdio.h>
+#include <wrap.h>
+void err_sys(const char* x) 
+&#123; 
+    perror(x); 
+    exit(1); 
+&#125;
+
+int Socket(int domain, int type, int protocol)
+&#123;
+  int n;
+  if ((n = socket(domain, type, protocol)) < 0)
+    err_sys("socket error");
+  return (n);
+&#125;
+
+int Bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
+&#123;
+  int n;
+  if ((n = bind(sockfd, addr, addrlen)) < 0)
+    err_sys("bind error");
+  return (n);
+
+&#125;
+
+int Listen(int sockfd, int backlog)
+&#123;
+  int n;
+  if ((n = listen(sockfd, backlog)) < 0)
+    err_sys("listen error");
+  return (n);
+
+&#125;
+
+int Accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen)
+&#123;
+  int n;
+  if ((n = accept(sockfd, addr, addrlen)) < 0)
+    err_sys("accept error");
+  return (n);
+
+&#125;
+
+int Connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
+&#123;
+  int n;
+  if ((n = connect(sockfd, addr, addrlen)) < 0)
+    err_sys("connect error");
+  return (n);
+
+&#125;
+</code></pre>
+<pre class=" language-lang-c"><code class="language-lang-c">// wrap.h
+#ifndef __WRAP_H
+#define __WRAP_H
+
+#include <stdlib.h>
+#include <sys/types.h>          /* See NOTES */
+#include <sys/socket.h>
+
+#define offsetof(type, member) ((int)&((type *)0)->member)
+
+int Socket(int domain, int type, int protocol);
+int Bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
+int Listen(int sockfd, int backlog);
+int Accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
+int Connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
+
+#endif
+</code></pre>
+<pre class=" language-lang-makefile"><code class="language-lang-makefile"># 这个makefile写不是很好，有待整改
+all : socket_client socket_server
+.PHONY : all
+
+RM_TARGET = socket_client socket_server
+
+CLIENT_OBJS = socket_client.o wrap.o
+SERVER_OBJS = socket_server.o wrap.o
+
+# LIBS := -lpthread
+CFLAGS = -I. -g
+CC = gcc
+CXX = g++
+
+socket_client : $(CLIENT_OBJS)
+    $(CC) -o socket_client $(CLIENT_OBJS) $(CFLAGS) $(LIBS)
+
+socket_server : $(SERVER_OBJS)
+    $(CC) -o socket_server $(SERVER_OBJS) $(CFLAGS) $(LIBS)
+
+$(CLIENT_OBJS) : %.o : %.c
+    $(CC) -c $(CFLAGS) $< -o $@
+
+$(SERVER_OBJS) : %.o : %.c
+    $(CC) -c $(CFLAGS) $< -o $@
+
+.PHONY : clean
+clean :
+    -$(RM) socket_server socket_client  $(CLIENT_OBJS) $(SERVER_OBJS)
+</code></pre>
 ]]></content>
       <categories>
         <category>Linux</category>

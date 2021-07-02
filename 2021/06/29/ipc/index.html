@@ -1,343 +1,577 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html lang="zh-CN">
+
+
 <head>
-  <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
-<meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.4.0">
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
-  <link rel="mask-icon" href="/images/logo.svg" color="#222">
-
-<link rel="stylesheet" href="/css/main.css">
-
-
-<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
-
-<script id="hexo-configurations">
-    var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"alanchans.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":25,"offset":20,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":5,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
-  </script>
-
-  <meta name="description" content="进程间通信IPCIPC（Inter-Process Communication，进程间通信）。进程间通信是指两个进程的数据之间产生交互。 1、管道1.1基本概念管道是一种最基本的IPC机制，作用于有血缘关系的进程之间，完成数据传递。调用pipe系统函数即可创建一个管道。  本质是一个伪文件（实为内核缓冲区）。 有两个文件描述符，一个表示读端(fd[1])，一个表示写端(fd[0])。 规定数据从管">
-<meta property="og:type" content="article">
-<meta property="og:title" content="进程间通信IPC">
-<meta property="og:url" content="http://alanchans.github.io/2021/06/29/ipc/index.html">
-<meta property="og:site_name" content="中单打野我都行">
-<meta property="og:description" content="进程间通信IPCIPC（Inter-Process Communication，进程间通信）。进程间通信是指两个进程的数据之间产生交互。 1、管道1.1基本概念管道是一种最基本的IPC机制，作用于有血缘关系的进程之间，完成数据传递。调用pipe系统函数即可创建一个管道。  本质是一个伪文件（实为内核缓冲区）。 有两个文件描述符，一个表示读端(fd[1])，一个表示写端(fd[0])。 规定数据从管">
-<meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2021-06-29T01:25:18.000Z">
-<meta property="article:modified_time" content="2021-07-01T15:30:37.754Z">
-<meta property="article:author" content="AlanChan">
-<meta property="article:tag" content="IPC">
-<meta property="article:tag" content="进程间通信">
-<meta name="twitter:card" content="summary">
-
-<link rel="canonical" href="http://alanchans.github.io/2021/06/29/ipc/">
+    <meta charset="utf-8">
+    <meta name="keywords" content="进程间通信IPC, 技术宅、攻城狮、史蒂芬库里、金州拉文">
+    <meta name="description" content="主要涉及开发技能为C/C++、单片机、嵌入式ARM、Linux、QT、FFMPEG">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-<script id="page-configurations">
-  // https://hexo.io/docs/variables.html
-  CONFIG.page = {
-    sidebar: "",
-    isHome : false,
-    isPost : true,
-    lang   : 'zh-CN'
-  };
-</script>
+    <title>进程间通信IPC | 中单打野我都行</title>
+    <link rel="icon" type="image/png" href="/medias/android-chrome-200x200.png">
 
-  <title>进程间通信IPC | 中单打野我都行</title>
-  
+    <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
+
+    <script src="/libs/jquery/jquery.min.js"></script>
+    <script src="https://v1.hitokoto.cn/?c=d&c=h&c=j&k&f&encode=js&select=%23hitokoto" defer></script>
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="中单打野我都行" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
 
 
 
 
-
-
-  <noscript>
-  <style>
-  .use-motion .brand,
-  .use-motion .menu-item,
-  .sidebar-inner,
-  .use-motion .post-block,
-  .use-motion .pagination,
-  .use-motion .comments,
-  .use-motion .post-header,
-  .use-motion .post-body,
-  .use-motion .collection-header { opacity: initial; }
-
-  .use-motion .site-title,
-  .use-motion .site-subtitle {
-    opacity: initial;
-    top: initial;
-  }
-
-  .use-motion .logo-line-before i { left: initial; }
-  .use-motion .logo-line-after i { right: initial; }
-  </style>
-</noscript>
-
-
-  <!-- 指定jquery源-->
-  <script type="text/javascript" 
-  src="//code.jquery.com/jquery-1.11.0.js"></script>
-  <script type="text/javascript" 
-  src="//code.jquery.com/jquery-1.11.0.min.js"></script>
-  <!--pjax：防止跳转页面音乐暂停-->
-  <script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.js"></script> 
-  <!--浏览器搞笑标题-->
-  <script type="text/javascript" src="/js/FunnyTitle.js"></script>
-  
-  <!-- 雪花特效 -->
-  <script type="text/javascript" src="/js/snow.js"></script>
-  <!-- 数字雨 -->
-  <canvas id="canvas" width="1440" height="900" ></canvas>
-  <script type="text/javascript" src="/js/DigitalRain.js"></script>
-
-<link rel="alternate" href="/atom.xml" title="中单打野我都行" type="application/atom+xml">
-</head>
-
-<body itemscope itemtype="http://schema.org/WebPage">
-  <div class="container use-motion">
-    <div class="headband"></div>
-
-    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-container">
-  <div class="site-nav-toggle">
-    <div class="toggle" aria-label="切换导航栏">
-      <span class="toggle-line toggle-line-first"></span>
-      <span class="toggle-line toggle-line-middle"></span>
-      <span class="toggle-line toggle-line-last"></span>
-    </div>
-  </div>
-
-  <div class="site-meta">
-
-    <a href="/" class="brand" rel="start">
-      <span class="logo-line-before"><i></i></span>
-      <h1 class="site-title">中单打野我都行</h1>
-      <span class="logo-line-after"><i></i></span>
-    </a>
-      <p class="site-subtitle" itemprop="description">为中华崛起而读书</p>
-  </div>
-
-  <div class="site-nav-right">
-    <div class="toggle popup-trigger">
-        <i class="fa fa-search fa-fw fa-lg"></i>
-    </div>
-  </div>
-</div>
-
-
-
-
-<nav class="site-nav">
-  <ul id="menu" class="main-menu menu">
-        <li class="menu-item menu-item-home">
-
-    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
-
-  </li>
-        <li class="menu-item menu-item-about">
-
-    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
-
-  </li>
-        <li class="menu-item menu-item-tags">
-
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">6</span></a>
-
-  </li>
-        <li class="menu-item menu-item-categories">
-
-    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">3</span></a>
-
-  </li>
-        <li class="menu-item menu-item-archives">
-
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">4</span></a>
-
-  </li>
-      <li class="menu-item menu-item-search">
-        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
-        </a>
-      </li>
-  </ul>
-</nav>
-
-
-
-  <div class="search-pop-overlay">
-    <div class="popup search-popup">
-        <div class="search-header">
-  <span class="search-icon">
-    <i class="fa fa-search"></i>
-  </span>
-  <div class="search-input-container">
-    <input autocomplete="off" autocapitalize="off"
-           placeholder="搜索..." spellcheck="false"
-           type="search" class="search-input">
-  </div>
-  <span class="popup-btn-close">
-    <i class="fa fa-times-circle"></i>
-  </span>
-</div>
-<div id="search-result">
-  <div id="no-result">
-    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
-  </div>
-</div>
-
-    </div>
-  </div>
-<script>
-var _hmt = _hmt || [];
-(function() {
-var hm = document.createElement("script");
-hm.src = "https://hm.baidu.com/hm.js?e0e26c7af780979dc17c209293b085cd";
-var s = document.getElementsByTagName("script")[0]; 
-s.parentNode.insertBefore(hm, s);
-})();
-</script>
-
-</div>
-    </header>
-    
-  <div class="back-to-top">
-    <i class="fa fa-arrow-up"></i>
-    <span>0%</span>
-  </div>
-  <div class="reading-progress-bar"></div>
-  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
-
-  <a href="https://github.com/AlanChans/alanchans.github.io" class="github-corner" title="Follow Alan on GitHub" aria-label="Follow Alan on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
-
-
-    <main class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-                <!-- 彩色滚动变换字体-->
-        <div id="binft">
-        </div>
-        <script>
-          var binft = function (r) {
-            function t() {
-              return b[Math.floor(Math.random() * b.length)]
-            }  
-            function e() {
-              return String.fromCharCode(94 * Math.random() + 33)
-            }
-            function n(r) {
-              for (var n = document.createDocumentFragment(), i = 0; r > i; i++) {
-                var l = document.createElement("span");
-                l.textContent = e(), l.style.color = t(), n.appendChild(l)
-              }
-              return n
-            }
-            function i() {
-              var t = o[c.skillI];
-              c.step ? c.step-- : (c.step = g, c.prefixP < l.length ? (c.prefixP >= 0 && (c.text += l[c.prefixP]), c.prefixP++) : "forward" === c.direction ? c.skillP < t.length ? (c.text += t[c.skillP], c.skillP++) : c.delay ? c.delay-- : (c.direction = "backward", c.delay = a) : c.skillP > 0 ? (c.text = c.text.slice(0, -1), c.skillP--) : (c.skillI = (c.skillI + 1) % o.length, c.direction = "forward")), r.textContent = c.text, r.appendChild(n(c.prefixP < l.length ? Math.min(s, s + c.prefixP) : Math.min(s, t.length - c.skillP))), setTimeout(i, d)
-            }
-            var l = "",
-            o = ["青青陵上柏，磊磊涧中石。", "人生天地间，忽如远行客。","斗酒相娱乐，聊厚不为薄。", "驱车策驽马，游戏宛与洛。","洛中何郁郁，冠带自相索。","长衢罗夹巷，王侯多第宅。","两宫遥相望，双阙百余尺。","极宴娱心意，戚戚何所迫？", "我拜唐僧入佛门，不爱娇娥悟红尘。春风何能空拂柳，南海幽蓝净瓶中。","半生风雨半身寒，一杯浊酒敬流年，回首过往半生路，七分酸楚三分甜，日出东方催人醒，不及晚霞懂我心，辞别再无相见日，终是一人渡春秋！","尚未佩妥剑,转眼便江湖。愿历尽千帆,归来仍少年", "我曾见过群山万重，后见你眉眼,便觉山河少了一抹春色。说起来虽然夸张,但我仍然觉得,你的眼里最适合淌着星河。", "我听过最善良的一句话是:“你在路上碰到的一个路人,都是别人做梦都想见到的人。”"].map(function (r) {
-            return r + ""
-            }),
-            a = 2,
-            g = 1,
-            s = 5,
-            d = 75,
-            b = ["rgb(110,64,170)", "rgb(150,61,179)", "rgb(191,60,175)", "rgb(228,65,157)", "rgb(254,75,131)", "rgb(255,94,99)", "rgb(255,120,71)", "rgb(251,150,51)", "rgb(226,183,47)", "rgb(198,214,60)", "rgb(175,240,91)", "rgb(127,246,88)", "rgb(82,246,103)", "rgb(48,239,130)", "rgb(29,223,163)", "rgb(26,199,194)", "rgb(35,171,216)", "rgb(54,140,225)", "rgb(76,110,219)", "rgb(96,84,200)"],
-            c = {
-              text: "",
-              prefixP: -s,
-              skillI: 0,
-              skillP: 0,
-              direction: "forward",
-              delay: a,
-              step: g
-            };
-            i()
-            };
-            binft(document.getElementById('binft'));
-        </script>
-          
-
-          <div class="content post posts-expand">
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/logo.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">中单打野我都行</span>
+                </a>
+            </div>
             
 
-    
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
   
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
   
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://alanchans.github.io/2021/06/29/ipc/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/android-chrome-512x512.png">
-      <meta itemprop="name" content="AlanChan">
-      <meta itemprop="description" content="主要涉及开发技能为C/C++、单片机、嵌入式ARM、Linux、QT、FFMPEG">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="中单打野我都行">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          进程间通信IPC
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-06-29 01:25:18" itemprop="dateCreated datePublished" datetime="2021-06-29T01:25:18+00:00">2021-06-29</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-07-01 15:30:37" itemprop="dateModified" datetime="2021-07-01T15:30:37+00:00">2021-07-01</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>14k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>13 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
+  <li class="hide-on-med-and-down nav-item">
     
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
     
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
     
-    <div class="post-body" itemprop="articleBody">
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/contact" class="waves-effect waves-light">
+      
+      <i class="fas fa-comments" style="zoom: 0.6;"></i>
+      
+      <span>留言板</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/friends" class="waves-effect waves-light">
+      
+      <i class="fas fa-address-book" style="zoom: 0.6;"></i>
+      
+      <span>友情链接</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="" class="waves-effect waves-light">
 
       
-        <h1 id="进程间通信IPC"><a href="#进程间通信IPC" class="headerlink" title="进程间通信IPC"></a>进程间通信IPC</h1><p>IPC（Inter-Process Communication，进程间通信）。进程间通信是指两个进程的数据之间产生交互。</p>
+      <i class="fas fa-list" style="zoom: 0.6;"></i>
+      
+      <span>Medias</span>
+      <i class="fas fa-chevron-down" aria-hidden="true" style="zoom: 0.6;"></i>
+    </a>
+    <ul class="sub-nav menus_item_child ">
+      
+      <li>
+        <a href="/musics">
+          
+          <i class="fas fa-music" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>Musics</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/movies">
+          
+          <i class="fas fa-film" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>Movies</span>
+        </a>
+      </li>
+      
+    </ul>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">中单打野我都行</div>
+        <div class="logo-desc">
+            
+            主要涉及开发技能为C/C++、单片机、嵌入式ARM、Linux、QT、FFMPEG
+            
+        </div>
+    </div>
+
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/contact" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-comments"></i>
+			
+			留言板
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/friends" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-address-book"></i>
+			
+			友情链接
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="javascript:;">
+			
+				<i class="fa-fw fas fa-list"></i>
+			
+			Medias
+			<span class="m-icon"><i class="fas fa-chevron-right"></i></span>
+		</a>
+            <ul  style="background:  ;" >
+              
+                <li>
+
+                  <a href="/musics " style="margin-left:75px">
+				  
+				   <i class="fa fas fa-music" style="position: absolute;left:50px" ></i>
+			      
+		          <span>Musics</span>
+                  </a>
+                </li>
+              
+                <li>
+
+                  <a href="/movies " style="margin-left:75px">
+				  
+				   <i class="fa fas fa-film" style="position: absolute;left:50px" ></i>
+			      
+		          <span>Movies</span>
+                  </a>
+                </li>
+              
+            </ul>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/blinkfox/hexo-theme-matery" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/blinkfox/hexo-theme-matery" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/15.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">进程间通信IPC</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    .toc-widget {
+        width: 345px;
+        padding-left: 20px;
+    }
+
+    .toc-widget .toc-title {
+        padding: 35px 0 15px 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content {
+        padding-bottom: 30px;
+        overflow: auto;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+
+        position: absolute;
+        right: 23.5vw;
+        display: block;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 15px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/IPC/">
+                                <span class="chip bg-color">IPC</span>
+                            </a>
+                        
+                            <a href="/tags/%E8%BF%9B%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1/">
+                                <span class="chip bg-color">进程间通信</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/Linux/" class="post-category">
+                                Linux
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2021-06-29
+                </div>
+                
+
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
+                    2021-07-02
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    3.4k
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    16 分
+                </div>
+                
+
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h1 id="进程间通信IPC"><a href="#进程间通信IPC" class="headerlink" title="进程间通信IPC"></a>进程间通信IPC</h1><p>IPC（Inter-Process Communication，进程间通信）。进程间通信是指两个进程的数据之间产生交互。</p>
 <h2 id="1、管道"><a href="#1、管道" class="headerlink" title="1、管道"></a>1、管道</h2><h3 id="1-1基本概念"><a href="#1-1基本概念" class="headerlink" title="1.1基本概念"></a>1.1基本概念</h3><p>管道是一种最基本的IPC机制，作用于有血缘关系的进程之间，完成数据传递。调用pipe系统函数即可创建一个管道。</p>
 <ul>
 <li>本质是一个伪文件（实为内核缓冲区）。</li>
@@ -354,14 +588,81 @@ s.parentNode.insertBefore(hm, s);
 <li>只能在有公共祖先的进程间使用。</li>
 </ul>
 <p>查看系统用户所有限制值的命令：<code>ulimit -a</code></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">root@iZwz94euuu9omhoocm3l5uZ:~# ulimit -a</span><br><span class="line">core file size          (blocks, -c) 0</span><br><span class="line">data seg size           (kbytes, -d) unlimited</span><br><span class="line">scheduling priority             (-e) 0</span><br><span class="line">file size               (blocks, -f) unlimited</span><br><span class="line">pending signals                 (-i) 7725</span><br><span class="line">max locked memory       (kbytes, -l) 65536</span><br><span class="line">max memory size         (kbytes, -m) unlimited</span><br><span class="line">open files                      (-n) 65535</span><br><span class="line">pipe size            (512 bytes, -p) 8</span><br><span class="line">POSIX message queues     (bytes, -q) 819200</span><br><span class="line">real-time priority              (-r) 0</span><br><span class="line">stack size              (kbytes, -s) 8192</span><br><span class="line">cpu time               (seconds, -t) unlimited</span><br><span class="line">max user processes              (-u) 7725</span><br><span class="line">virtual memory          (kbytes, -v) unlimited</span><br><span class="line">file locks                      (-x) unlimited</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-shell"><code class="language-lang-shell">root@iZwz94euuu9omhoocm3l5uZ:~# ulimit -a
+core file size          (blocks, -c) 0
+data seg size           (kbytes, -d) unlimited
+scheduling priority             (-e) 0
+file size               (blocks, -f) unlimited
+pending signals                 (-i) 7725
+max locked memory       (kbytes, -l) 65536
+max memory size         (kbytes, -m) unlimited
+open files                      (-n) 65535
+pipe size            (512 bytes, -p) 8
+POSIX message queues     (bytes, -q) 819200
+real-time priority              (-r) 0
+stack size              (kbytes, -s) 8192
+cpu time               (seconds, -t) unlimited
+max user processes              (-u) 7725
+virtual memory          (kbytes, -v) unlimited
+file locks                      (-x) unlimited
+</code></pre>
 <p><code>pipe size = 512bytes * 8 = 4KBytes</code>    ,512bytes为磁盘的一个扇区大小。</p>
-<h3 id="1-2pipe函数"><a href="#1-2pipe函数" class="headerlink" title="1.2pipe函数"></a>1.2pipe函数</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/wait.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">pipe</span><span class="params">(<span class="keyword">int</span> pipefd[<span class="number">2</span>])</span></span>;</span><br></pre></td></tr></table></figure>
+<h3 id="1-2pipe函数"><a href="#1-2pipe函数" class="headerlink" title="1.2pipe函数"></a>1.2pipe函数</h3><pre class=" language-lang-c"><code class="language-lang-c">#include <sys/wait.h>
+int pipe(int pipefd[2]);
+</code></pre>
 <ul>
 <li>参数：<code>pipefd[0]</code>为读端，<code>pipefd[1]</code>为写端</li>
 <li>返回值：成功：0；失败：-1，设置errno</li>
 </ul>
-<h3 id="1-3例子"><a href="#1-3例子" class="headerlink" title="1.3例子"></a>1.3例子</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/wait.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> fd[<span class="number">2</span>];</span><br><span class="line">  <span class="keyword">pid_t</span> pid;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">int</span> ret = pipe(fd);</span><br><span class="line">  <span class="keyword">if</span>(ret == <span class="number">-1</span>)</span><br><span class="line">  &#123;</span><br><span class="line">    perror(<span class="string">&quot;pipe error:&quot;</span>);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  pid = fork();</span><br><span class="line">  <span class="keyword">if</span>(pid == <span class="number">-1</span>)</span><br><span class="line">  &#123;</span><br><span class="line">    perror(<span class="string">&quot;fork error:&quot;</span>);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span> <span class="keyword">if</span>(pid == <span class="number">0</span>) <span class="comment">// 子进程 读数据</span></span><br><span class="line">  &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">char</span> buf[<span class="number">1024</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    close(fd[<span class="number">1</span>]);</span><br><span class="line">    ret = read(fd[<span class="number">0</span>], buf, <span class="keyword">sizeof</span>(buf));</span><br><span class="line">    <span class="keyword">if</span>(ret == <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">&quot;----\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    write(STDOUT_FILENO, buf, ret);</span><br><span class="line">    close(fd[<span class="number">0</span>]);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span> <span class="comment">// 父进程 写数据</span></span><br><span class="line">  &#123;</span><br><span class="line">    close(fd[<span class="number">0</span>]);</span><br><span class="line">    <span class="keyword">char</span> *data = <span class="string">&quot;hello pipe\n&quot;</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;len = %ld\n&quot;</span>, <span class="keyword">sizeof</span>(data));</span><br><span class="line">    write(fd[<span class="number">1</span>], data, <span class="built_in">strlen</span>(data));</span><br><span class="line">    wait(<span class="literal">NULL</span>); <span class="comment">// 阻塞回收子线程资源，避免子进程成为僵尸进程</span></span><br><span class="line">    close(fd[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="1-3例子"><a href="#1-3例子" class="headerlink" title="1.3例子"></a>1.3例子</h3><pre class=" language-lang-c"><code class="language-lang-c">#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/wait.h>
+int main(void)
+&#123;
+  int fd[2];
+  pid_t pid;
+
+  int ret = pipe(fd);
+  if(ret == -1)
+  &#123;
+    perror("pipe error:");
+    exit(1);
+  &#125;
+  pid = fork();
+  if(pid == -1)
+  &#123;
+    perror("fork error:");
+    exit(1);
+  &#125;
+  else if(pid == 0) // 子进程 读数据
+  &#123;
+
+    char buf[1024] = &#123;0&#125;;
+    close(fd[1]);
+    ret = read(fd[0], buf, sizeof(buf));
+    if(ret == 0)
+    &#123;
+      printf("----\n");
+    &#125;
+    write(STDOUT_FILENO, buf, ret);
+    close(fd[0]);
+  &#125;
+  else // 父进程 写数据
+  &#123;
+    close(fd[0]);
+    char *data = "hello pipe\n";
+    printf("len = %ld\n", sizeof(data));
+    write(fd[1], data, strlen(data));
+    wait(NULL); // 阻塞回收子线程资源，避免子进程成为僵尸进程
+    close(fd[1]);
+
+  &#125;
+
+  return 0;
+&#125;
+</code></pre>
 <h3 id="1-4读写管道的特点"><a href="#1-4读写管道的特点" class="headerlink" title="1.4读写管道的特点"></a>1.4读写管道的特点</h3><ul>
 <li><p>读管道：</p>
 <ul>
@@ -397,7 +698,9 @@ s.parentNode.insertBefore(hm, s);
 <li>一般和信号量一起使用，信号量用来同步对共享内存的访问。</li>
 </ul>
 <h3 id="2-2相关函数"><a href="#2-2相关函数" class="headerlink" title="2.2相关函数"></a>2.2相关函数</h3><p><strong>创建共享内存映射</strong>：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/mman.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> *<span class="title">mmap</span><span class="params">(<span class="keyword">void</span> *addr, <span class="keyword">size_t</span> length, <span class="keyword">int</span> prot, <span class="keyword">int</span> flags, <span class="keyword">int</span> fd, <span class="keyword">off_t</span> offset)</span></span>;</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-c"><code class="language-lang-c">#include <sys/mman.h>
+void *mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset);
+</code></pre>
 <p>参数：</p>
 <ul>
 <li><p>addr：建立映射区的首地址，由Linux内核指定。使用时，写NULL即可。</p>
@@ -417,7 +720,9 @@ s.parentNode.insertBefore(hm, s);
 </ul>
 <p>返回值：成功返回创建的映射区首地址；失败返回<code>MAP_FAILED</code>宏。</p>
 <p><strong>解除共享内存映射</strong>：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/mman.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">munmap</span><span class="params">(<span class="keyword">void</span> *addr, <span class="keyword">size_t</span> length)</span></span>;</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-c"><code class="language-lang-c">#include <sys/mman.h>
+int munmap(void *addr, size_t length);
+</code></pre>
 <p>参数：</p>
 <ul>
 <li>addr：映射区的首地址。</li>
@@ -434,10 +739,154 @@ s.parentNode.insertBefore(hm, s);
 <li>如果文件偏移量必须为4k的整数倍。</li>
 <li><code>mmap</code>创建的映射区出错概率非常高，一定要检查返回值，确保映射区建立成功后才进行后续操作。</li>
 </ol>
-<h3 id="2-3例子"><a href="#2-3例子" class="headerlink" title="2.3例子"></a>2.3例子</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/mman.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/wait.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MY_MMAP_SIZE 20</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MY_MMAP_FILE <span class="meta-string">&quot;temp&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> *p = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">pid_t</span> pid;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> fd;</span><br><span class="line">    fd = open(MY_MMAP_FILE, O_RDWR|O_CREAT|O_TRUNC, <span class="number">0644</span>);</span><br><span class="line">    <span class="keyword">if</span>(fd &lt; <span class="number">0</span>)&#123;</span><br><span class="line">        perror(<span class="string">&quot;open error&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    unlink(MY_MMAP_FILE);        <span class="comment">//删除临时文件目录项</span></span><br><span class="line">    ftruncate(fd, MY_MMAP_SIZE);</span><br><span class="line">    p = (<span class="keyword">char</span> *)mmap(<span class="literal">NULL</span>, MY_MMAP_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">if</span>(p == MAP_FAILED) &#123; <span class="comment">// 注意，不是 p == NULL</span></span><br><span class="line">        perror(<span class="string">&quot;mmap error&quot;</span>);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    close(fd);                   <span class="comment">//映射区建立完毕,即可关闭文件</span></span><br><span class="line"></span><br><span class="line">    pid = fork();                               <span class="comment">//创建子进程</span></span><br><span class="line">    <span class="keyword">if</span>(pid == <span class="number">0</span>)&#123;</span><br><span class="line">       <span class="keyword">char</span> *data = <span class="string">&quot;child hello!\n&quot;</span>;</span><br><span class="line">        <span class="built_in">strncpy</span>(p, data, <span class="built_in">strlen</span>(data) + <span class="number">1</span>);</span><br><span class="line">       <span class="comment">// *p = 1234;</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;son, *p = %s\n&quot;</span>, p);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        sleep(<span class="number">1</span>);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;parent, *p = %s\n&quot;</span>, p);</span><br><span class="line">        wait(<span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> ret = munmap(p, MY_MMAP_SIZE);                 <span class="comment">//释放映射区</span></span><br><span class="line">        <span class="keyword">if</span> (ret == <span class="number">-1</span>) &#123;</span><br><span class="line">            perror(<span class="string">&quot;munmap error&quot;</span>);</span><br><span class="line">            <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 匿名映射方式，不要创建临时文件temp</span></span><br><span class="line"><span class="comment">// MAP_ANONYMOUS linux下才有此宏，类unix系统没有</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/mman.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/wait.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MY_MMAP_SIZE 20</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> *p = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">pid_t</span> pid;</span><br><span class="line"></span><br><span class="line">    p = (<span class="keyword">char</span> *)mmap(<span class="literal">NULL</span>, MY_MMAP_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, <span class="number">-1</span>, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">if</span>(p == MAP_FAILED) &#123; <span class="comment">// 注意，不是 p == NULL</span></span><br><span class="line">        perror(<span class="string">&quot;mmap error&quot;</span>);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    pid = fork();                               <span class="comment">//创建子进程</span></span><br><span class="line">    <span class="keyword">if</span>(pid == <span class="number">0</span>)&#123;</span><br><span class="line">       <span class="keyword">char</span> *data = <span class="string">&quot;child hello!\n&quot;</span>;</span><br><span class="line">        <span class="built_in">strncpy</span>(p, data, <span class="built_in">strlen</span>(data) + <span class="number">1</span>);</span><br><span class="line">       <span class="comment">// *p = 1234;</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;son, *p = %s\n&quot;</span>, p);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        sleep(<span class="number">1</span>);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;parent, *p = %s\n&quot;</span>, p);</span><br><span class="line">        wait(<span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> ret = munmap(p, MY_MMAP_SIZE);                 <span class="comment">//释放映射区</span></span><br><span class="line">        <span class="keyword">if</span> (ret == <span class="number">-1</span>) &#123;</span><br><span class="line">            perror(<span class="string">&quot;munmap error&quot;</span>);</span><br><span class="line">            <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">// 类unix系统的匿名映射方法，Linux也可以使用</span><br><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &lt;stdlib.h&gt;</span><br><span class="line">#include &lt;unistd.h&gt;</span><br><span class="line">#include &lt;fcntl.h&gt;</span><br><span class="line">#include &lt;sys/mman.h&gt;</span><br><span class="line">#include &lt;sys/wait.h&gt;</span><br><span class="line">#include &lt;string.h&gt;</span><br><span class="line"></span><br><span class="line">#define MY_MMAP_SIZE 20</span><br><span class="line">#define MY_MMAP_FILE &quot;/dev/zero&quot;</span><br><span class="line"></span><br><span class="line">int main(void)</span><br><span class="line">&#123;</span><br><span class="line">    char *p = NULL;</span><br><span class="line">    pid_t pid;</span><br><span class="line"></span><br><span class="line">    int fd;</span><br><span class="line">    fd = open(MY_MMAP_FILE, O_RDWR);</span><br><span class="line">    if(fd &lt; 0)&#123;</span><br><span class="line">        perror(&quot;open error&quot;);</span><br><span class="line">        exit(1);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    p = (char *)mmap(NULL, MY_MMAP_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);</span><br><span class="line">    if(p == MAP_FAILED) &#123; // 注意，不是 p == NULL</span><br><span class="line">        perror(&quot;mmap error&quot;);</span><br><span class="line">    exit(1);</span><br><span class="line">    &#125;</span><br><span class="line">    close(fd);                   //映射区建立完毕,即可关闭文件</span><br><span class="line"></span><br><span class="line">    pid = fork();                               //创建子进程</span><br><span class="line">    if(pid == 0)&#123;</span><br><span class="line">       char *data = &quot;child hello!\n&quot;;</span><br><span class="line">        strncpy(p, data, strlen(data) + 1);</span><br><span class="line">       // *p = 1234;</span><br><span class="line">        printf(&quot;son, *p = %s\n&quot;, p);</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        sleep(1);</span><br><span class="line">        printf(&quot;parent, *p = %s\n&quot;, p);</span><br><span class="line">        wait(NULL);</span><br><span class="line"></span><br><span class="line">        int ret = munmap(p, MY_MMAP_SIZE);                 //释放映射区</span><br><span class="line">        if (ret == -1) &#123;</span><br><span class="line">            perror(&quot;munmap error&quot;);</span><br><span class="line">            exit(1);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
+<h3 id="2-3例子"><a href="#2-3例子" class="headerlink" title="2.3例子"></a>2.3例子</h3><pre class=" language-lang-c"><code class="language-lang-c">#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <sys/wait.h>
+#include <string.h>
+
+#define MY_MMAP_SIZE 20
+#define MY_MMAP_FILE "temp"
+
+int main(void)
+&#123;
+    char *p = NULL;
+    pid_t pid;
+
+    int fd;
+    fd = open(MY_MMAP_FILE, O_RDWR|O_CREAT|O_TRUNC, 0644);
+    if(fd < 0)&#123;
+        perror("open error");
+        exit(1);
+    &#125;
+    unlink(MY_MMAP_FILE);        //删除临时文件目录项
+    ftruncate(fd, MY_MMAP_SIZE);
+    p = (char *)mmap(NULL, MY_MMAP_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
+    if(p == MAP_FAILED) &#123; // 注意，不是 p == NULL
+        perror("mmap error");
+    exit(1);
+    &#125;
+    close(fd);                   //映射区建立完毕,即可关闭文件
+
+    pid = fork();                               //创建子进程
+    if(pid == 0)&#123;
+       char *data = "child hello!\n";
+        strncpy(p, data, strlen(data) + 1);
+       // *p = 1234;
+        printf("son, *p = %s\n", p);
+    &#125; else &#123;
+        sleep(1);
+        printf("parent, *p = %s\n", p);
+        wait(NULL);
+
+        int ret = munmap(p, MY_MMAP_SIZE);                 //释放映射区
+        if (ret == -1) &#123;
+            perror("munmap error");
+            exit(1);
+        &#125;
+    &#125;
+
+    return 0;
+&#125;
+</code></pre>
+<pre class=" language-lang-c"><code class="language-lang-c">// 匿名映射方式，不要创建临时文件temp
+// MAP_ANONYMOUS linux下才有此宏，类unix系统没有
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <sys/wait.h>
+#include <string.h>
+
+#define MY_MMAP_SIZE 20
+
+int main(void)
+&#123;
+    char *p = NULL;
+    pid_t pid;
+
+    p = (char *)mmap(NULL, MY_MMAP_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    if(p == MAP_FAILED) &#123; // 注意，不是 p == NULL
+        perror("mmap error");
+    exit(1);
+    &#125;
+
+    pid = fork();                               //创建子进程
+    if(pid == 0)&#123;
+       char *data = "child hello!\n";
+        strncpy(p, data, strlen(data) + 1);
+       // *p = 1234;
+        printf("son, *p = %s\n", p);
+    &#125; else &#123;
+        sleep(1);
+        printf("parent, *p = %s\n", p);
+        wait(NULL);
+
+        int ret = munmap(p, MY_MMAP_SIZE);                 //释放映射区
+        if (ret == -1) &#123;
+            perror("munmap error");
+            exit(1);
+        &#125;
+    &#125;
+
+    return 0;
+&#125;
+</code></pre>
+<pre><code>// 类unix系统的匿名映射方法，Linux也可以使用
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;sys/mman.h&gt;
+#include &lt;sys/wait.h&gt;
+#include &lt;string.h&gt;
+
+#define MY_MMAP_SIZE 20
+#define MY_MMAP_FILE &quot;/dev/zero&quot;
+
+int main(void)
+&#123;
+    char *p = NULL;
+    pid_t pid;
+
+    int fd;
+    fd = open(MY_MMAP_FILE, O_RDWR);
+    if(fd &lt; 0)&#123;
+        perror(&quot;open error&quot;);
+        exit(1);
+    &#125;
+
+    p = (char *)mmap(NULL, MY_MMAP_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
+    if(p == MAP_FAILED) &#123; // 注意，不是 p == NULL
+        perror(&quot;mmap error&quot;);
+    exit(1);
+    &#125;
+    close(fd);                   //映射区建立完毕,即可关闭文件
+
+    pid = fork();                               //创建子进程
+    if(pid == 0)&#123;
+       char *data = &quot;child hello!\n&quot;;
+        strncpy(p, data, strlen(data) + 1);
+       // *p = 1234;
+        printf(&quot;son, *p = %s\n&quot;, p);
+    &#125; else &#123;
+        sleep(1);
+        printf(&quot;parent, *p = %s\n&quot;, p);
+        wait(NULL);
+
+        int ret = munmap(p, MY_MMAP_SIZE);                 //释放映射区
+        if (ret == -1) &#123;
+            perror(&quot;munmap error&quot;);
+            exit(1);
+        &#125;
+    &#125;
+
+    return 0;
+&#125;
+</code></pre><ul>
 <li><code>/dev/zero</code>：在类UNIX 操作系统中, <code>/dev/zero</code> 是一个伪文件。<ul>
 <li>产生连续不断的null的流 （二进制的零流，而不是ASCII型的）。</li>
 <li>写入它的输出会丢失不见 。</li>
@@ -453,8 +902,124 @@ s.parentNode.insertBefore(hm, s);
 </ul>
 </li>
 </ul>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// mmap_wr.c</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/stat.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/mman.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">STU</span>&#123;</span></span><br><span class="line">    <span class="keyword">int</span> id;</span><br><span class="line">    <span class="keyword">char</span> name[<span class="number">20</span>];</span><br><span class="line">    <span class="keyword">char</span> sex;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">sys_err</span><span class="params">(<span class="keyword">char</span> *str)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    perror(str);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc,<span class="keyword">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> fd;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">STU</span> <span class="title">student</span> =</span> &#123;<span class="number">10</span>, <span class="string">&quot;xiaoming&quot;</span>, <span class="string">&#x27;m&#x27;</span>&#125;;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">STU</span> *<span class="title">mm</span>;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(argc &lt; <span class="number">2</span>)&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;./a.out file_shared\n&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    fd = open(argv[<span class="number">1</span>],O_RDWR | O_CREAT, <span class="number">0664</span>);</span><br><span class="line">    ftruncate(fd,<span class="keyword">sizeof</span>(student));</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    mm = mmap(<span class="literal">NULL</span>, <span class="keyword">sizeof</span>(student), PROT_READ|PROT_WRITE, MAP_SHARED, fd, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">if</span> (mm == MAP_FAILED)</span><br><span class="line">        sys_err(<span class="string">&quot;mmap error&quot;</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    close(fd);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">        <span class="built_in">memcpy</span>(mm, &amp;student, <span class="keyword">sizeof</span>(student));</span><br><span class="line">        student.id++;</span><br><span class="line">        sleep(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    munmap(mm, <span class="keyword">sizeof</span>(student));</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// mmap_rd.c</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/stat.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/mman.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">STU</span>&#123;</span></span><br><span class="line">    <span class="keyword">int</span> id;</span><br><span class="line">    <span class="keyword">char</span> name[<span class="number">20</span>];</span><br><span class="line">    <span class="keyword">char</span> sex;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">sys_err</span><span class="params">(<span class="keyword">char</span> *str)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    perror(str);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc,<span class="keyword">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> fd;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">STU</span> <span class="title">student</span>;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">STU</span> *<span class="title">mm</span>;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(argc &lt; <span class="number">2</span>)&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;./a.out file_shared\n&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    fd = open(argv[<span class="number">1</span>],O_RDONLY);</span><br><span class="line">    <span class="keyword">if</span> (fd == <span class="number">-1</span>)</span><br><span class="line">    sys_err(<span class="string">&quot;open error&quot;</span>);</span><br><span class="line"></span><br><span class="line">    mm = mmap(<span class="literal">NULL</span>,<span class="keyword">sizeof</span>(student),PROT_READ,MAP_SHARED,fd,<span class="number">0</span>);</span><br><span class="line">    <span class="keyword">if</span> (mm == MAP_FAILED)</span><br><span class="line">        sys_err(<span class="string">&quot;mmap error&quot;</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    close(fd);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;id=%d\tname=%s\t%c\n&quot;</span>, mm-&gt;id, mm-&gt;name, mm-&gt;sex);</span><br><span class="line">        sleep(<span class="number">2</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    munmap(mm, <span class="keyword">sizeof</span>(student));</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-c"><code class="language-lang-c">// mmap_wr.c
+#include<stdio.h>
+#include<sys/stat.h>
+#include<fcntl.h>
+#include<unistd.h>
+#include<string.h>
+#include<stdlib.h>
+#include<sys/mman.h>
+
+
+struct STU&#123;
+    int id;
+    char name[20];
+    char sex;
+&#125;;
+
+
+void sys_err(char *str)
+&#123;
+    perror(str);
+    exit(1);
+&#125;
+
+int main(int argc,char *argv[])
+&#123;
+    int fd;
+    struct STU student = &#123;10, "xiaoming", 'm'&#125;;
+    struct STU *mm;
+
+
+    if(argc < 2)&#123;
+        printf("./a.out file_shared\n");
+        exit(-1);
+    &#125;
+
+
+    fd = open(argv[1],O_RDWR | O_CREAT, 0664);
+    ftruncate(fd,sizeof(student));
+
+
+    mm = mmap(NULL, sizeof(student), PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
+    if (mm == MAP_FAILED)
+        sys_err("mmap error");
+
+
+    close(fd);
+
+
+    while (1) &#123;
+        memcpy(mm, &student, sizeof(student));
+        student.id++;
+        sleep(1);
+    &#125;
+
+
+    munmap(mm, sizeof(student));
+    return 0;
+&#125;
+</code></pre>
+<pre class=" language-lang-c"><code class="language-lang-c">// mmap_rd.c
+#include<stdio.h>
+#include<sys/stat.h>
+#include<fcntl.h>
+#include<unistd.h>
+#include<string.h>
+#include<stdlib.h>
+#include<sys/mman.h>
+
+
+struct STU&#123;
+    int id;
+    char name[20];
+    char sex;
+&#125;;
+
+
+void sys_err(char *str)
+&#123;
+    perror(str);
+    exit(1);
+&#125;
+
+
+int main(int argc,char *argv[])
+&#123;
+    int fd;
+    struct STU student;
+    struct STU *mm;
+
+
+    if(argc < 2)&#123;
+        printf("./a.out file_shared\n");
+        exit(-1);
+    &#125;
+
+
+    fd = open(argv[1],O_RDONLY);
+    if (fd == -1)
+    sys_err("open error");
+
+    mm = mmap(NULL,sizeof(student),PROT_READ,MAP_SHARED,fd,0);
+    if (mm == MAP_FAILED)
+        sys_err("mmap error");
+
+
+    close(fd);
+
+
+    while (1) &#123;
+        printf("id=%d\tname=%s\t%c\n", mm->id, mm->name, mm->sex);
+        sleep(2);
+    &#125;
+    munmap(mm, sizeof(student));
+    return 0;
+
+
+&#125;
+</code></pre>
 <h2 id="3、套接字（socket）"><a href="#3、套接字（socket）" class="headerlink" title="3、套接字（socket）"></a>3、套接字（socket）</h2><h3 id="3-1基本概念"><a href="#3-1基本概念" class="headerlink" title="3.1基本概念"></a>3.1基本概念</h3><p><code>socket</code>套接字本身是为网络通信而设计的，但后来在<code>socket</code>的框架上发展出一种<code>IPC</code>机制，就是<code>Unix Domain Socket</code>。使用<code>Unix Domain Socket</code>的过程跟网络<code>socket</code>十分相似，也要先调用<code>socket()</code>创建一个<code>socket</code>文件描述符，<code>address_family</code>指定为<code>AF_UNIX</code>，<code>type</code>可以选择<code>SOCK_DGRAM</code>或者<code>SOCK_STREAM</code>，<code>protocol</code>参数仍然指定为0即可。</p>
 <p><code>Unix Domain Socket</code>与网络<code>socket</code>编程的区别。</p>
 <ul>
@@ -463,10 +1028,16 @@ s.parentNode.insertBefore(hm, s);
 <li><p>地址格式结构体为<code>sockaddr_un</code>，<code>un</code>表示Unix。</p>
 </li>
 <li><p>地址是一个<code>socket</code>类型的文件在文件系统中的路径，这个<code>socket</code>文件由<code>bind()</code>调用创建，如果调用<code>bind()</code>时该文件已存在，则<code>bind()</code>错误返回。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_un</span> &#123;</span></span><br><span class="line">   __kernel_sa_family sun_family;   <span class="comment">/* AF_UNIX */</span>  地址结构类型</span><br><span class="line">   <span class="keyword">char</span> sun_path[UNIX_PATH_MAX];	<span class="comment">/* pathname */</span> socket文件名（含路径）</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-c"><code class="language-lang-c">struct sockaddr_un &#123;
+   __kernel_sa_family sun_family;   /* AF_UNIX */  地址结构类型
+   char sun_path[UNIX_PATH_MAX];    /* pathname */ socket文件名（含路径）
+&#125;;
+</code></pre>
 </li>
 <li><p>将<code>Unix Domain socket</code>绑定到一个地址。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">size = offsetof(struct sockaddr_un, sunpath) + <span class="built_in">strlen</span>(un.sun_path);</span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> offsetof(type, member) ((int)&amp;((type *)0)-&gt;MEMBER)</span></span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-c"><code class="language-lang-c">size = offsetof(struct sockaddr_un, sunpath) + strlen(un.sun_path);
+#define offsetof(type, member) ((int)&((type *)0)->MEMBER)
+</code></pre>
 </li>
 </ul>
 </li>
@@ -477,444 +1048,1101 @@ s.parentNode.insertBefore(hm, s);
 <li><p>地址格式结构体为<code>sockaddr_in</code>，<code>in</code>表示Internet。</p>
 </li>
 <li><p>地址是IP地址加上端口号。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> &#123;</span></span><br><span class="line">    <span class="keyword">__kernel_sa_family_t</span> sin_family; <span class="comment">/* Address family */</span>  地址结构类型</span><br><span class="line">    __be16 sin_port;                 <span class="comment">/* Port number */</span>     端口号</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">in_addr</span> <span class="title">sin_addr</span>;</span>         <span class="comment">/* Internet address */</span>ip地址</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-c"><code class="language-lang-c">struct sockaddr_in &#123;
+    __kernel_sa_family_t sin_family; /* Address family */  地址结构类型
+    __be16 sin_port;                 /* Port number */     端口号
+    struct in_addr sin_addr;         /* Internet address */ip地址
+&#125;;
+</code></pre>
 </li>
 </ul>
 </li>
 </ul>
-<h3 id="3-2例子"><a href="#3-2例子" class="headerlink" title="3.2例子"></a>3.2例子</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// socket_server.c</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/socket.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;strings.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;ctype.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/un.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;wrap.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SERVER_ADDR <span class="meta-string">&quot;server.socket&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SERVER_CONNECT_MAX 20</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> rdbuf_size 4096</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> lfd, cfd, len, size;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_un</span> <span class="title">serveraddr</span>, <span class="title">clientaddr</span>;</span></span><br><span class="line">  <span class="keyword">char</span> rdbuf[rdbuf_size] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line"></span><br><span class="line">  lfd = Socket(AF_UNIX, SOCK_STREAM, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">  bzero(&amp;serveraddr, <span class="keyword">sizeof</span>(serveraddr));</span><br><span class="line">  serveraddr.sun_family = AF_UNIX;</span><br><span class="line">  <span class="built_in">strncpy</span>(serveraddr.sun_path, SERVER_ADDR, <span class="keyword">sizeof</span>(SERVER_ADDR));</span><br><span class="line"></span><br><span class="line">  len = offsetof(struct sockaddr_un, sun_path) + <span class="built_in">strlen</span>(serveraddr.sun_path); <span class="comment">// serveraddr total len</span></span><br><span class="line">  </span><br><span class="line">  unlink(SERVER_ADDR);    <span class="comment">// 确保bind之前 server.socket 文件不存在，bind() 会创建该文件</span></span><br><span class="line">  Bind(lfd, (struct sockaddr *)&amp;serveraddr, len); <span class="comment">// 参3不能是 sizeof(serveraddr)</span></span><br><span class="line"></span><br><span class="line">  Listen(lfd, SERVER_CONNECT_MAX);</span><br><span class="line"></span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;Accept...\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">while</span>(<span class="number">1</span>)</span><br><span class="line">  &#123;</span><br><span class="line">    len = <span class="keyword">sizeof</span>(clientaddr); <span class="comment">// 好像不用这句也行</span></span><br><span class="line">    cfd = Accept(lfd, (struct sockaddr *)&amp;clientaddr, (<span class="keyword">socklen_t</span> *)&amp;len);</span><br><span class="line"></span><br><span class="line">    len -= offsetof(struct sockaddr_un, sun_path); <span class="comment">// 等到文件名的长度</span></span><br><span class="line">    clientaddr.sun_path[len] = <span class="string">&#x27;\0&#x27;</span>; <span class="comment">// 确保打印时没有乱码</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;client bind filename %s \n&quot;</span>, clientaddr.sun_path);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span>((size = read(cfd, rdbuf, rdbuf_size)) &gt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; size; i++)</span><br><span class="line">              rdbuf[i] = <span class="built_in">toupper</span>(rdbuf[i]);</span><br><span class="line">      <span class="keyword">int</span> tmp = size;</span><br><span class="line">      <span class="keyword">do</span> &#123;</span><br><span class="line">        <span class="keyword">int</span> tmp2 = write(cfd, rdbuf, tmp);</span><br><span class="line">        <span class="keyword">if</span>(tmp2 == <span class="number">-1</span>)</span><br><span class="line">        &#123;</span><br><span class="line">                perror(<span class="string">&quot;write error:&quot;</span>);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        tmp -= tmp2; </span><br><span class="line">      &#125; <span class="keyword">while</span>(tmp &gt; <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    close(cfd);</span><br><span class="line">  &#125;</span><br><span class="line">  close(lfd);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// socket_client.c</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/socket.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;strings.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;ctype.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/un.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;wrap.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SERVER_ADDR <span class="meta-string">&quot;server.socket&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> CLIENT_ADDR <span class="meta-string">&quot;client.socket&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FGETS_BUF_SIZE 4096</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> cfd, len;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_un</span> <span class="title">serveraddr</span>, <span class="title">clientaddr</span>;</span></span><br><span class="line">  <span class="keyword">char</span> buf[FGETS_BUF_SIZE] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line"></span><br><span class="line">  cfd = Socket(AF_UNIX, SOCK_STREAM, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">  bzero(&amp;clientaddr, <span class="keyword">sizeof</span>(clientaddr));</span><br><span class="line">  clientaddr.sun_family = AF_UNIX;</span><br><span class="line">  <span class="built_in">strncpy</span>(clientaddr.sun_path, CLIENT_ADDR, <span class="keyword">sizeof</span>(CLIENT_ADDR));</span><br><span class="line"></span><br><span class="line">  len = offsetof(struct sockaddr_un, sun_path) + <span class="built_in">strlen</span>(clientaddr.sun_path); <span class="comment">// 计算客户端地质结构有效长度</span></span><br><span class="line"></span><br><span class="line">  unlink(CLIENT_ADDR);</span><br><span class="line">  Bind(cfd, (struct sockaddr *)&amp;clientaddr, len); <span class="comment">// 客户端也需要bind，不能依赖自动绑定</span></span><br><span class="line"></span><br><span class="line">  bzero(&amp;serveraddr, <span class="keyword">sizeof</span>(serveraddr));  <span class="comment">// 构造server地址</span></span><br><span class="line">  serveraddr.sun_family = AF_UNIX;</span><br><span class="line">  <span class="built_in">strncpy</span>(serveraddr.sun_path, SERVER_ADDR, <span class="keyword">sizeof</span>(SERVER_ADDR));</span><br><span class="line"></span><br><span class="line">  len = offsetof(struct sockaddr_un, sun_path) + <span class="built_in">strlen</span>(serveraddr.sun_path); <span class="comment">//计算服务器地址结构有效长度</span></span><br><span class="line"></span><br><span class="line">  Connect(cfd, (struct sockaddr *)&amp;serveraddr, len);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">while</span>(fgets(buf, <span class="keyword">sizeof</span>(buf), <span class="built_in">stdin</span>) != <span class="literal">NULL</span>)</span><br><span class="line">  &#123;</span><br><span class="line">    write(cfd, buf, <span class="built_in">strlen</span>(buf));</span><br><span class="line">    len = read(cfd, buf, <span class="keyword">sizeof</span>(buf));</span><br><span class="line">    write(STDOUT_FILENO, buf, len);</span><br><span class="line">  </span><br><span class="line">  &#125;</span><br><span class="line">  close(cfd);</span><br><span class="line">        </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// wrap.c 这里是socket的包裹函数</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;wrap.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">err_sys</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* x)</span> </span></span><br><span class="line"><span class="function"></span>&#123; </span><br><span class="line">    perror(x); </span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">1</span>); </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Socket</span><span class="params">(<span class="keyword">int</span> domain, <span class="keyword">int</span> type, <span class="keyword">int</span> protocol)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> n;</span><br><span class="line">  <span class="keyword">if</span> ((n = socket(domain, type, protocol)) &lt; <span class="number">0</span>)</span><br><span class="line">    err_sys(<span class="string">&quot;socket error&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> (n);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Bind</span><span class="params">(<span class="keyword">int</span> sockfd, <span class="keyword">const</span> struct sockaddr *addr, <span class="keyword">socklen_t</span> addrlen)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> n;</span><br><span class="line">  <span class="keyword">if</span> ((n = bind(sockfd, addr, addrlen)) &lt; <span class="number">0</span>)</span><br><span class="line">    err_sys(<span class="string">&quot;bind error&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> (n);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Listen</span><span class="params">(<span class="keyword">int</span> sockfd, <span class="keyword">int</span> backlog)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> n;</span><br><span class="line">  <span class="keyword">if</span> ((n = listen(sockfd, backlog)) &lt; <span class="number">0</span>)</span><br><span class="line">    err_sys(<span class="string">&quot;listen error&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> (n);</span><br><span class="line">  </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Accept</span><span class="params">(<span class="keyword">int</span> sockfd, struct sockaddr *addr, <span class="keyword">socklen_t</span> *addrlen)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> n;</span><br><span class="line">  <span class="keyword">if</span> ((n = accept(sockfd, addr, addrlen)) &lt; <span class="number">0</span>)</span><br><span class="line">    err_sys(<span class="string">&quot;accept error&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> (n);</span><br><span class="line">  </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Connect</span><span class="params">(<span class="keyword">int</span> sockfd, <span class="keyword">const</span> struct sockaddr *addr, <span class="keyword">socklen_t</span> addrlen)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> n;</span><br><span class="line">  <span class="keyword">if</span> ((n = connect(sockfd, addr, addrlen)) &lt; <span class="number">0</span>)</span><br><span class="line">    err_sys(<span class="string">&quot;connect error&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> (n);</span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// wrap.h</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> __WRAP_H</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> __WRAP_H</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span>          <span class="comment">/* See NOTES */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/socket.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> offsetof(type, member) ((int)&amp;((type *)0)-&gt;member)</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Socket</span><span class="params">(<span class="keyword">int</span> domain, <span class="keyword">int</span> type, <span class="keyword">int</span> protocol)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Bind</span><span class="params">(<span class="keyword">int</span> sockfd, <span class="keyword">const</span> struct sockaddr *addr, <span class="keyword">socklen_t</span> addrlen)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Listen</span><span class="params">(<span class="keyword">int</span> sockfd, <span class="keyword">int</span> backlog)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Accept</span><span class="params">(<span class="keyword">int</span> sockfd, struct sockaddr *addr, <span class="keyword">socklen_t</span> *addrlen)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Connect</span><span class="params">(<span class="keyword">int</span> sockfd, <span class="keyword">const</span> struct sockaddr *addr, <span class="keyword">socklen_t</span> addrlen)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure>
-<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 这个makefile写不是很好，有待整改</span></span><br><span class="line">all : socket_client socket_server</span><br><span class="line">.PHONY : all</span><br><span class="line"></span><br><span class="line">RM_TARGET = socket_client socket_server</span><br><span class="line"></span><br><span class="line">CLIENT_OBJS = socket_client.o wrap.o</span><br><span class="line">SERVER_OBJS = socket_server.o wrap.o</span><br><span class="line"></span><br><span class="line"><span class="comment"># LIBS := -lpthread</span></span><br><span class="line">CFLAGS = -I. -g</span><br><span class="line">CC = gcc</span><br><span class="line">CXX = g++</span><br><span class="line"></span><br><span class="line">socket_client : <span class="variable">$(CLIENT_OBJS)</span></span><br><span class="line">	<span class="variable">$(CC)</span> -o socket_client <span class="variable">$(CLIENT_OBJS)</span> <span class="variable">$(CFLAGS)</span> <span class="variable">$(LIBS)</span></span><br><span class="line"></span><br><span class="line">socket_server : <span class="variable">$(SERVER_OBJS)</span></span><br><span class="line">	<span class="variable">$(CC)</span> -o socket_server <span class="variable">$(SERVER_OBJS)</span> <span class="variable">$(CFLAGS)</span> <span class="variable">$(LIBS)</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$(CLIENT_OBJS)</span> : %.o : %.c</span><br><span class="line">	<span class="variable">$(CC)</span> -c <span class="variable">$(CFLAGS)</span> <span class="variable">$&lt;</span> -o <span class="variable">$@</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$(SERVER_OBJS)</span> : %.o : %.c</span><br><span class="line">	<span class="variable">$(CC)</span> -c <span class="variable">$(CFLAGS)</span> <span class="variable">$&lt;</span> -o <span class="variable">$@</span></span><br><span class="line"></span><br><span class="line">.PHONY : clean</span><br><span class="line">clean :</span><br><span class="line">	-<span class="variable">$(RM)</span> socket_server socket_client  <span class="variable">$(CLIENT_OBJS)</span> <span class="variable">$(SERVER_OBJS)</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="3-2例子"><a href="#3-2例子" class="headerlink" title="3.2例子"></a>3.2例子</h3><pre class=" language-lang-c"><code class="language-lang-c">// socket_server.c
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <string.h>
+#include <strings.h>
+#include <ctype.h>
+#include <sys/un.h>
+#include <stdlib.h>
+#include "wrap.h"
+#define SERVER_ADDR "server.socket"
+#define SERVER_CONNECT_MAX 20
 
+#define rdbuf_size 4096
+
+int main(void)
+&#123;
+  int lfd, cfd, len, size;
+  struct sockaddr_un serveraddr, clientaddr;
+  char rdbuf[rdbuf_size] = &#123;0&#125;;
+
+  lfd = Socket(AF_UNIX, SOCK_STREAM, 0);
+
+  bzero(&serveraddr, sizeof(serveraddr));
+  serveraddr.sun_family = AF_UNIX;
+  strncpy(serveraddr.sun_path, SERVER_ADDR, sizeof(SERVER_ADDR));
+
+  len = offsetof(struct sockaddr_un, sun_path) + strlen(serveraddr.sun_path); // serveraddr total len
+
+  unlink(SERVER_ADDR);    // 确保bind之前 server.socket 文件不存在，bind() 会创建该文件
+  Bind(lfd, (struct sockaddr *)&serveraddr, len); // 参3不能是 sizeof(serveraddr)
+
+  Listen(lfd, SERVER_CONNECT_MAX);
+
+  printf("Accept...\n");
+
+  while(1)
+  &#123;
+    len = sizeof(clientaddr); // 好像不用这句也行
+    cfd = Accept(lfd, (struct sockaddr *)&clientaddr, (socklen_t *)&len);
+
+    len -= offsetof(struct sockaddr_un, sun_path); // 等到文件名的长度
+    clientaddr.sun_path[len] = '\0'; // 确保打印时没有乱码
+
+    printf("client bind filename %s \n", clientaddr.sun_path);
+
+    while((size = read(cfd, rdbuf, rdbuf_size)) > 0)
+    &#123;
+      for(int i = 0; i < size; i++)
+              rdbuf[i] = toupper(rdbuf[i]);
+      int tmp = size;
+      do &#123;
+        int tmp2 = write(cfd, rdbuf, tmp);
+        if(tmp2 == -1)
+        &#123;
+                perror("write error:");
+                break;
+        &#125;
+        tmp -= tmp2; 
+      &#125; while(tmp > 0);
+    &#125;
+    close(cfd);
+  &#125;
+  close(lfd);
+
+  return 0;
+
+&#125;
+</code></pre>
+<pre class=" language-lang-c"><code class="language-lang-c">// socket_client.c
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <string.h>
+#include <strings.h>
+#include <ctype.h>
+#include <sys/un.h>
+#include "wrap.h"
+
+#define SERVER_ADDR "server.socket"
+#define CLIENT_ADDR "client.socket"
+#define FGETS_BUF_SIZE 4096
+
+
+int main(void)
+&#123;
+  int cfd, len;
+  struct sockaddr_un serveraddr, clientaddr;
+  char buf[FGETS_BUF_SIZE] = &#123;0&#125;;
+
+  cfd = Socket(AF_UNIX, SOCK_STREAM, 0);
+
+  bzero(&clientaddr, sizeof(clientaddr));
+  clientaddr.sun_family = AF_UNIX;
+  strncpy(clientaddr.sun_path, CLIENT_ADDR, sizeof(CLIENT_ADDR));
+
+  len = offsetof(struct sockaddr_un, sun_path) + strlen(clientaddr.sun_path); // 计算客户端地质结构有效长度
+
+  unlink(CLIENT_ADDR);
+  Bind(cfd, (struct sockaddr *)&clientaddr, len); // 客户端也需要bind，不能依赖自动绑定
+
+  bzero(&serveraddr, sizeof(serveraddr));  // 构造server地址
+  serveraddr.sun_family = AF_UNIX;
+  strncpy(serveraddr.sun_path, SERVER_ADDR, sizeof(SERVER_ADDR));
+
+  len = offsetof(struct sockaddr_un, sun_path) + strlen(serveraddr.sun_path); //计算服务器地址结构有效长度
+
+  Connect(cfd, (struct sockaddr *)&serveraddr, len);
+
+  while(fgets(buf, sizeof(buf), stdin) != NULL)
+  &#123;
+    write(cfd, buf, strlen(buf));
+    len = read(cfd, buf, sizeof(buf));
+    write(STDOUT_FILENO, buf, len);
+
+  &#125;
+  close(cfd);
+
+&#125;
+</code></pre>
+<pre class=" language-lang-c"><code class="language-lang-c">// wrap.c 这里是socket的包裹函数
+#include <stdio.h>
+#include <wrap.h>
+void err_sys(const char* x) 
+&#123; 
+    perror(x); 
+    exit(1); 
+&#125;
+
+int Socket(int domain, int type, int protocol)
+&#123;
+  int n;
+  if ((n = socket(domain, type, protocol)) < 0)
+    err_sys("socket error");
+  return (n);
+&#125;
+
+int Bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
+&#123;
+  int n;
+  if ((n = bind(sockfd, addr, addrlen)) < 0)
+    err_sys("bind error");
+  return (n);
+
+&#125;
+
+int Listen(int sockfd, int backlog)
+&#123;
+  int n;
+  if ((n = listen(sockfd, backlog)) < 0)
+    err_sys("listen error");
+  return (n);
+
+&#125;
+
+int Accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen)
+&#123;
+  int n;
+  if ((n = accept(sockfd, addr, addrlen)) < 0)
+    err_sys("accept error");
+  return (n);
+
+&#125;
+
+int Connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
+&#123;
+  int n;
+  if ((n = connect(sockfd, addr, addrlen)) < 0)
+    err_sys("connect error");
+  return (n);
+
+&#125;
+</code></pre>
+<pre class=" language-lang-c"><code class="language-lang-c">// wrap.h
+#ifndef __WRAP_H
+#define __WRAP_H
+
+#include <stdlib.h>
+#include <sys/types.h>          /* See NOTES */
+#include <sys/socket.h>
+
+#define offsetof(type, member) ((int)&((type *)0)->member)
+
+int Socket(int domain, int type, int protocol);
+int Bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
+int Listen(int sockfd, int backlog);
+int Accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
+int Connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
+
+#endif
+</code></pre>
+<pre class=" language-lang-makefile"><code class="language-lang-makefile"># 这个makefile写不是很好，有待整改
+all : socket_client socket_server
+.PHONY : all
+
+RM_TARGET = socket_client socket_server
+
+CLIENT_OBJS = socket_client.o wrap.o
+SERVER_OBJS = socket_server.o wrap.o
+
+# LIBS := -lpthread
+CFLAGS = -I. -g
+CC = gcc
+CXX = g++
+
+socket_client : $(CLIENT_OBJS)
+    $(CC) -o socket_client $(CLIENT_OBJS) $(CFLAGS) $(LIBS)
+
+socket_server : $(SERVER_OBJS)
+    $(CC) -o socket_server $(SERVER_OBJS) $(CFLAGS) $(LIBS)
+
+$(CLIENT_OBJS) : %.o : %.c
+    $(CC) -c $(CFLAGS) $< -o $@
+
+$(SERVER_OBJS) : %.o : %.c
+    $(CC) -c $(CFLAGS) $< -o $@
+
+.PHONY : clean
+clean :
+    -$(RM) socket_server socket_client  $(CLIENT_OBJS) $(SERVER_OBJS)
+</code></pre>
+
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/about" rel="external nofollow noreferrer">AlanChan</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="http://alanchans.github.io/2021/06/29/ipc/">http://alanchans.github.io/2021/06/29/ipc/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/about" target="_blank">AlanChan</a>
+                    !
+                </span>
+            </div>
+        
     </div>
 
-    
-    
-    
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
 
-      <footer class="post-footer">
-          
-          <div class="post-tags">
-              <a href="/tags/IPC/" rel="tag"><i class="fa fa-tag"></i> IPC</a>
-              <a href="/tags/%E8%BF%9B%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1/" rel="tag"><i class="fa fa-tag"></i> 进程间通信</a>
-          </div>
-
-        
-
-
-        
-    <div class="post-nav">
-      <div class="post-nav-item">
-    <a href="/2021/06/25/linuxPthread/" rel="prev" title="Linux下线程的使用">
-      <i class="fa fa-chevron-left"></i> Linux下线程的使用
-    </a></div>
-      <div class="post-nav-item">
-    <a href="/2021/07/01/hello-world/" rel="next" title="Hello World">
-      Hello World <i class="fa fa-chevron-right"></i>
-    </a></div>
-    </div>
-      </footer>
-    
-  </article>
-  
-  
-  
-  
-  
-  <div style="text-align:center;color: #ccc;font-size:16px;">-------------Amazing,你居然看完了 <i class="fa fa-heart"></i> 感谢阅读-------------</div>
-  
-
-
-          </div>
-          
-    <div class="comments" id="gitalk-container"></div>
-
-<script>
-  window.addEventListener('tabs:register', () => {
-    let { activeClass } = CONFIG.comments;
-    if (CONFIG.comments.storage) {
-      activeClass = localStorage.getItem('comments_active') || activeClass;
-    }
-    if (activeClass) {
-      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
-      if (activeTab) {
-        activeTab.click();
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
       }
-    }
-  });
-  if (CONFIG.comments.storage) {
-    window.addEventListener('tabs:click', event => {
-      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
-      let commentClass = event.target.classList[1];
-      localStorage.setItem('comments_active', commentClass);
-    });
-  }
-</script>
+    </script>
 
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/IPC/">
+                                    <span class="chip bg-color">IPC</span>
+                                </a>
+                            
+                                <a href="/tags/%E8%BF%9B%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1/">
+                                    <span class="chip bg-color">进程间通信</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+    <div class="social-share" data-sites="twitter,facebook,google,qq,qzone,wechat,weibo,douban,linkedin" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="/libs/share/js/social-share.min.js"></script>
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+                <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
+
+    #reward .reward-link {
+        font-size: 1.4rem;
+        line-height: 38px;
+    }
+
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .close:hover {
+        color: #ef5350;
+        transform: scale(1.3);
+        -moz-transform:scale(1.3);
+        -webkit-transform:scale(1.3);
+        -o-transform:scale(1.3);
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-content ul {
+        padding-left: 0 !important;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        background-color: #ccc;
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff !important;
+        background-color: #22AB38 !important;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff !important;
+        background-color: #019FE8 !important;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fas fa-times"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
         </div>
-          
-  
-  <div class="toggle sidebar-toggle">
-    <span class="toggle-line toggle-line-first"></span>
-    <span class="toggle-line toggle-line-middle"></span>
-    <span class="toggle-line toggle-line-last"></span>
-  </div>
-
-  <aside class="sidebar">
-    <div class="sidebar-inner">
-
-      <ul class="sidebar-nav motion-element">
-        <li class="sidebar-nav-toc">
-          文章目录
-        </li>
-        <li class="sidebar-nav-overview">
-          站点概览
-        </li>
-      </ul>
-
-      <!--noindex-->
-      <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1IPC"><span class="nav-number">1.</span> <span class="nav-text">进程间通信IPC</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1%E3%80%81%E7%AE%A1%E9%81%93"><span class="nav-number">1.1.</span> <span class="nav-text">1、管道</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.1基本概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2pipe%E5%87%BD%E6%95%B0"><span class="nav-number">1.1.2.</span> <span class="nav-text">1.2pipe函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3%E4%BE%8B%E5%AD%90"><span class="nav-number">1.1.3.</span> <span class="nav-text">1.3例子</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4%E8%AF%BB%E5%86%99%E7%AE%A1%E9%81%93%E7%9A%84%E7%89%B9%E7%82%B9"><span class="nav-number">1.1.4.</span> <span class="nav-text">1.4读写管道的特点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2%E3%80%81%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98"><span class="nav-number">1.2.</span> <span class="nav-text">2、共享内存</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1基本概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2%E7%9B%B8%E5%85%B3%E5%87%BD%E6%95%B0"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2相关函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3%E4%BE%8B%E5%AD%90"><span class="nav-number">1.2.3.</span> <span class="nav-text">2.3例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3%E3%80%81%E5%A5%97%E6%8E%A5%E5%AD%97%EF%BC%88socket%EF%BC%89"><span class="nav-number">1.3.</span> <span class="nav-text">3、套接字（socket）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-number">1.3.1.</span> <span class="nav-text">3.1基本概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2%E4%BE%8B%E5%AD%90"><span class="nav-number">1.3.2.</span> <span class="nav-text">3.2例子</span></a></li></ol></li></ol></li></ol></div>
-      </div>
-      <!--/noindex-->
-
-      <div class="site-overview-wrap sidebar-panel">
-        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <img class="site-author-image" itemprop="image" alt="AlanChan"
-      src="/images/android-chrome-512x512.png">
-  <p class="site-author-name" itemprop="name">AlanChan</p>
-  <div class="site-description" itemprop="description">主要涉及开发技能为C/C++、单片机、嵌入式ARM、Linux、QT、FFMPEG</div>
-</div>
-<div class="site-state-wrap motion-element">
-  <nav class="site-state">
-      <div class="site-state-item site-state-posts">
-          <a href="/archives/">
-        
-          <span class="site-state-item-count">4</span>
-          <span class="site-state-item-name">日志</span>
-        </a>
-      </div>
-      <div class="site-state-item site-state-categories">
-            <a href="/categories/">
-          
-        <span class="site-state-item-count">3</span>
-        <span class="site-state-item-name">分类</span></a>
-      </div>
-      <div class="site-state-item site-state-tags">
-            <a href="/tags/">
-          
-        <span class="site-state-item-count">6</span>
-        <span class="site-state-item-name">标签</span></a>
-      </div>
-  </nav>
-</div>
-  <div class="links-of-author motion-element">
-      <span class="links-of-author-item">
-        <a href="https://github.com/AlanChans/alanchans.github.io" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AlanChans&#x2F;alanchans.github.io" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
-      </span>
-      <span class="links-of-author-item">
-        <a href="mailto:1475411271@qq.com" title="E-Mail → mailto:1475411271@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
-      </span>
-      <span class="links-of-author-item">
-        <a href="https://weibo.com/yourname" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i></a>
-      </span>
-      <span class="links-of-author-item">
-        <a href="https://plus.google.com/yourname" title="Google → https:&#x2F;&#x2F;plus.google.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fab fa-google fa-fw"></i></a>
-      </span>
-      <span class="links-of-author-item">
-        <a href="https://twitter.com/yourname" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i></a>
-      </span>
-      <span class="links-of-author-item">
-        <a href="https://www.facebook.com/yourname" title="FB Page → https:&#x2F;&#x2F;www.facebook.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fab fa-facebook fa-fw"></i></a>
-      </span>
-  </div>
-
-
-
-      </div>
-      
-      <link rel="stylesheet" href="/dist/APlayer.min.css">
-      <div id="aplayer"></div>
-      <script type="text/javascript" src="/dist/APlayer.min.js"></script>
-      <script type="text/javascript" src="/dist/music.js"></script>
-
     </div>
-  </aside>
-  <div id="sidebar-dimmer"></div>
-
-
-      </div>
-    </main>
-
-    <footer class="footer">
-      <div class="footer-inner">
-        
-
-        
-
-<div class="copyright">
-  
-  &copy; 2020 – 
-  <span itemprop="copyrightYear">2021</span>
-  <span class="with-love">
-    <i class="fa fa-heart"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">yhchen</span>
-    <span class="post-meta-divider">|</span>
-    <span class="post-meta-item-icon">
-      <i class="fa fa-chart-area"></i>
-    </span>
-      <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">23k</span>
-    <span class="post-meta-divider">|</span>
-    <span class="post-meta-item-icon">
-      <i class="fa fa-coffee"></i>
-    </span>
-      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">21 分钟</span>
 </div>
-<div id="site-runtime">
-  <span class="post-meta-item-icon">
-    <i class="fa fa-clock-o"></i>
-  </span>
-  <span id="runtime"></span>
-</div>
-<script language="javascript">
-  function isPC() {
-    var userAgentInfo = navigator.userAgent;
-    var agents = ["Android", "iPhone", "SymbianOS", "Windows Phone", "iPad", "iPod"];
-    for (var i = 0; i < agents.length; i++) {
-      if (userAgentInfo.indexOf(agents[i]) > 0) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  function siteTime(openOnPC, start) {
-    window.setTimeout("siteTime(openOnPC, start)", 1000);
-    var seconds = 1000;
-    var minutes = seconds * 60;
-    var hours = minutes * 60;
-    var days = hours * 24;
-    var years = days * 365;
-
-    
-      start = new Date("2020-01-01 00:00:00 +0800");
-    
-    var now = new Date();
-    var year = now.getFullYear();
-    var month = now.getMonth() + 1;
-    var date = now.getDate();
-    var hour = now.getHours();
-    var minute = now.getMinutes();
-    var second = now.getSeconds();
-    var diff = now - start;
-
-    var diffYears = Math.floor(diff / years);
-    var diffDays = Math.floor((diff / days) - diffYears * 365);
-    var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours);
-    var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) / minutes);
-    var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours - diffMinutes * minutes) / seconds);
-
-    if (openOnPC) {
-      document.getElementById("runtime").innerHTML = "Running: " + diffYears + " years " + diffDays + " days " + diffHours + " hours " + diffMinutes + " mins " + diffSeconds + " secs";
-    } else {
-      document.getElementById("runtime").innerHTML = "Running: " + diffYears + "y " + diffDays + "d " + diffHours + "h " + diffMinutes + "m " + diffSeconds + "s";
-    }
-  }
-
-  var showOnMobile = true;
-  var openOnPC = isPC();
-  var start = new Date();
-  siteTime(openOnPC, start);
-
-  if (!openOnPC && !showOnMobile) {
-    document.getElementById('site-runtime').style.display = 'none';
-  }
-</script>
-
-
-
-        
-
-
-
-
-
-
-
-
-      </div>
-    </footer>
-  </div>
-
-  
-  <script src="/lib/anime.min.js"></script>
-  <script src="/lib/pjax/pjax.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
-  <script src="/lib/velocity/velocity.min.js"></script>
-  <script src="/lib/velocity/velocity.ui.min.js"></script>
-
-<script src="/js/utils.js"></script>
-
-<script src="/js/motion.js"></script>
-
-
-<script src="/js/schemes/pisces.js"></script>
-
-
-<script src="/js/next-boot.js"></script>
-
-<script src="/js/bookmark.js"></script>
-
-  <script>
-var pjax = new Pjax({
-  selectors: [
-    'head title',
-    '#page-configurations',
-    '.content-wrap',
-    '.post-toc-wrap',
-    '.languages',
-    '#pjax'
-  ],
-  switches: {
-    '.post-toc-wrap': Pjax.switches.innerHTML
-  },
-  analytics: false,
-  cacheBust: false,
-  scrollTo : !CONFIG.bookmark.enable
-});
-
-window.addEventListener('pjax:success', () => {
-  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
-    var code = element.text || element.textContent || element.innerHTML || '';
-    var parent = element.parentNode;
-    parent.removeChild(element);
-    var script = document.createElement('script');
-    if (element.id) {
-      script.id = element.id;
-    }
-    if (element.className) {
-      script.className = element.className;
-    }
-    if (element.type) {
-      script.type = element.type;
-    }
-    if (element.src) {
-      script.src = element.src;
-      // Force synchronous loading of peripheral JS.
-      script.async = false;
-    }
-    if (element.dataset.pjax !== undefined) {
-      script.dataset.pjax = '';
-    }
-    if (code !== '') {
-      script.appendChild(document.createTextNode(code));
-    }
-    parent.appendChild(script);
-  });
-  NexT.boot.refresh();
-  // Define Motion Sequence & Bootstrap Motion.
-  if (CONFIG.motion.enable) {
-    NexT.motion.integrator
-      .init()
-      .add(NexT.motion.middleWares.subMenu)
-      .add(NexT.motion.middleWares.postList)
-      .bootstrap();
-  }
-  NexT.utils.updateSidebarPosition();
-});
-</script>
-
-
-  <script defer src="/lib/three/three.min.js"></script>
-
-
-  
-  <script data-pjax>
-    (function(){
-      var canonicalURL, curProtocol;
-      //Get the <link> tag
-      var x=document.getElementsByTagName("link");
-		//Find the last canonical URL
-		if(x.length > 0){
-			for (i=0;i<x.length;i++){
-				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
-					canonicalURL=x[i].href;
-				}
-			}
-		}
-    //Get protocol
-	    if (!canonicalURL){
-	    	curProtocol = window.location.protocol.split(':')[0];
-	    }
-	    else{
-	    	curProtocol = canonicalURL.split(':')[0];
-	    }
-      //Get current URL if the canonical URL does not exist
-	    if (!canonicalURL) canonicalURL = window.location.href;
-	    //Assign script content. Replace current URL with the canonical URL
-      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
-  </script>
-
-
-
-
-  
-<script src="/js/local-search.js"></script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <div id="pjax">
-  
-
-  
-
-<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
 
 <script>
-NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
-  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
-    var gitalk = new Gitalk({
-      clientID    : '39005aac8dd53f2f9f3b',
-      clientSecret: '40bf5b48d7f39338a880e10e9279ea4ba73730ee',
-      repo        : 'alanchans.github.io',
-      owner       : 'AlanChans',
-      admin       : ['AlanChans'],
-      id          : '0d31c8b4186ae73cec0cfa444cb2f39f',
-        language: 'zh-CN',
-      distractionFreeMode: true
+    $(function () {
+        $('.tabs').tabs();
     });
-    gitalk.render('gitalk-container');
-  }, window.Gitalk);
+</script>
+
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/2021/07/02/hello-world/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/12.jpg" class="responsive-img" alt="Hello World">
+                        
+                        <span class="card-title">Hello World</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2021-07-02
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            AlanChan
+                            
+                        </span>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2021/06/25/linuxPthread/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/14.jpg" class="responsive-img" alt="Linux下线程的使用">
+                        
+                        <span class="card-title">Linux下线程的使用</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2021-06-25
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/Linux/" class="post-category">
+                                    Linux
+                                </a>
+                            
+                            <a href="/categories/Linux/%E7%BA%BF%E7%A8%8B%E8%BF%9B%E7%A8%8B/" class="post-category">
+                                    线程进程
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/Linux/">
+                        <span class="chip bg-color">Linux</span>
+                    </a>
+                    
+                    <a href="/tags/%E7%BA%BF%E7%A8%8B%E8%BF%9B%E7%A8%8B/">
+                        <span class="chip bg-color">线程进程</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('120')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: 中单打野我都行<br />'
+            + '文章作者: AlanChan<br />'
+            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+        <link rel="stylesheet" href="/libs/aplayer/APlayer.min.css">
+<style>
+    .aplayer .aplayer-lrc p {
+        
+        display: none;
+        
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 16px !important;
+    }
+
+    .aplayer .aplayer-lrc p.aplayer-lrc-current {
+        
+        display: none;
+        
+        font-size: 15px;
+        color: #42b983;
+    }
+
+    
+    .aplayer.aplayer-fixed.aplayer-narrow .aplayer-body {
+        left: -66px !important;
+    }
+
+    .aplayer.aplayer-fixed.aplayer-narrow .aplayer-body:hover {
+        left: 0px !important;
+    }
+
+    
+</style>
+<div class="">
+    
+    <div class="row">
+        <meting-js class="col l8 offset-l2 m10 offset-m1 s12"
+                   server="netease"
+                   type="song"
+                   id="1846809171"
+                   fixed='true'
+                   autoplay='true'
+                   theme='#42b983'
+                   loop='all'
+                   order='random'
+                   preload='auto'
+                   volume='0.7'
+                   list-folded='true'
+        >
+        </meting-js>
+    </div>
+</div>
+
+<script src="/libs/aplayer/APlayer.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script>
+
+    
+    <div class="container row center-align" style="margin-bottom: 15px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2020-2021</span>
+            
+            <span id="year">2020</span>
+            <a href="/about" target="_blank">AlanChan</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            <br>
+            
+            &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                class="white-color">7.3k</span>&nbsp;字
+            
+            
+            
+            
+            
+            
+            <span id="busuanzi_container_site_pv">
+                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
+                    class="white-color"></span>&nbsp;次
+            </span>
+            
+            
+            <span id="busuanzi_container_site_uv">
+                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
+                    class="white-color"></span>&nbsp;人
+            </span>
+            
+            <br>
+            
+            <span id="sitetime">载入运行时间...</span>
+            <script>
+                function siteTime() {
+                    var seconds = 1000;
+                    var minutes = seconds * 60;
+                    var hours = minutes * 60;
+                    var days = hours * 24;
+                    var years = days * 365;
+                    var today = new Date();
+                    var startYear = "2020";
+                    var startMonth = "1";
+                    var startDate = "1";
+                    var startHour = "0";
+                    var startMinute = "0";
+                    var startSecond = "0";
+                    var todayYear = today.getFullYear();
+                    var todayMonth = today.getMonth() + 1;
+                    var todayDate = today.getDate();
+                    var todayHour = today.getHours();
+                    var todayMinute = today.getMinutes();
+                    var todaySecond = today.getSeconds();
+                    var t1 = Date.UTC(startYear, startMonth, startDate, startHour, startMinute, startSecond);
+                    var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond);
+                    var diff = t2 - t1;
+                    var diffYears = Math.floor(diff / years);
+                    var diffDays = Math.floor((diff / days) - diffYears * 365);
+                    var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours);
+                    var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) /
+                        minutes);
+                    var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours -
+                        diffMinutes * minutes) / seconds);
+                    if (startYear == todayYear) {
+                        document.getElementById("year").innerHTML = todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffDays + " 天 " + diffHours +
+                            " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    } else {
+                        document.getElementById("year").innerHTML = startYear + " - " + todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffYears + " 年 " + diffDays +
+                            " 天 " + diffHours + " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    }
+                }
+                setInterval(siteTime, 1000);
+            </script>
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/AlanChans/alanchans.github.io" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:1475411271@qq.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=1475411271" class="tooltipped" target="_blank" data-tooltip="QQ联系我: 1475411271" data-position="top" data-delay="50">
+        <i class="fab fa-qq"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
 });
 </script>
 
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    <!-- Baidu Analytics -->
+
+<script>
+    var _hmt = _hmt || [];
+    (function () {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?e0e26c7af780979dc17c209293b085cd";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+	
+    
+
+    
+
+    
+
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+    
+    <!--单击显示文字-->
+    <script type="text/javascript" src="/js/click_show_text.js"></script>
+
+    <!-- 点击爆炸 -->
+    <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+    <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+    <script type="text/javascript" src="/js/fireworks.js"></script>
+    
+    <!-- 雪花特效 -->
+    <script type="text/javascript" src="/js/snow.js"></script>
+    
+    <!-- 数字雨 -->
+    <canvas id="canvas" width="1440" height="900" ></canvas>
+    <script type="text/javascript" src="/js/digitalrain.js"></script>
+
+    <!-- 每日一言 -->
+    <!-- 加入网易云音乐热门评论，实时更新 -->
+    <div class="poem-wrap">
+    <div class="poem-border poem-left">
+    </div>
+    <div class="poem-border poem-right">
+    </div>
+    <h1>热评</h1>
+    <p id="poem">获取中...</p>
+    <script src="https://v1.hitokoto.cn/?c=d&c=h&c=j&k&f&encode=js&select=%23poem" defer></script>
     </div>
 
-  
-   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
-   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
-   <script type="text/javascript" src="/js/src/fireworks.js"></script>
-  
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
 
-  
-  <!--单击显示文字-->
-  <script type="text/javascript" src="/js/click_show_text.js"></script>
-  
-
-<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"superSample":2,"width":180,"height":360,"position":"right","hOffset":-20,"vOffset":-20},"mobile":{"show":true,"scale":0.001},"react":{"opacityDefault":25,"opacityOnHover":0.2}});</script></body>
 </html>
