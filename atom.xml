@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title>中单打野我都行</title>
+  <title>我中单打野</title>
   
   <subtitle>为中华崛起而读书</subtitle>
   <link href="http://alanchans.github.io/atom.xml" rel="self"/>
   
   <link href="http://alanchans.github.io/"/>
-  <updated>2021-07-02T12:12:32.675Z</updated>
+  <updated>2021-07-02T16:06:38.457Z</updated>
   <id>http://alanchans.github.io/</id>
   
   <author>
@@ -17,11 +17,38 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>MYSQL数据库的基本操作</title>
+    <link href="http://alanchans.github.io/2021/07/03/mysql/"/>
+    <id>http://alanchans.github.io/2021/07/03/mysql/</id>
+    <published>2021-07-03T00:01:27.000Z</published>
+    <updated>2021-07-02T16:06:38.457Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;MYSQL数据库的基本操作&quot;&gt;&lt;a href=&quot;#MYSQL数据库的基本操作&quot; class=&quot;headerlink&quot; title=&quot;MYSQL数据库的基本操作&quot;&gt;&lt;/a&gt;MYSQL数据库的基本操作&lt;/h1&gt;&lt;h2 id=&quot;1、root登录mysql&quot;&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    <category term="MYSQL" scheme="http://alanchans.github.io/categories/MYSQL/"/>
+    
+    
+    <category term="MYSQL" scheme="http://alanchans.github.io/tags/MYSQL/"/>
+    
+    <category term="数据库" scheme="http://alanchans.github.io/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
     <title>Hello World</title>
     <link href="http://alanchans.github.io/2021/07/02/hello-world/"/>
     <id>http://alanchans.github.io/2021/07/02/hello-world/</id>
-    <published>2021-07-02T12:12:32.675Z</published>
-    <updated>2021-07-02T12:12:32.675Z</updated>
+    <published>2021-07-02T16:06:38.457Z</published>
+    <updated>2021-07-02T16:06:38.457Z</updated>
     
     
       
@@ -42,7 +69,7 @@
     <link href="http://alanchans.github.io/2021/06/29/ipc/"/>
     <id>http://alanchans.github.io/2021/06/29/ipc/</id>
     <published>2021-06-29T01:25:18.000Z</published>
-    <updated>2021-07-02T12:12:32.675Z</updated>
+    <updated>2021-07-02T16:06:38.457Z</updated>
     
     
       
@@ -69,7 +96,7 @@
     <link href="http://alanchans.github.io/2021/06/25/linuxPthread/"/>
     <id>http://alanchans.github.io/2021/06/25/linuxPthread/</id>
     <published>2021-06-25T20:29:54.000Z</published>
-    <updated>2021-07-02T12:12:32.675Z</updated>
+    <updated>2021-07-02T16:06:38.457Z</updated>
     
     
       
@@ -98,7 +125,7 @@
     <link href="http://alanchans.github.io/2021/06/25/threadDescription/"/>
     <id>http://alanchans.github.io/2021/06/25/threadDescription/</id>
     <published>2021-06-25T02:35:39.000Z</published>
-    <updated>2021-07-02T12:12:32.675Z</updated>
+    <updated>2021-07-02T16:06:38.457Z</updated>
     
     
       

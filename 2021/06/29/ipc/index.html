@@ -16,7 +16,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>进程间通信IPC | 中单打野我都行</title>
+    <title>进程间通信IPC | 我中单打野</title>
     <link rel="icon" type="image/png" href="/medias/android-chrome-200x200.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
@@ -29,7 +29,7 @@
 
     <script src="/libs/jquery/jquery.min.js"></script>
     <script src="https://v1.hitokoto.cn/?c=d&c=h&c=j&k&f&encode=js&select=%23hitokoto" defer></script>
-<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="中单打野我都行" type="application/atom+xml">
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="我中单打野" type="application/atom+xml">
 <link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
 
 
@@ -44,7 +44,7 @@
                     
                     <img src="/medias/logo.png" class="logo-img" alt="LOGO">
                     
-                    <span class="logo-span">中单打野我都行</span>
+                    <span class="logo-span">我中单打野</span>
                 </a>
             </div>
             
@@ -177,7 +177,7 @@
         
         <img src="/medias/logo.png" class="logo-img circle responsive-img">
         
-        <div class="logo-name">中单打野我都行</div>
+        <div class="logo-name">我中单打野</div>
         <div class="logo-desc">
             
             主要涉及开发技能为C/C++、单片机、嵌入式ARM、Linux、QT、FFMPEG
@@ -551,7 +551,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    16 分
+                    15 分
                 </div>
                 
 
@@ -835,17 +835,17 @@ int main(void)
     return 0;
 &#125;
 </code></pre>
-<pre><code>// 类unix系统的匿名映射方法，Linux也可以使用
-#include &lt;stdio.h&gt;
-#include &lt;stdlib.h&gt;
-#include &lt;unistd.h&gt;
-#include &lt;fcntl.h&gt;
-#include &lt;sys/mman.h&gt;
-#include &lt;sys/wait.h&gt;
-#include &lt;string.h&gt;
+<pre class=" language-lang-c"><code class="language-lang-c">// 类unix系统的匿名映射方法，Linux也可以使用
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <sys/wait.h>
+#include <string.h>
 
 #define MY_MMAP_SIZE 20
-#define MY_MMAP_FILE &quot;/dev/zero&quot;
+#define MY_MMAP_FILE "/dev/zero"
 
 int main(void)
 &#123;
@@ -854,39 +854,40 @@ int main(void)
 
     int fd;
     fd = open(MY_MMAP_FILE, O_RDWR);
-    if(fd &lt; 0)&#123;
-        perror(&quot;open error&quot;);
+    if(fd < 0)&#123;
+        perror("open error");
         exit(1);
     &#125;
 
     p = (char *)mmap(NULL, MY_MMAP_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
     if(p == MAP_FAILED) &#123; // 注意，不是 p == NULL
-        perror(&quot;mmap error&quot;);
+        perror("mmap error");
     exit(1);
     &#125;
     close(fd);                   //映射区建立完毕,即可关闭文件
 
     pid = fork();                               //创建子进程
     if(pid == 0)&#123;
-       char *data = &quot;child hello!\n&quot;;
+       char *data = "child hello!\n";
         strncpy(p, data, strlen(data) + 1);
        // *p = 1234;
-        printf(&quot;son, *p = %s\n&quot;, p);
+        printf("son, *p = %s\n", p);
     &#125; else &#123;
         sleep(1);
-        printf(&quot;parent, *p = %s\n&quot;, p);
+        printf("parent, *p = %s\n", p);
         wait(NULL);
 
         int ret = munmap(p, MY_MMAP_SIZE);                 //释放映射区
         if (ret == -1) &#123;
-            perror(&quot;munmap error&quot;);
+            perror("munmap error");
             exit(1);
         &#125;
     &#125;
 
     return 0;
 &#125;
-</code></pre><ul>
+</code></pre>
+<ul>
 <li><code>/dev/zero</code>：在类UNIX 操作系统中, <code>/dev/zero</code> 是一个伪文件。<ul>
 <li>产生连续不断的null的流 （二进制的零流，而不是ASCII型的）。</li>
 <li>写入它的输出会丢失不见 。</li>
@@ -1041,8 +1042,6 @@ int main(int argc,char *argv[])
 </li>
 </ul>
 </li>
-</ul>
-<ul>
 <li><p>网络<code>socket</code>编程：</p>
 <ul>
 <li><p>地址格式结构体为<code>sockaddr_in</code>，<code>in</code>表示Internet。</p>
@@ -1643,7 +1642,7 @@ clean :
 
         var url = document.location.href;
         newdiv.innerHTML += '<br />'
-            + '来源: 中单打野我都行<br />'
+            + '来源: 我中单打野<br />'
             + '文章作者: AlanChan<br />'
             + '文章链接: <a href="' + url + '">' + url + '</a><br />'
             + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
@@ -1837,12 +1836,11 @@ clean :
             
             <span id="year">2020</span>
             <a href="/about" target="_blank">AlanChan</a>
-            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
-            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">7.3k</span>&nbsp;字
+                class="white-color">8.1k</span>&nbsp;字
             
             
             
@@ -2130,6 +2128,9 @@ $(function () {
     <!-- 数字雨 -->
     <canvas id="canvas" width="1440" height="900" ></canvas>
     <script type="text/javascript" src="/js/digitalrain.js"></script>
+
+    <!--浏览器搞笑标题-->
+    <script type="text/javascript" src="/js/FunnyTitle.js"></script>
 
     <!-- 每日一言 -->
     <!-- 加入网易云音乐热门评论，实时更新 -->

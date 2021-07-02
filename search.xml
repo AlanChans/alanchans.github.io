@@ -347,6 +347,215 @@ root@iZwz94euuu9omhoocm3l5uZ:~/07_article#
       </tags>
   </entry>
   <entry>
+    <title>MYSQL数据库的基本操作</title>
+    <url>/2021/07/03/mysql/</url>
+    <content><![CDATA[<h1 id="MYSQL数据库的基本操作"><a href="#MYSQL数据库的基本操作" class="headerlink" title="MYSQL数据库的基本操作"></a>MYSQL数据库的基本操作</h1><h2 id="1、root登录mysql"><a href="#1、root登录mysql" class="headerlink" title="1、root登录mysql"></a>1、root登录mysql</h2><pre class=" language-lang-sql"><code class="language-lang-sql">mysql -uroot -p
+Enter password: *****
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 8
+Server version: 8.0.25 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2021, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+</code></pre>
+<h2 id="2、查看数据库"><a href="#2、查看数据库" class="headerlink" title="2、查看数据库"></a>2、查看数据库</h2><pre class=" language-lang-sql"><code class="language-lang-sql">mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+</code></pre>
+<h2 id="3、查看表"><a href="#3、查看表" class="headerlink" title="3、查看表"></a>3、查看表</h2><pre class=" language-lang-sql"><code class="language-lang-sql">mysql> use mysql
+Database changed
+mysql> show tables;
++------------------------------------------------------+
+| Tables_in_mysql                                      |
++------------------------------------------------------+
+| columns_priv                                         |
+| component                                            |
+| db                                                   |
+| default_roles                                        |
+| engine_cost                                          |
+| func                                                 |
+| general_log                                          |
+| global_grants                                        |
+| gtid_executed                                        |
+| help_category                                        |
+| help_keyword                                         |
+| help_relation                                        |
+| help_topic                                           |
+| innodb_index_stats                                   |
+| innodb_table_stats                                   |
+| password_history                                     |
+| plugin                                               |
+| procs_priv                                           |
+| proxies_priv                                         |
+| replication_asynchronous_connection_failover         |
+| replication_asynchronous_connection_failover_managed |
+| role_edges                                           |
+| server_cost                                          |
+| servers                                              |
+| slave_master_info                                    |
+| slave_relay_log_info                                 |
+| slave_worker_info                                    |
+| slow_log                                             |
+| tables_priv                                          |
+| time_zone                                            |
+| time_zone_leap_second                                |
+| time_zone_name                                       |
+| time_zone_transition                                 |
+| time_zone_transition_type                            |
+| user                                                 |
++------------------------------------------------------+
+</code></pre>
+<h2 id="4、退出数据库"><a href="#4、退出数据库" class="headerlink" title="4、退出数据库"></a>4、退出数据库</h2><pre class=" language-lang-sql"><code class="language-lang-sql">mysql> exit;
+Bye
+</code></pre>
+<h2 id="5、创建数据库"><a href="#5、创建数据库" class="headerlink" title="5、创建数据库"></a>5、创建数据库</h2><pre class=" language-lang-sql"><code class="language-lang-sql">mysql> create database mydb01;
+</code></pre>
+<h2 id="6、创建表"><a href="#6、创建表" class="headerlink" title="6、创建表"></a>6、创建表</h2><pre class=" language-lang-sql"><code class="language-lang-sql">mysql> create table employee(id int, name varchar(30), sex int, birthday date, salary double, entry_date date, resume text);
+</code></pre>
+<h2 id="7、创建表数据"><a href="#7、创建表数据" class="headerlink" title="7、创建表数据"></a>7、创建表数据</h2><pre class=" language-lang-sql"><code class="language-lang-sql">insert into employee values(1,'韩信',1,'1997-07-07',15000,'2020-02-02','突进刺客');
+insert into employee(id,name,sex,birthday,salary,entry_date,resume) values(2,'兰陵王',1,'1996-06-06',12000,'2020-01-01','脆皮刺客');
+insert into employee(id,name,sex,birthday,salary,entry_date,resume) values(3,'亚瑟',1,'1000-01-01',8000,'2020-10-01','前排坦克');
+</code></pre>
+<h2 id="查看表信息"><a href="#查看表信息" class="headerlink" title="查看表信息"></a>查看表信息</h2><pre class=" language-lang-sql"><code class="language-lang-sql">mysql> desc employee;
++------------+-------------+------+-----+---------+-------+
+| Field      | Type        | Null | Key | Default | Extra |
++------------+-------------+------+-----+---------+-------+
+| id         | int         | YES  |     | NULL    |       |
+| name       | varchar(30) | YES  |     | NULL    |       |
+| sex        | int         | YES  |     | NULL    |       |
+| birthday   | date        | YES  |     | NULL    |       |
+| salary     | double      | YES  |     | NULL    |       |
+| entry_date | date        | YES  |     | NULL    |       |
+| resume     | text        | YES  |     | NULL    |       |
++------------+-------------+------+-----+---------+-------+
+</code></pre>
+<h2 id="8、查看表数据"><a href="#8、查看表数据" class="headerlink" title="8、查看表数据"></a>8、查看表数据</h2><pre class=" language-lang-sql"><code class="language-lang-sql">mysql> select * from employee;
++------+--------+------+------------+--------+------------+----------+
+| id   | name   | sex  | birthday   | salary | entry_date | resume   |
++------+--------+------+------------+--------+------------+----------+
+|    1 | 韩信   |    1 | 1997-07-07 |  15000 | 2020-02-02 | 突进刺客 |
+|    2 | 兰陵王 |    1 | 1996-06-06 |  12000 | 2020-01-01 | 脆皮刺客 |
+|    3 | 亚瑟   |    1 | 1000-01-01 |   8000 | 2020-10-01 | 前排坦克 |
++------+--------+------+------------+--------+------------+----------+
+</code></pre>
+<h2 id="修改某个项的内容"><a href="#修改某个项的内容" class="headerlink" title="修改某个项的内容"></a>修改某个项的内容</h2><pre class=" language-lang-sql"><code class="language-lang-sql">mysql> update employee set resume='偷家小贼' where id=1;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> select * from employee;
++------+--------+------+------------+--------+------------+----------+
+| id   | name   | sex  | birthday   | salary | entry_date | resume   |
++------+--------+------+------------+--------+------------+----------+
+|    1 | 韩信   |    1 | 1997-07-07 |  15000 | 2020-02-02 | 偷家小贼 |
+|    2 | 兰陵王 |    1 | 1996-06-06 |  12000 | 2020-01-01 | 脆皮刺客 |
+|    3 | 亚瑟   |    1 | 1000-01-01 |   8000 | 2020-10-01 | 前排坦克 |
++------+--------+------+------------+--------+------------+----------+
+</code></pre>
+<h1 id="example"><a href="#example" class="headerlink" title="example"></a>example</h1><pre class=" language-lang-sql"><code class="language-lang-sql">create table students(id int, name varchar(20), chinese int, english int, math int);
+insert into students(id, name, chinese, english, math) values(1, '黄真', 80, 85, 90);
+insert into students(id, name, chinese, english, math) values(2, '归辛树', 90, 95, 95);
+insert into students(id, name, chinese, english, math) values(3, '李寻欢', 80, 96, 96);
+insert into students(id, name, chinese, english, math) values(4, '叶开', 81, 97, 85);
+insert into students(id, name, chinese, english, math) values(5, '袁承志', 85, 84, 90);
+insert into students(id, name, chinese, english, math) values(6, '何红药', 92, 85, 87);
+insert into students(id, name, chinese, english, math) values(7, '何铁手', 75, 81, 80);
+insert into students(id, name, chinese, english, math) values(8, '夏雪宜', 77, 80, 79);
+insert into students(id, name, chinese, english, math) values(9, '任我行', 95, 85, 85);
+insert into students(id, name, chinese, english, math) values(10, '岳不群', 94, 85, 84);
+
+
+增加一列：
+alter table students add class_id int;
+
+id <= 5 为1班， id > 5 为2班
+update students set class_id=1 where id <= 5;
+
+select ceil(id/5),id from students;
+
+update students set class_id=ceil(id/5);
+
+求平均
+select avg(english),class_id from students group by class_id;
+
+求和
+select sum(chinese+math+english), class_id from students group by class_id;
++---------------------------+----------+
+| sum(chinese+math+english) | class_id |
++---------------------------+----------+
+|                      1329 |        1 |
+|                      1264 |        2 |
++---------------------------+----------+
+
+找到总分大于1300的
+select sum(chinese+english+math), class_id from students group by class_id having sum(chinese+english+math)>1300;
++---------------------------+----------+
+| sum(chinese+english+math) | class_id |
++---------------------------+----------+
+|                      1329 |        1 |
++---------------------------+----------+
+
+查看当前时间
+select now() from dual;
++---------------------+
+| now()               |
++---------------------+
+| 2021-06-19 14:44:07 |
++---------------------+
+
+
+select now()-1,now(),now()+1 from dual;
++----------------+---------------------+----------------+
+| now()-1        | now()               | now()+1        |
++----------------+---------------------+----------------+
+| 20210619164648 | 2021-06-19 16:46:49 | 20210619164650 |
++----------------+---------------------+----------------+
+
+
+求今天、昨天、明天
+select date_add(now(), interval -1 day), now(), date_add(now(), interval 1 day) from dual;
++----------------------------------+---------------------+---------------------------------+
+| date_add(now(), interval -1 day) | now()               | date_add(now(), interval 1 day) |
++----------------------------------+---------------------+---------------------------------+
+| 2021-06-18 16:53:37              | 2021-06-19 16:53:37 | 2021-06-20 16:53:37             |
++----------------------------------+---------------------+---------------------------------+
+1 row in set (0.07 sec)
+
+select addtime(now(),'0:1:0'),now() from dual;
++------------------------+---------------------+
+| addtime(now(),'0:1:0') | now()               |
++------------------------+---------------------+
+| 2021-06-19 17:00:34    | 2021-06-19 16:59:34 |
++------------------------+---------------------+
+
+字符串
+select concat('hello ', 'mysql', 'yyds', '123.') from dual;
++-------------------------------------------+
+| concat('hello ', 'mysql', 'yyds', '123.') |
++-------------------------------------------+
+| hello mysqlyyds123.                       |
++-------------------------------------------+
+1 row in set (0.00 sec)
+</code></pre>
+]]></content>
+      <categories>
+        <category>MYSQL</category>
+      </categories>
+      <tags>
+        <tag>MYSQL</tag>
+        <tag>数据库</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>进程、线程</title>
     <url>/2021/06/25/threadDescription/</url>
     <content><![CDATA[<h1 id="进程、线程"><a href="#进程、线程" class="headerlink" title="进程、线程"></a>进程、线程</h1><hr>
@@ -678,17 +887,17 @@ int main(void)
     return 0;
 &#125;
 </code></pre>
-<pre><code>// 类unix系统的匿名映射方法，Linux也可以使用
-#include &lt;stdio.h&gt;
-#include &lt;stdlib.h&gt;
-#include &lt;unistd.h&gt;
-#include &lt;fcntl.h&gt;
-#include &lt;sys/mman.h&gt;
-#include &lt;sys/wait.h&gt;
-#include &lt;string.h&gt;
+<pre class=" language-lang-c"><code class="language-lang-c">// 类unix系统的匿名映射方法，Linux也可以使用
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <sys/wait.h>
+#include <string.h>
 
 #define MY_MMAP_SIZE 20
-#define MY_MMAP_FILE &quot;/dev/zero&quot;
+#define MY_MMAP_FILE "/dev/zero"
 
 int main(void)
 &#123;
@@ -697,39 +906,40 @@ int main(void)
 
     int fd;
     fd = open(MY_MMAP_FILE, O_RDWR);
-    if(fd &lt; 0)&#123;
-        perror(&quot;open error&quot;);
+    if(fd < 0)&#123;
+        perror("open error");
         exit(1);
     &#125;
 
     p = (char *)mmap(NULL, MY_MMAP_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
     if(p == MAP_FAILED) &#123; // 注意，不是 p == NULL
-        perror(&quot;mmap error&quot;);
+        perror("mmap error");
     exit(1);
     &#125;
     close(fd);                   //映射区建立完毕,即可关闭文件
 
     pid = fork();                               //创建子进程
     if(pid == 0)&#123;
-       char *data = &quot;child hello!\n&quot;;
+       char *data = "child hello!\n";
         strncpy(p, data, strlen(data) + 1);
        // *p = 1234;
-        printf(&quot;son, *p = %s\n&quot;, p);
+        printf("son, *p = %s\n", p);
     &#125; else &#123;
         sleep(1);
-        printf(&quot;parent, *p = %s\n&quot;, p);
+        printf("parent, *p = %s\n", p);
         wait(NULL);
 
         int ret = munmap(p, MY_MMAP_SIZE);                 //释放映射区
         if (ret == -1) &#123;
-            perror(&quot;munmap error&quot;);
+            perror("munmap error");
             exit(1);
         &#125;
     &#125;
 
     return 0;
 &#125;
-</code></pre><ul>
+</code></pre>
+<ul>
 <li><code>/dev/zero</code>：在类UNIX 操作系统中, <code>/dev/zero</code> 是一个伪文件。<ul>
 <li>产生连续不断的null的流 （二进制的零流，而不是ASCII型的）。</li>
 <li>写入它的输出会丢失不见 。</li>
@@ -884,8 +1094,6 @@ int main(int argc,char *argv[])
 </li>
 </ul>
 </li>
-</ul>
-<ul>
 <li><p>网络<code>socket</code>编程：</p>
 <ul>
 <li><p>地址格式结构体为<code>sockaddr_in</code>，<code>in</code>表示Internet。</p>
