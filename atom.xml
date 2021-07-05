@@ -6,7 +6,7 @@
   <link href="http://alanchans.github.io/atom.xml" rel="self"/>
   
   <link href="http://alanchans.github.io/"/>
-  <updated>2021-07-05T06:05:07.845Z</updated>
+  <updated>2021-07-05T14:57:14.900Z</updated>
   <id>http://alanchans.github.io/</id>
   
   <author>
@@ -17,11 +17,88 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>简单的gdb调试命令</title>
+    <link href="http://alanchans.github.io/2021/07/05/easy-gdb/"/>
+    <id>http://alanchans.github.io/2021/07/05/easy-gdb/</id>
+    <published>2021-07-05T22:51:54.000Z</published>
+    <updated>2021-07-05T14:57:14.900Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;gdb调试&quot;&gt;&lt;a href=&quot;#gdb调试&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="gdb" scheme="http://alanchans.github.io/categories/gdb/"/>
+    
+    
+    <category term="Linux" scheme="http://alanchans.github.io/tags/Linux/"/>
+    
+    <category term="gdb" scheme="http://alanchans.github.io/tags/gdb/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>多进程、线程并发服务器</title>
+    <link href="http://alanchans.github.io/2021/07/05/multi-proc-pthread-server/"/>
+    <id>http://alanchans.github.io/2021/07/05/multi-proc-pthread-server/</id>
+    <published>2021-07-05T22:49:13.000Z</published>
+    <updated>2021-07-05T14:57:14.904Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;多进程、线程并发服务器&quot;&gt;&lt;a href=&quot;#多进程、线程并发服务器&quot; class=&quot;headerlink&quot; title=&quot;多进程、线程并发服务器&quot;&gt;&lt;/a&gt;多进程、线程并发服务器&lt;/h1&gt;&lt;h2 id=&quot;多进程并发服务器&quot;&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    <category term="Linux" scheme="http://alanchans.github.io/categories/Linux/"/>
+    
+    
+    <category term="Linux" scheme="http://alanchans.github.io/tags/Linux/"/>
+    
+    <category term="多线程" scheme="http://alanchans.github.io/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/"/>
+    
+    <category term="多进程" scheme="http://alanchans.github.io/tags/%E5%A4%9A%E8%BF%9B%E7%A8%8B/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Hello World</title>
+    <link href="http://alanchans.github.io/2021/07/05/hello-world/"/>
+    <id>http://alanchans.github.io/2021/07/05/hello-world/</id>
+    <published>2021-07-05T14:57:14.900Z</published>
+    <updated>2021-07-05T14:57:14.901Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;Welcome to &lt;a href=&quot;https://hexo.io/&quot;&gt;Hexo&lt;/a&gt;! This is your very first post. Check &lt;a href=&quot;https://hexo.io/docs/&quot;&gt;documentation&lt;/a&gt;</summary>
+        
+      
+    
+    
+    
+    
+  </entry>
+  
+  <entry>
     <title>信号</title>
     <link href="http://alanchans.github.io/2021/07/05/signal/"/>
     <id>http://alanchans.github.io/2021/07/05/signal/</id>
     <published>2021-07-05T13:57:48.000Z</published>
-    <updated>2021-07-05T06:05:07.845Z</updated>
+    <updated>2021-07-05T14:57:14.905Z</updated>
     
     
       
@@ -44,32 +121,11 @@
   </entry>
   
   <entry>
-    <title>Hello World</title>
-    <link href="http://alanchans.github.io/2021/07/05/hello-world/"/>
-    <id>http://alanchans.github.io/2021/07/05/hello-world/</id>
-    <published>2021-07-05T06:05:07.845Z</published>
-    <updated>2021-07-05T06:05:07.845Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;p&gt;Welcome to &lt;a href=&quot;https://hexo.io/&quot;&gt;Hexo&lt;/a&gt;! This is your very first post. Check &lt;a href=&quot;https://hexo.io/docs/&quot;&gt;documentation&lt;/a&gt;</summary>
-        
-      
-    
-    
-    
-    
-  </entry>
-  
-  <entry>
     <title>MYSQL数据库的基本操作</title>
     <link href="http://alanchans.github.io/2021/07/03/mysql/"/>
     <id>http://alanchans.github.io/2021/07/03/mysql/</id>
     <published>2021-07-03T00:01:27.000Z</published>
-    <updated>2021-07-05T06:05:07.845Z</updated>
+    <updated>2021-07-05T14:57:14.905Z</updated>
     
     
       
@@ -96,7 +152,7 @@
     <link href="http://alanchans.github.io/2021/06/29/ipc/"/>
     <id>http://alanchans.github.io/2021/06/29/ipc/</id>
     <published>2021-06-29T01:25:18.000Z</published>
-    <updated>2021-07-05T06:05:07.845Z</updated>
+    <updated>2021-07-05T14:57:14.901Z</updated>
     
     
       
@@ -123,7 +179,7 @@
     <link href="http://alanchans.github.io/2021/06/25/linuxPthread/"/>
     <id>http://alanchans.github.io/2021/06/25/linuxPthread/</id>
     <published>2021-06-25T20:29:54.000Z</published>
-    <updated>2021-07-05T06:05:07.845Z</updated>
+    <updated>2021-07-05T14:57:14.902Z</updated>
     
     
       
@@ -152,7 +208,7 @@
     <link href="http://alanchans.github.io/2021/06/25/threadDescription/"/>
     <id>http://alanchans.github.io/2021/06/25/threadDescription/</id>
     <published>2021-06-25T02:35:39.000Z</published>
-    <updated>2021-07-05T06:05:07.845Z</updated>
+    <updated>2021-07-05T14:57:14.906Z</updated>
     
     
       

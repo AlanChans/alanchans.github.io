@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="标签, 技术宅、攻城狮、史蒂芬库里、金州拉文">
+    <meta name="keywords" content="多进程、线程并发服务器, 技术宅、攻城狮、史蒂芬库里、金州拉文">
     <meta name="description" content="主要涉及开发技能为C/C++、单片机、嵌入式ARM、Linux、QT、FFMPEG">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -16,7 +16,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>标签 | 我中单打野</title>
+    <title>多进程、线程并发服务器 | 我中单打野</title>
     <link rel="icon" type="image/png" href="/medias/android-chrome-200x200.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
@@ -380,12 +380,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/17.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/10.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">tags</h1>
+                    <h1 class="description center-align post-title">多进程、线程并发服务器</h1>
                 </div>
             </div>
         </div>
@@ -499,12 +499,33 @@
             <div class="row tag-cate">
                 <div class="col s7">
                     
-                          <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
-                          </div>
+                    <div class="article-tag">
+                        
+                            <a href="/tags/Linux/">
+                                <span class="chip bg-color">Linux</span>
+                            </a>
+                        
+                            <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">
+                                <span class="chip bg-color">多线程</span>
+                            </a>
+                        
+                            <a href="/tags/%E5%A4%9A%E8%BF%9B%E7%A8%8B/">
+                                <span class="chip bg-color">多进程</span>
+                            </a>
+                        
+                    </div>
                     
                 </div>
                 <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/Linux/" class="post-category">
+                                Linux
+                            </a>
+                        
+                    </div>
                     
                 </div>
             </div>
@@ -513,7 +534,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2021-06-23
+                    2021-07-05
                 </div>
                 
 
@@ -527,14 +548,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    0
+                    1.1k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    1 分
+                    5 分
                 </div>
                 
 
@@ -554,7 +575,432 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                
+                <h1 id="多进程、线程并发服务器"><a href="#多进程、线程并发服务器" class="headerlink" title="多进程、线程并发服务器"></a>多进程、线程并发服务器</h1><h2 id="多进程并发服务器"><a href="#多进程并发服务器" class="headerlink" title="多进程并发服务器"></a>多进程并发服务器</h2><h3 id="server-c"><a href="#server-c" class="headerlink" title="server.c"></a>server.c</h3><pre class=" language-lang-c"><code class="language-lang-c">#include <stdio.h>
+#include <arpa/inet.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <strings.h>
+#include <unistd.h>
+#include <signal.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+#include "wrap.h"
+#define SERV_PORT 8888
+
+void wait_chld(int signo)
+&#123;
+  while(waitpid(0, NULL, WNOHANG) > 0); // 0：回收属于同一进程组的所有子进程， WNOHANG：不阻塞
+  return;
+&#125;
+
+int main(void)
+&#123;
+        pid_t pid;
+        int i, n;
+        int lfd, cfd;
+        struct sockaddr_in serv_addr, clie_addr;
+        socklen_t clie_addr_len;
+        char buf[1024] = &#123;0&#125;;
+        char clientip[1024] = &#123;0&#125;;
+        lfd = Socket(AF_INET, SOCK_STREAM, 0);
+
+        bzero(&serv_addr, sizeof(serv_addr));
+
+        serv_addr.sin_family = AF_INET;
+        serv_addr.sin_port = htons(SERV_PORT);
+        serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+        //inet_pton(AF_INET, "192.168.10.100", &serv_addr.sin_addr.s_addr);
+        Bind(lfd, (const struct sockaddr *)&serv_addr, (socklen_t)sizeof(serv_addr));
+
+        Listen(lfd, 128); // 操作系统运行最大监听数为128
+
+        while(1)
+        &#123;
+                clie_addr_len = sizeof(clie_addr);
+                cfd = Accept(lfd, (struct sockaddr *)&clie_addr, &clie_addr_len);
+                printf("client ip:%s, port:%d\n", inet_ntop(AF_INET, &clie_addr.sin_addr.s_addr, clientip, sizeof(clientip)),
+                                ntohs(clie_addr.sin_port));
+
+                pid = fork();
+                if(pid < 0)
+                &#123;
+                        perror("fork error");
+                        exit(1);
+                &#125;
+                else if(pid == 0)
+                &#123;
+                        close(lfd);
+                        break;
+                &#125;
+                else
+                &#123;
+                        close(cfd);
+                        signal(SIGCHLD, wait_chld);
+                &#125;
+        &#125;
+
+        if(pid == 0)
+        &#123;
+                while(1)
+                &#123;
+                        n = Read(cfd, buf, sizeof(buf));
+                        if(n == 0) // 0表示对方连接断开
+                        &#123;
+                                close(cfd);
+                                return 0;
+                        &#125;
+                        else if(n == -1)
+                        &#123;
+                                perror("read error");
+                                exit(1);
+                        &#125;
+                        else
+                        &#123;
+                                for(i = 0; i < n; i++)
+                                &#123;
+                                        buf[i] = toupper(buf[i]);
+                                &#125;
+                                write(cfd, buf, n);
+                                write(STDOUT_FILENO, buf, n);
+                        &#125;
+                &#125;
+        &#125;
+        return 0;
+&#125;
+</code></pre>
+<h3 id="wrap-c"><a href="#wrap-c" class="headerlink" title="wrap.c"></a>wrap.c</h3><pre class=" language-lang-c"><code class="language-lang-c">#include <stdio.h>
+#include <wrap.h>
+#include <unistd.h>
+#include <errno.h>
+void err_sys(const char* x)
+&#123;
+    perror(x);
+    exit(1);
+&#125;
+
+int Socket(int domain, int type, int protocol)
+&#123;
+  int n;
+  if ((n = socket(domain, type, protocol)) < 0)
+    err_sys("socket error");
+  return (n);
+&#125;
+
+int Bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
+&#123;
+  int n;
+  if ((n = bind(sockfd, addr, addrlen)) < 0)
+    err_sys("bind error");
+  return (n);
+
+&#125;
+
+int Listen(int sockfd, int backlog)
+&#123;
+  int n;
+  if ((n = listen(sockfd, backlog)) < 0)
+    err_sys("listen error");
+  return (n);
+
+&#125;
+
+int Accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen)
+&#123;
+  int n;
+
+  do &#123;
+
+    if ((n = accept(sockfd, addr, addrlen)) < 0)
+    &#123;
+      if((errno == ECONNABORTED) || (errno == EINTR))
+      &#123;
+
+      &#125;
+      else
+      &#123;
+        err_sys("accept error");
+        break;
+      &#125;
+    &#125;
+  &#125; while(n < 0);
+  return (n);
+
+&#125;
+
+int Connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
+&#123;
+  int n;
+  if ((n = connect(sockfd, addr, addrlen)) < 0)
+    err_sys("connect error");
+  return (n);
+
+&#125;
+
+ssize_t Read(int fd, void *buf, size_t count)
+&#123;
+  ssize_t n;
+
+again:
+  if((n = read(fd, buf, count)) == -1)
+  &#123;
+    if(errno == EINTR)
+    &#123;
+      goto again;
+    &#125;
+    return -1;
+  &#125;
+
+  return n;
+&#125;
+
+ssize_t Write(int fd, const void *buf, size_t count)
+&#123;
+  ssize_t n;
+
+  do &#123;
+    if((n = write(fd, buf, count)) == -1)
+    &#123;
+      if(errno != EINTR)
+      &#123;
+        return -1;
+      &#125;
+    &#125;
+  &#125; while(n != -1);
+
+  return n;
+&#125;
+
+int Close(int fd)
+&#123;
+  int n;
+  if((n = close(fd)) == -1)
+      err_sys("connect error");
+  return n;
+&#125;
+
+ssize_t Readn(int fd, void *vptr, ssize_t n)
+&#123;
+  size_t nleft;   // unsigned int 剩余未读取的字节数
+  ssize_t nread;  // int 实际读到的字节数
+
+  const char *ptr = vptr;
+  nleft = n;      // n 未读取的字节数
+
+
+  while(nleft > 0)
+  &#123;
+    if((nread = read(fd, (void *)ptr, nleft)) < 0)
+    &#123;
+      if(errno == EINTR)
+        nread = 0;
+      else
+        return -1;
+    &#125;
+    else if(nread == 0)
+      break;
+
+    nleft -= nread;
+    ptr += nread;
+  &#125;
+
+  return n - nleft;
+&#125;
+
+ssize_t Writen(int fd, const void *vptr, size_t n)
+&#123;
+  size_t nleft;   // unsigned int 剩余未写出的字节数
+  ssize_t nwriten;  // int 实际写出的字节数
+
+  const char *ptr = vptr;
+  nleft = n;      // n 未写出的字节数
+
+
+  while(nleft > 0)
+  &#123;
+    if((nwriten = write(fd, ptr, nleft)) <= 0)
+    &#123;
+      if(errno == EINTR && nwriten < 0)
+        nwriten = 0;
+      else
+        return -1;
+    &#125;
+    else if(nwriten == 0)
+      break;
+
+    nleft -= nwriten;
+    ptr += nwriten;
+  &#125;
+
+  return n - nleft;
+
+&#125;
+</code></pre>
+<h3 id="wrap-h"><a href="#wrap-h" class="headerlink" title="wrap.h"></a>wrap.h</h3><pre class=" language-lang-c"><code class="language-lang-c">#ifndef __WRAP_H
+#define __WRAP_H
+
+#include <stdlib.h>
+#include <sys/types.h>          /* See NOTES */
+#include <sys/socket.h>
+
+#define offsetof(type, member) ((int)&((type *)0)->member)
+
+int Socket(int domain, int type, int protocol);
+int Bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
+int Listen(int sockfd, int backlog);
+int Accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
+int Connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
+ssize_t Read(int fd, void *buf, size_t count);
+ssize_t Write(int fd, const void *buf, size_t count);
+int Close(int fd);
+ssize_t Readn(int fd, void *vptr, ssize_t n);
+ssize_t Writen(int fd, const void *vptr, size_t n);
+
+#endif
+</code></pre>
+<h3 id="Makefile"><a href="#Makefile" class="headerlink" title="Makefile"></a>Makefile</h3><pre class=" language-lang-makefile"><code class="language-lang-makefile">all : server
+.PHONY : all
+
+src = $(wildcard ./*.c) # wildcard函数：显示指定路径下指定文件类型的所有文件
+obj = $(patsubst ./%.c, ./%.o, $(src)) # patsubst函数：.c 替换成 .o
+
+# LIBS := -lpthread
+CFLAGS = -I. -g -Wall
+CC = gcc
+CXX = g++
+
+server : $(obj)
+        $(CC) -o server $(obj) $(CFLAGS) $(LIBS)
+
+# $@  表示目标文件
+# $<  表示第一个依赖文件
+%.o : %.c
+        $(CC) -c $(CFLAGS) $< -o $@
+
+
+# -  即使出错也继续执行后面
+.PHONY : clean  # .PHONY 伪目标，有了这句，不管怎样都执行clean
+clean :
+        -$(RM) server  $(obj)
+</code></pre>
+<h2 id="多线程并发服务器"><a href="#多线程并发服务器" class="headerlink" title="多线程并发服务器"></a>多线程并发服务器</h2><h3 id="server-c-1"><a href="#server-c-1" class="headerlink" title="server.c"></a>server.c</h3><pre class=" language-lang-c"><code class="language-lang-c">#include <stdio.h>
+#include <arpa/inet.h>
+#include <ctype.h>
+#include <string.h>
+#include <unistd.h>
+#include <pthread.h>
+#include <fcntl.h>
+#include "wrap.h"
+
+#define MAXSIZE 8192
+#define SERV_PORT 8888
+// 定义i一个结构体，将结构体跟cfd捆绑
+struct s_info&#123;
+  struct sockaddr_in clieaddr;
+  int connfd;
+&#125;;
+
+
+void *dowork(void * arg)
+&#123;
+  int n, i;
+  struct s_info *ts = (struct s_info *)arg;
+  char buf[MAXSIZE] = &#123;0&#125;;
+  char str[INET_ADDRSTRLEN]; // #define INET_ADDRSRTLEN 16 可用"[+d"查看
+
+  while(1)
+  &#123;
+    n = Read(ts->connfd, buf, MAXSIZE);   // 读客户端
+    if(n == 0)
+    &#123;
+      printf("the client %d closed...\n", ts->connfd);
+      break; // 对端关闭连接
+    &#125;
+    printf("reaeived from %s at port %d",
+                    inet_ntop(AF_INET, &ts->clieaddr.sin_addr.s_addr, str, sizeof(str)),
+                    ntohs(ts->clieaddr.sin_port)); // 打印客户端信息
+
+    for(i = 0; i < n; i++)
+    &#123;
+      buf[i] = toupper(buf[i]);
+    &#125;
+
+    Write(STDOUT_FILENO, buf, n); // 打印到屏幕
+    Write(ts->connfd, buf, n);  // 回显给客户端
+
+  &#125;
+  Close(ts->connfd);
+  return (void *)0;
+&#125;
+
+int main(void)
+&#123;
+        int i;
+        int lfd, cfd;
+        struct sockaddr_in serv_addr, clie_addr;
+        socklen_t clie_addr_len;
+        pthread_t tid;
+        struct s_info ts[256]; // 根据最大线程数创建结数组
+        char clientip[256];
+
+        lfd = Socket(AF_INET, SOCK_STREAM, 0);
+
+        bzero(&serv_addr, sizeof(serv_addr));
+
+        serv_addr.sin_family = AF_INET;
+        serv_addr.sin_port = htons(SERV_PORT);
+        serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);  // 指定本地任意IP
+        //inet_pton(AF_INET, "192.168.10.100", &serv_addr.sin_addr.s_addr);
+        Bind(lfd, (const struct sockaddr *)&serv_addr, (socklen_t)sizeof(serv_addr));
+
+        Listen(lfd, 128); // 设置同一时刻连接服务器的上限，操作系统运行最大监听数为128
+
+        printf("Accepting client connect ...\n");
+        while(1)
+        &#123;
+                clie_addr_len = sizeof(clie_addr);
+                cfd = Accept(lfd, (struct sockaddr *)&clie_addr, &clie_addr_len); // 阻塞监听客户端连接请求
+                printf("client ip:%s, port:%d\n", inet_ntop(AF_INET, &clie_addr.sin_addr.s_addr, clientip, sizeof(clientip)),
+                                ntohs(clie_addr.sin_port));
+                ts[i].clieaddr = clie_addr;
+                ts[i].connfd = cfd;
+
+                /* 达到最大线程数时，pthread_create出错处理，增加系统服务稳定性*/
+                pthread_create(&tid, NULL, dowork, (void *)&ts[i]);
+                pthread_detach(tid); // 子线程分离，防止僵尸线程产生
+                i++;
+        &#125;
+        return 0;
+&#125;
+</code></pre>
+<h3 id="wrap-c-1"><a href="#wrap-c-1" class="headerlink" title="wrap.c"></a>wrap.c</h3><p>跟前面多进程版一致</p>
+<h3 id="wrap-h-1"><a href="#wrap-h-1" class="headerlink" title="wrap.h"></a>wrap.h</h3><p>跟前面多进程版一致</p>
+<h3 id="Makefile-1"><a href="#Makefile-1" class="headerlink" title="Makefile"></a>Makefile</h3><pre class=" language-lang-makefile"><code class="language-lang-makefile">all : server
+.PHONY : all
+
+src = $(wildcard ./*.c) # wildcard函数：显示指定路径下指定文件类型的所有文件
+obj = $(patsubst ./%.c, ./%.o, $(src)) # patsubst函数：.c 替换成 .o
+
+LIBS := -lpthread #相比多进程只是多了这一句，这句为链接线程库pthread
+CFLAGS = -I. -g -Wall
+CC = gcc
+CXX = g++
+
+server : $(obj)
+        $(CC) -o server $(obj) $(CFLAGS) $(LIBS)
+
+# $@  表示目标文件
+# $<  表示第一个依赖文件
+%.o : %.c
+        $(CC) -c $(CFLAGS) $< -o $@
+
+
+# -  即使出错也继续执行后面
+.PHONY : clean  # .PHONY 伪目标，有了这句，不管怎样都执行clean
+clean :
+        -$(RM) server  $(obj)
+</code></pre>
+
                 
             </div>
             <hr/>
@@ -580,7 +1026,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://alanchans.github.io/tags/index.html">http://alanchans.github.io/tags/index.html</a>
+                    <a href="http://alanchans.github.io/2021/07/05/multi-proc-pthread-server/">http://alanchans.github.io/2021/07/05/multi-proc-pthread-server/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -617,7 +1063,19 @@
                 <div class="post-meta__tag-list" style="display: inline-block;">
                     
                         <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
+                            
+                                <a href="/tags/Linux/">
+                                    <span class="chip bg-color">Linux</span>
+                                </a>
+                            
+                                <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">
+                                    <span class="chip bg-color">多线程</span>
+                                </a>
+                            
+                                <a href="/tags/%E5%A4%9A%E8%BF%9B%E7%A8%8B/">
+                                    <span class="chip bg-color">多进程</span>
+                                </a>
+                            
                         </div>
                     
                 </div>
@@ -785,18 +1243,17 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="far fa-dot-circle"></i>&nbsp;本篇
-            </div>
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/tags/index.html">
+                <a href="/2021/07/05/easy-gdb/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/17.jpg" class="responsive-img" alt="tags">
+                        <img src="/medias/featureimages/23.jpg" class="responsive-img" alt="简单的gdb调试命令">
                         
-                        <span class="card-title">tags</span>
+                        <span class="card-title">简单的gdb调试命令</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -806,18 +1263,33 @@
                         
                     </div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2021-06-23
-                            </span>
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2021-07-05
+                        </span>
                         <span class="publish-author">
                             
-                            <i class="fas fa-user fa-fw"></i>
-                            AlanChan
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/gdb/" class="post-category">
+                                    gdb
+                                </a>
+                            
                             
                         </span>
                     </div>
                 </div>
-
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/Linux/">
+                        <span class="chip bg-color">Linux</span>
+                    </a>
+                    
+                    <a href="/tags/gdb/">
+                        <span class="chip bg-color">gdb</span>
+                    </a>
+                    
+                </div>
                 
             </div>
         </div>
@@ -825,16 +1297,16 @@
         
         <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge right-badge text-color">
-                本篇&nbsp;<i class="far fa-dot-circle"></i>
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/tags/index.html">
+                <a href="/2021/07/05/hello-world/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/17.jpg" class="responsive-img" alt="tags">
+                        <img src="/medias/featureimages/12.jpg" class="responsive-img" alt="Hello World">
                         
-                        <span class="card-title">tags</span>
+                        <span class="card-title">Hello World</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -845,7 +1317,7 @@
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2021-06-23
+                                <i class="far fa-clock fa-fw icon-date"></i>2021-07-05
                             </span>
                         <span class="publish-author">
                             
@@ -855,7 +1327,6 @@
                         </span>
                     </div>
                 </div>
-
                 
             </div>
         </div>
