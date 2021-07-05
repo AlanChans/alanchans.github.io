@@ -6,7 +6,7 @@
   <link href="http://alanchans.github.io/atom.xml" rel="self"/>
   
   <link href="http://alanchans.github.io/"/>
-  <updated>2021-07-02T16:06:38.457Z</updated>
+  <updated>2021-07-05T06:05:07.845Z</updated>
   <id>http://alanchans.github.io/</id>
   
   <author>
@@ -17,11 +17,59 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>信号</title>
+    <link href="http://alanchans.github.io/2021/07/05/signal/"/>
+    <id>http://alanchans.github.io/2021/07/05/signal/</id>
+    <published>2021-07-05T13:57:48.000Z</published>
+    <updated>2021-07-05T06:05:07.845Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;信号&quot;&gt;&lt;a href=&quot;#信号&quot; class=&quot;headerlink&quot; title=&quot;信号&quot;&gt;&lt;/a&gt;信号&lt;/h1&gt;&lt;h2 id=&quot;1、信号的概念&quot;&gt;&lt;a href=&quot;#1、信号的概念&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="Linux" scheme="http://alanchans.github.io/categories/Linux/"/>
+    
+    
+    <category term="Linux" scheme="http://alanchans.github.io/tags/Linux/"/>
+    
+    <category term="信号" scheme="http://alanchans.github.io/tags/%E4%BF%A1%E5%8F%B7/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Hello World</title>
+    <link href="http://alanchans.github.io/2021/07/05/hello-world/"/>
+    <id>http://alanchans.github.io/2021/07/05/hello-world/</id>
+    <published>2021-07-05T06:05:07.845Z</published>
+    <updated>2021-07-05T06:05:07.845Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;Welcome to &lt;a href=&quot;https://hexo.io/&quot;&gt;Hexo&lt;/a&gt;! This is your very first post. Check &lt;a href=&quot;https://hexo.io/docs/&quot;&gt;documentation&lt;/a&gt;</summary>
+        
+      
+    
+    
+    
+    
+  </entry>
+  
+  <entry>
     <title>MYSQL数据库的基本操作</title>
     <link href="http://alanchans.github.io/2021/07/03/mysql/"/>
     <id>http://alanchans.github.io/2021/07/03/mysql/</id>
     <published>2021-07-03T00:01:27.000Z</published>
-    <updated>2021-07-02T16:06:38.457Z</updated>
+    <updated>2021-07-05T06:05:07.845Z</updated>
     
     
       
@@ -44,32 +92,11 @@
   </entry>
   
   <entry>
-    <title>Hello World</title>
-    <link href="http://alanchans.github.io/2021/07/02/hello-world/"/>
-    <id>http://alanchans.github.io/2021/07/02/hello-world/</id>
-    <published>2021-07-02T16:06:38.457Z</published>
-    <updated>2021-07-02T16:06:38.457Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;p&gt;Welcome to &lt;a href=&quot;https://hexo.io/&quot;&gt;Hexo&lt;/a&gt;! This is your very first post. Check &lt;a href=&quot;https://hexo.io/docs/&quot;&gt;documentation&lt;/a&gt;</summary>
-        
-      
-    
-    
-    
-    
-  </entry>
-  
-  <entry>
     <title>进程间通信IPC</title>
     <link href="http://alanchans.github.io/2021/06/29/ipc/"/>
     <id>http://alanchans.github.io/2021/06/29/ipc/</id>
     <published>2021-06-29T01:25:18.000Z</published>
-    <updated>2021-07-02T16:06:38.457Z</updated>
+    <updated>2021-07-05T06:05:07.845Z</updated>
     
     
       
@@ -96,7 +123,7 @@
     <link href="http://alanchans.github.io/2021/06/25/linuxPthread/"/>
     <id>http://alanchans.github.io/2021/06/25/linuxPthread/</id>
     <published>2021-06-25T20:29:54.000Z</published>
-    <updated>2021-07-02T16:06:38.457Z</updated>
+    <updated>2021-07-05T06:05:07.845Z</updated>
     
     
       
@@ -125,7 +152,7 @@
     <link href="http://alanchans.github.io/2021/06/25/threadDescription/"/>
     <id>http://alanchans.github.io/2021/06/25/threadDescription/</id>
     <published>2021-06-25T02:35:39.000Z</published>
-    <updated>2021-07-02T16:06:38.457Z</updated>
+    <updated>2021-07-05T06:05:07.845Z</updated>
     
     
       
