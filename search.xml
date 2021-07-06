@@ -211,7 +211,7 @@
   </entry>
   <entry>
     <title>Hello World</title>
-    <url>/2021/07/05/hello-world/</url>
+    <url>/2021/07/06/hello-world/</url>
     <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
 <h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post."></a>Create a new post.</h3><pre class=" language-lang-bash"><code class="language-lang-bash">$ hexo new "My New Post"
 </code></pre>
@@ -553,6 +553,163 @@ root@iZwz94euuu9omhoocm3l5uZ:~/07_article#
       <tags>
         <tag>Linux</tag>
         <tag>线程进程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>基本的Makefile使用</title>
+    <url>/2021/07/07/makefile-simple/</url>
+    <content><![CDATA[<h1 id="Makefile"><a href="#Makefile" class="headerlink" title="Makefile"></a>Makefile</h1><h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p>makefile是一个代码管理工具，它定义了一系列的规则来指定那些文件需要先编译，哪些文件需要后编译，哪些文件需要重新编译。</p>
+<p>最大的好处就是，只要把makefile写好，然后执行一个make命令就完成所有的编译了。</p>
+<p>不然每次编译都要敲一大串命令，很容易把我们累死。例如：</p>
+<pre class=" language-lang-shell"><code class="language-lang-shell">gcc *.c -Include ./ -Wall -g -O3 -D DEBUG -L
+</code></pre>
+<h2 id="makefile的命名"><a href="#makefile的命名" class="headerlink" title="makefile的命名"></a>makefile的命名</h2><p>makefile命名只有两种情况，任选其一即可：makefile、Makefile。</p>
+<h2 id="makefile的规则"><a href="#makefile的规则" class="headerlink" title="makefile的规则"></a>makefile的规则</h2><p>规则中的三要素：目标，依赖，规则。一条规则的形式如下：</p>
+<blockquote>
+<p>目标：依赖条件</p>
+<p>​    命令</p>
+</blockquote>
+<p>注意命令前面必须是一个Table缩进。</p>
+<p>如果makefile中有多条规则，则默认第一条规则中的目标是我们的终极目标。makefile向下检索，构建出一颗关系树，从下往上执行命令。</p>
+<p>make命令生成的目标都是终极目标。</p>
+<p><img src="https://i.loli.net/2021/07/07/5IrjAsQVm8TaPDC.png" alt="makefile工作原理.png"></p>
+<p>例子：</p>
+<pre class=" language-lang-makefile"><code class="language-lang-makefile">main:main.c sub.c add.c
+    gcc main.c sub.c add.c -o main
+</code></pre>
+<p>可见，目标就是我们想要生成的文件，依赖就是我们的源文件，命令就是我们用依赖生成目标的命令，例如这里的就是gcc编译的命令。</p>
+<p>上面例子是makefile和main.c 、sub.c、add.c是处于同一目录下的，如果不处于同一目录，需要显示指出源文件的目录。</p>
+<h2 id="makefile的分文件编译"><a href="#makefile的分文件编译" class="headerlink" title="makefile的分文件编译"></a>makefile的分文件编译</h2><p>当一个项目的源文件很多很多时，需要对文件的进行分文件编译，否则修改了其中一个源文件，就会导致整个项目的源文件都重新编译了一次，浪费时间。</p>
+<pre class=" language-lang-makefile"><code class="language-lang-makefile">main:main.o sub.o add.o
+    gcc main.o sub.o add.o
+
+main.o:main.c
+    gcc -c main.c
+
+sub.o:sub.c
+    gcc -c sub.c
+
+add.o:add.c
+    gcc -c add.c
+</code></pre>
+<h2 id="makefile的变量"><a href="#makefile的变量" class="headerlink" title="makefile的变量"></a>makefile的变量</h2><p>makefile定义变量不需要数据类型，直接定义即可，但要取变量里的内容则需在其前加<code>$</code>符号，一般也会将变量用<code>()</code>括起来。</p>
+<pre class=" language-lang-makefile"><code class="language-lang-makefile">obj = main.o sub.o add.o
+target = main
+
+$(target):$(obj)
+    gcc $(obj) -o $(target)
+
+main.o:main.c
+    gcc -c main.c
+
+sub.o:sub.c
+    gcc -c sub.c
+
+add.o:add.c
+    gcc -c add.c
+</code></pre>
+<h2 id="makefile的自动变量"><a href="#makefile的自动变量" class="headerlink" title="makefile的自动变量"></a>makefile的自动变量</h2><p>%&lt;：规则中的第一个依赖</p>
+<p>%@：规则中的目标</p>
+<p>%^：规则中的所有依赖</p>
+<p><strong>只能在规则中的命令使用。</strong></p>
+<h2 id="makefile的“-”"><a href="#makefile的“-”" class="headerlink" title="makefile的“=”"></a>makefile的“=”</h2><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>=</td>
+<td>最基本的赋值</td>
+</tr>
+<tr>
+<td>:=</td>
+<td>覆盖之前的值</td>
+</tr>
+<tr>
+<td>?=</td>
+<td>如果没有被赋值过就赋予等号后面的值</td>
+</tr>
+<tr>
+<td>+=</td>
+<td>添加等号后面的值</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="makefile的模式规则"><a href="#makefile的模式规则" class="headerlink" title="makefile的模式规则"></a>makefile的模式规则</h2><p>在规则的目标定义使用%，在规则的依赖条件使用%。</p>
+<pre class=" language-lang-makefile"><code class="language-lang-makefile">obj = main.o sub.o add.o
+target = main
+
+$(target):$(obj)
+    gcc $(obj) -o $(target)
+
+%.o:%.c
+    gcc -c $< -o $@
+</code></pre>
+<p>%.o:%.c 相当于 main.o:main.c、sub.0:sub.c、add.o:add.c。模式规则会帮我们自动匹配上。</p>
+<h2 id="makefile自己维护的变量"><a href="#makefile自己维护的变量" class="headerlink" title="makefile自己维护的变量"></a>makefile自己维护的变量</h2><p>特征：通常变量名全大写</p>
+<p>CC：默认值为cc，cc其实也就是gcc。</p>
+<p>CPPFLAGS：预处理的时候使用的参数。例如：</p>
+<p><code>CPPFLAGS = -I</code>预处理的时候指定头文件路径。</p>
+<p>CFLAGS：编译的时候使用的参数。例如：</p>
+<p><code>CFLAGS = -Wall -g -c</code>编译的时候显示警告、加入调试信息、只编译</p>
+<p>LDFLAGS：链接库的时候使用的选项。</p>
+<p><code>LDFLAGS = -L -l</code>链接库的时候指定库路径、库名。</p>
+<pre class=" language-lang-makefile"><code class="language-lang-makefile">obj = main.o sub.o add.o
+target = main
+CC = gcc
+CPPFLAGS = -I
+$(target):$(obj)
+    $(CC) $(obj) -o $(target)
+
+%.o:%.c
+    $(CC) -c $< -o $@
+</code></pre>
+<h2 id="makefile的函数"><a href="#makefile的函数" class="headerlink" title="makefile的函数"></a>makefile的函数</h2><p>makefile中使用的所有函数都是有返回值的，函数名与参数通过空格分开，参数与参数之间通过逗号分开。</p>
+<p>$(wildcard <pattern>…)</p>
+<p>$(patsubst <pattern>,<replacement>,<text>)</p>
+<p>一般这两个函数结合使用。wildcard 通过通配符找到相关的.c源文件，返回它们的字符串，再通过 patsubst 模式替换将.c源文件的名称的字符串替换成对应的.o目标文件。</p>
+<pre class=" language-lang-makefile"><code class="language-lang-makefile">target = main
+src = $(wildcard ./*.c)
+obj = $(patsubst ./%.c, ./%.o, $(src))
+CC = gcc
+CPPFLAGS = -I
+$(target):$(obj)
+    $(CC) $(obj) -o $(target)
+
+%.o:%.c
+    $(CC) -c $< -o $@
+</code></pre>
+<h2 id="clean"><a href="#clean" class="headerlink" title="clean"></a>clean</h2><p>伪目标，没有依赖。用于删除所有被 make 创建的文件。</p>
+<pre class=" language-lang-makefile"><code class="language-lang-makefile">target = main
+src = $(wildcard ./*.c)
+obj = $(patsubst ./%.c, ./%.o, $(src))
+CC = gcc
+CPPFLAGS = -I
+$(target):$(obj)
+    $(CC) $(obj) -o $(target)
+
+%.o:%.c
+    $(CC) -c $< -o $@
+
+.PHONY:clean
+clean:
+    -rm $(target) $(obj) -f
+</code></pre>
+<p>-：如果出错，忽略当前命令，继续向下执行下面的命令。</p>
+<p>-f：强制执行，不管有没有对应的文件都删除。</p>
+<p>.PHONY:clean：声明clean为伪目标。</p>
+]]></content>
+      <categories>
+        <category>Makefile</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>Makefile</tag>
       </tags>
   </entry>
   <entry>

@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="技术宅、攻城狮、史蒂芬库里、金州拉文">
+    <meta name="keywords" content="基本的Makefile使用, 技术宅、攻城狮、史蒂芬库里、金州拉文">
     <meta name="description" content="主要涉及开发技能为C/C++、单片机、嵌入式ARM、Linux、QT、FFMPEG">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -16,7 +16,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>我中单打野</title>
+    <title>基本的Makefile使用 | 我中单打野</title>
     <link rel="icon" type="image/png" href="/medias/android-chrome-200x200.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
@@ -311,12 +311,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/0.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/5.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title"></h1>
+                    <h1 class="description center-align post-title">基本的Makefile使用</h1>
                 </div>
             </div>
         </div>
@@ -430,12 +430,29 @@
             <div class="row tag-cate">
                 <div class="col s7">
                     
-                          <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
-                          </div>
+                    <div class="article-tag">
+                        
+                            <a href="/tags/Linux/">
+                                <span class="chip bg-color">Linux</span>
+                            </a>
+                        
+                            <a href="/tags/Makefile/">
+                                <span class="chip bg-color">Makefile</span>
+                            </a>
+                        
+                    </div>
                     
                 </div>
                 <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/Makefile/" class="post-category">
+                                Makefile
+                            </a>
+                        
+                    </div>
                     
                 </div>
             </div>
@@ -444,7 +461,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2021-07-06
+                    2021-07-07
                 </div>
                 
 
@@ -458,7 +475,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    738
+                    1.1k
                 </div>
                 
 
@@ -485,391 +502,151 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <style>
-    .mdui-container,
-    .mdui-container-fluid {
-    box-sizing: border-box;
-    padding-right: 8px;
-    padding-left: 8px;
-    margin-right: auto;
-    margin-left: auto
-    }
+                <h1 id="Makefile"><a href="#Makefile" class="headerlink" title="Makefile"></a>Makefile</h1><h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p>makefile是一个代码管理工具，它定义了一系列的规则来指定那些文件需要先编译，哪些文件需要后编译，哪些文件需要重新编译。</p>
+<p>最大的好处就是，只要把makefile写好，然后执行一个make命令就完成所有的编译了。</p>
+<p>不然每次编译都要敲一大串命令，很容易把我们累死。例如：</p>
+<pre class=" language-lang-shell"><code class="language-lang-shell">gcc *.c -Include ./ -Wall -g -O3 -D DEBUG -L
+</code></pre>
+<h2 id="makefile的命名"><a href="#makefile的命名" class="headerlink" title="makefile的命名"></a>makefile的命名</h2><p>makefile命名只有两种情况，任选其一即可：makefile、Makefile。</p>
+<h2 id="makefile的规则"><a href="#makefile的规则" class="headerlink" title="makefile的规则"></a>makefile的规则</h2><p>规则中的三要素：目标，依赖，规则。一条规则的形式如下：</p>
+<blockquote>
+<p>目标：依赖条件</p>
+<p>​    命令</p>
+</blockquote>
+<p>注意命令前面必须是一个Table缩进。</p>
+<p>如果makefile中有多条规则，则默认第一条规则中的目标是我们的终极目标。makefile向下检索，构建出一颗关系树，从下往上执行命令。</p>
+<p>make命令生成的目标都是终极目标。</p>
+<p><img src="https://i.loli.net/2021/07/07/5IrjAsQVm8TaPDC.png" alt="makefile工作原理.png"></p>
+<p>例子：</p>
+<pre class=" language-lang-makefile"><code class="language-lang-makefile">main:main.c sub.c add.c
+    gcc main.c sub.c add.c -o main
+</code></pre>
+<p>可见，目标就是我们想要生成的文件，依赖就是我们的源文件，命令就是我们用依赖生成目标的命令，例如这里的就是gcc编译的命令。</p>
+<p>上面例子是makefile和main.c 、sub.c、add.c是处于同一目录下的，如果不处于同一目录，需要显示指出源文件的目录。</p>
+<h2 id="makefile的分文件编译"><a href="#makefile的分文件编译" class="headerlink" title="makefile的分文件编译"></a>makefile的分文件编译</h2><p>当一个项目的源文件很多很多时，需要对文件的进行分文件编译，否则修改了其中一个源文件，就会导致整个项目的源文件都重新编译了一次，浪费时间。</p>
+<pre class=" language-lang-makefile"><code class="language-lang-makefile">main:main.o sub.o add.o
+    gcc main.o sub.o add.o
 
-    .mdui-container-fluid:after,
-    .mdui-container:after {
-    display: table;
-    clear: both;
-    content: ''
-    }
+main.o:main.c
+    gcc -c main.c
 
-    .mdui-container {
-    width: 96%;
-    max-width: 1280px
-    }
+sub.o:sub.c
+    gcc -c sub.c
 
-    @media (min-width:600px) {
-    .mdui-container {
-    width: 94%
-    }
-    }
+add.o:add.c
+    gcc -c add.c
+</code></pre>
+<h2 id="makefile的变量"><a href="#makefile的变量" class="headerlink" title="makefile的变量"></a>makefile的变量</h2><p>makefile定义变量不需要数据类型，直接定义即可，但要取变量里的内容则需在其前加<code>$</code>符号，一般也会将变量用<code>()</code>括起来。</p>
+<pre class=" language-lang-makefile"><code class="language-lang-makefile">obj = main.o sub.o add.o
+target = main
 
-    @media (min-width:1024px) {
-    .mdui-container {
-    width: 92%
-    }
-    }
-    h3 {
-    text-align: center
-    }
-    .icon {
-    padding: 0 2% 1% 2%;
-    width: 40px;
-    height: 40px
-    }
-    table {
-        
-    text-align: left;
-    font-family:'STZhongsong';
-    margin: 0 0 0 0px;
-    font-size: 20px;
-    height: 145px;
-    width: 100%
-    }
+$(target):$(obj)
+    gcc $(obj) -o $(target)
 
-    .showarea-1 {
-    opacity: 0.9;
-    background-color: white;
-    margin: 0% 0% 0% 0%;
-    padding: 10px
-    }
+main.o:main.c
+    gcc -c main.c
 
-    .showarea-2 {
-    opacity: 0.9;
-    background-color: white;
-    height: 300px;
-    margin: 0.5% 0 0 10%;
-    float: left;
-    width: 38%;
-    padding: 0 0 8px 20px
-    }
+sub.o:sub.c
+    gcc -c sub.c
 
-    .showarea-3 {
-    opacity: 0.9;
-    background-color: white;
-    height: 300px;
-    float: left;
-    width: 38.3%;
-    margin: 0.5% 0 0 0.5%;
-    padding: 0 0 8px 20px
-    }
-
-    .showarea-4 {
-    opacity: 0.9;
-    background-color: white;
-    margin: 0.5% 10% 0 10%;
-    padding: 8px;
-    text-align: center
-    }
-
-    .skill {
-    max-width: 700px;
-    margin: auto;
-    }
-
-    .skill .item {
-    width: 100%;
-    clear: both;
-    margin-right: auto;
-    margin-left: auto;
-    height: 35px;
-    }
-
-    .skill .describe {
-    font-family: "Microsoft Yahei";
-    margin-right: 12px;
-    text-align: center;
-    }
-
-    .skill .progress {
-    float: left;
-    height: 25px;
-    background: #fbfbfb;
-    border-left: 1px solid transparent;
-    border-right: 1px solid transparent;
-    width: 70%;
-    }
-
-    .skill .progress>span {
-    position: relative;
-    float: left;
-    margin: 0 -1px;
-    min-width: 30px;
-    height: 25px;
-    line-height: 21px;
-    text-align: right;
-    background: #cccccc;
-    border: none;
-    border-color: #bfbfbf #b3b3b3 #9e9e9e;
-    box-shadow: inset 0 1px rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
-    }
-
-    .skill .progress>span>span {
-    padding: 0 8px;
-    font-size: 14px;
-    color: #404040;
-    color: rgba(0, 0, 0, 0.7);
-    font-family: "Microsoft Yahie";
-    line-height: 25px;
-    }
-
-    .skill .progress>span:before {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 1;
-    height: 25px;
-    border-radius: 10px;
-    }
-
-    .skill .progress .green {
-    background: #49C085;
-    }
-
-    .skill .progress .darkblue {
-    background: #7782D1;
-    }
-
-    .skill .progress .red {
-    background: #EC5B5B;
-    }
-
-    .skill .progress .orange {
-    background: #f2b63c;
-    }
-
-    .skill .progress .blue {
-    background: #6F92FF;
-    }
-
-    @media (min-width:750px) {
-    .skill .describe {
-    width: 100px;
-    float: left;
-    }
-
-    .skill .progress {
-    width: 70%;
-    float: left;
-    }
-    }
-
-    @media (max-width:750px) {
-    .skill .describe {
-    width: 100%;
-    margin-bottom: 5px;
-    text-align: left;
-    }
-
-    .skill .progress {
-    width: 100%;
-    margin-bottom: 5px;
-    }
-    }
-
-    #mainicon {
-    -webkit-animation: rotateImg 5s linear infinite;
-    height: 60px;
-    width: 60px;
-    float: left;
-    border: 3px solid;
-    border-color: aqua;
-    border-radius: 50%;
-    transition: -webkit-transform 1s;
-    transition: transform 1s;
-    transition: transform 1s, -webkit-transform 1s;
-    max-width: 50%;
-    display: block
-    }
-
-    @keyframes rotateImg {
-    0% {
-    -webkit-transform: rotate(0deg);
-            transform: rotate(0deg);
-    }
-
-    100% {
-    -webkit-transform: rotate(360deg);
-            transform: rotate(360deg);
-    }
-    }
-
-    @-webkit-keyframes rotateImg {
-    0% {
-    -webkit-transform: rotate(0deg);
-    }
-
-    100% {
-    -webkit-transform: rotate(360deg);
-    }
-    }
-
-    canvas {
-    top: 0;
-    padding: 0;
-    margin: 0;
-    position: absolute;
-    z-index: -1;
-    left: 0px
-    }
-    #footer {
-    position: relative;
-    clear: both;
-    width: 100%;
-    top: 20px;
-    text-align: center;
-    display: inline-block;
-    color: #D3D3D3;
-    font-family:Georgia, 'Times New Roman', Times, serif
-    }
-    #footer a {
-    text-decoration: none;
-    color: #D3D3D3;
-    cursor: pointer
-    }
-    #footer a:hover {
-    border-bottom: 1px dotted #FFFFFF;
-    color: #FFFFFF
-    }
-    
-    @media screen and (max-width:120px) {
-    #mainicon {
-    position: relative;
-    float: top;
-    display: block
-    }
-    }
-</style>
-<script>
-    document.onkeydown = function () {
-        if (window.event && window.event.keyCode == 123) {
-            event.keyCode = 0;
-            event.returnValue = false;
-            return false;
-        }
-    };
-</script>
-
-
-<div class="mdui-container">
-    <div class="showarea-1">
-    <a href="https://alanchans.github.io/" target="_blank">
-    <img id="mainicon" src="https://cdn.jsdelivr.net/gh/TRHX/CDN-for-itrhx.com@3.0.4/images/trhx2.png">
-    </a>
-        <table>
-            <tr>
-                <td><i class="fa fa-user-tie fa-fw"></i> 江湖名称：Alan</td>
-                <td><i class="fa fa-map-marker-alt fa-fw"></i> 常驻地址：China~丨广东丨深圳湾1号</td>
-            </tr>
-            <tr>
-                <td><i class="fa fa-birthday-cake fa-fw"></i> 跌落凡间：1996</td>
-                <td><i class="fas fa-code"></i> 擅长领域：C/C++丨嵌入式丨Linux</td>
-            </tr>
-        </table>
-    </div>
+add.o:add.c
+    gcc -c add.c
+</code></pre>
+<h2 id="makefile的自动变量"><a href="#makefile的自动变量" class="headerlink" title="makefile的自动变量"></a>makefile的自动变量</h2><p>%&lt;：规则中的第一个依赖</p>
+<p>%@：规则中的目标</p>
+<p>%^：规则中的所有依赖</p>
+<p><strong>只能在规则中的命令使用。</strong></p>
+<h2 id="makefile的“-”"><a href="#makefile的“-”" class="headerlink" title="makefile的“=”"></a>makefile的“=”</h2><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>=</td>
+<td>最基本的赋值</td>
+</tr>
+<tr>
+<td>:=</td>
+<td>覆盖之前的值</td>
+</tr>
+<tr>
+<td>?=</td>
+<td>如果没有被赋值过就赋予等号后面的值</td>
+</tr>
+<tr>
+<td>+=</td>
+<td>添加等号后面的值</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div class="mdui-container">
-    <div class="showarea-2">
-        <h3>技能丨Skill</h3>
-        <div>
-            <section class="skill">
-                <div class="item">
-                    <div class="describe">
-                        Linux
-                    </div>
-                    <div class="progress">
-                        <span class="green" style="width: 65%;"><span>65%</span></span>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="describe">
-                        C / C++
-                    </div>
-                    <div class="progress">
-                        <span class="orange" style="width: 90%;"><span>90%</span></span>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="describe">
-                        QT
-                    </div>
-                    <div class="progress">
-                        <span class="red" style="width: 30%;"><span>30%</span></span>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="describe">
-                        32位微控制器
-                    </div>
-                    <div class="progress">
-                        <span class="blue" style="width: 80%;"><span>80%</span></span>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="describe">
-                        HEXO / GIT
-                    </div>
-                    <div class="progress">
-                        <span class="darkblue" style="width: 50%;"><span>50%</span></span>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="describe">
-                        FFMPEG / 音频编解码
-                    </div>
-                    <div class="progress">
-                        <span class="orange" style="width: 65%;"><span>65%</span></span>
-                    </div>
-                </div>
-            </section>
-        </div>
-    </div>
-    <div class="showarea-3">
-        <h3>简介丨Introduction</h3>
-        <p>● 学历：东莞某本科，通信工程专业；</p>
-        <p>● 现况：自学 Linux 中，Linux应用开发方向；</p>
-        <p>● 目标：优秀嵌入式软件工程师；</p>
-        <p>● 博客：好记性不如烂笔头，记录学习过程；</p>
-        <p>● 兴趣：酷爱编程，业余NBA种子选手，King of Glory 玩家；</p>
-        <p>● 其他：虽然很菜，但是在努力学习中！</p>
-    </div>
-</div>
-<div class="mdui-container">
-    <div class="showarea-4">
-        <h3>联系我丨Contact me</h3>
-        <a href="https://www.alanchans.com/" target="_blank"><img src="https://cdn.jsdelivr.net/gh/TRHX/CDN-for-itrhx.com@3.0.4/about/icon/hexo.png" class="icon" title="个人博客"></a>
-        <a href="https://alanchans.github.io/" target="_blank"><img src="https://cdn.jsdelivr.net/gh/TRHX/CDN-for-itrhx.com@3.0.4/about/icon/github.png" class="icon" title="GitHub"></a>
-        <a href="https://alanchans.blog.csdn.net/" target="_blank"><img src="https://cdn.jsdelivr.net/gh/TRHX/CDN-for-itrhx.com@3.0.4/about/icon/csdn.png" class="icon" title="CSDN"></a>
-        <a href="https://www.cnblogs.com/alanchans/" target="_blank"><img src="https://cdn.jsdelivr.net/gh/TRHX/CDN-for-itrhx.com@3.0.4/about/icon/cnblogs.png" class="icon" title="博客园"></a>
-        <a href="https://www.zhihu.com/people/alanchans" target="_blank"><img src="https://cdn.jsdelivr.net/gh/TRHX/CDN-for-itrhx.com@3.0.4/about/icon/zhihu.png" class="icon" title="知乎"></a>
-        <a href="https://music.163.com/#/user/home?id=alanchans" target="_blank"><img src="https://cdn.jsdelivr.net/gh/TRHX/CDN-for-itrhx.com@3.0.4/about/icon/netease.png" class="icon" title="网易云音乐"></a>
-        <a href="https://space.bilibili.com/alanchans" target="_blank"><img src="https://cdn.jsdelivr.net/gh/TRHX/CDN-for-itrhx.com@3.0.4/about/icon/bilibili.png" class="icon" title="哔哩哔哩"></a>
-        <a href="http://wpa.qq.com/msgrd?v=3&uin=alanchans&site=qq&menu=yes" target="_blank"><img src="https://cdn.jsdelivr.net/gh/TRHX/CDN-for-itrhx.com@3.0.4/about/icon/qq.png" class="icon" title="QQ"></a>
-        <a href="mailto:alanworksapce@foxmail.com" target="_blank"><img src="https://cdn.jsdelivr.net/gh/TRHX/CDN-for-itrhx.com@3.0.4/about/icon/mail.png" class="icon" title="邮件"></a>
-        <a href="https://t.me/alanchans" target="_blank"><img src="https://cdn.jsdelivr.net/gh/TRHX/CDN-for-itrhx.com@3.0.4/about/icon/telegram.png" class="icon" title="Telegram"></a>
-        <a href="https://twitter.com/alanchans" target="_blank"><img src="https://cdn.jsdelivr.net/gh/TRHX/CDN-for-itrhx.com@3.0.4/about/icon/twitter.png" class="icon" title="Twitter"></a>
-        <!--<a href="https://www.facebook.com/profile.php?id=100039716302318" target="_blank"><img
-                src="https://cdn.jsdelivr.net/gh/TRHX/CDN-for-itrhx.com@3.0.4/about/icon/facebook.png" class="icon" title="Facebook"></a>-->
-    </div>
-</div>
-<script>
-    if ('addEventListener' in window) {
-        window.addEventListener('load', function () { document.body.className = document.body.className.replace(/\bis-loading\b/, ''); });
-        document.body.className += (navigator.userAgent.match(/(MSIE|rv:11\.0)/) ? ' is-ie' : '');
-    }
-</script>
+<h2 id="makefile的模式规则"><a href="#makefile的模式规则" class="headerlink" title="makefile的模式规则"></a>makefile的模式规则</h2><p>在规则的目标定义使用%，在规则的依赖条件使用%。</p>
+<pre class=" language-lang-makefile"><code class="language-lang-makefile">obj = main.o sub.o add.o
+target = main
+
+$(target):$(obj)
+    gcc $(obj) -o $(target)
+
+%.o:%.c
+    gcc -c $< -o $@
+</code></pre>
+<p>%.o:%.c 相当于 main.o:main.c、sub.0:sub.c、add.o:add.c。模式规则会帮我们自动匹配上。</p>
+<h2 id="makefile自己维护的变量"><a href="#makefile自己维护的变量" class="headerlink" title="makefile自己维护的变量"></a>makefile自己维护的变量</h2><p>特征：通常变量名全大写</p>
+<p>CC：默认值为cc，cc其实也就是gcc。</p>
+<p>CPPFLAGS：预处理的时候使用的参数。例如：</p>
+<p><code>CPPFLAGS = -I</code>预处理的时候指定头文件路径。</p>
+<p>CFLAGS：编译的时候使用的参数。例如：</p>
+<p><code>CFLAGS = -Wall -g -c</code>编译的时候显示警告、加入调试信息、只编译</p>
+<p>LDFLAGS：链接库的时候使用的选项。</p>
+<p><code>LDFLAGS = -L -l</code>链接库的时候指定库路径、库名。</p>
+<pre class=" language-lang-makefile"><code class="language-lang-makefile">obj = main.o sub.o add.o
+target = main
+CC = gcc
+CPPFLAGS = -I
+$(target):$(obj)
+    $(CC) $(obj) -o $(target)
+
+%.o:%.c
+    $(CC) -c $< -o $@
+</code></pre>
+<h2 id="makefile的函数"><a href="#makefile的函数" class="headerlink" title="makefile的函数"></a>makefile的函数</h2><p>makefile中使用的所有函数都是有返回值的，函数名与参数通过空格分开，参数与参数之间通过逗号分开。</p>
+<p>$(wildcard <pattern>…)</p>
+<p>$(patsubst <pattern>,<replacement>,<text>)</p>
+<p>一般这两个函数结合使用。wildcard 通过通配符找到相关的.c源文件，返回它们的字符串，再通过 patsubst 模式替换将.c源文件的名称的字符串替换成对应的.o目标文件。</p>
+<pre class=" language-lang-makefile"><code class="language-lang-makefile">target = main
+src = $(wildcard ./*.c)
+obj = $(patsubst ./%.c, ./%.o, $(src))
+CC = gcc
+CPPFLAGS = -I
+$(target):$(obj)
+    $(CC) $(obj) -o $(target)
+
+%.o:%.c
+    $(CC) -c $< -o $@
+</code></pre>
+<h2 id="clean"><a href="#clean" class="headerlink" title="clean"></a>clean</h2><p>伪目标，没有依赖。用于删除所有被 make 创建的文件。</p>
+<pre class=" language-lang-makefile"><code class="language-lang-makefile">target = main
+src = $(wildcard ./*.c)
+obj = $(patsubst ./%.c, ./%.o, $(src))
+CC = gcc
+CPPFLAGS = -I
+$(target):$(obj)
+    $(CC) $(obj) -o $(target)
+
+%.o:%.c
+    $(CC) -c $< -o $@
+
+.PHONY:clean
+clean:
+    -rm $(target) $(obj) -f
+</code></pre>
+<p>-：如果出错，忽略当前命令，继续向下执行下面的命令。</p>
+<p>-f：强制执行，不管有没有对应的文件都删除。</p>
+<p>.PHONY:clean：声明clean为伪目标。</p>
 
                 
             </div>
@@ -896,7 +673,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://alanchans.github.io/about/icon/tmp_about.html">http://alanchans.github.io/about/icon/tmp_about.html</a>
+                    <a href="http://alanchans.github.io/2021/07/07/makefile-simple/">http://alanchans.github.io/2021/07/07/makefile-simple/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -933,7 +710,15 @@
                 <div class="post-meta__tag-list" style="display: inline-block;">
                     
                         <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
+                            
+                                <a href="/tags/Linux/">
+                                    <span class="chip bg-color">Linux</span>
+                                </a>
+                            
+                                <a href="/tags/Makefile/">
+                                    <span class="chip bg-color">Makefile</span>
+                                </a>
+                            
                         </div>
                     
                 </div>
@@ -1106,13 +891,13 @@
                 <i class="far fa-dot-circle"></i>&nbsp;本篇
             </div>
             <div class="card">
-                <a href="/about/icon/tmp_about.html">
+                <a href="/2021/07/07/makefile-simple/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="">
+                        <img src="/medias/featureimages/5.jpg" class="responsive-img" alt="基本的Makefile使用">
                         
-                        <span class="card-title"></span>
+                        <span class="card-title">基本的Makefile使用</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1123,17 +908,33 @@
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2021-07-06
+                                <i class="far fa-clock fa-fw icon-date"></i>2021-07-07
                             </span>
                         <span class="publish-author">
                             
-                            <i class="fas fa-user fa-fw"></i>
-                            AlanChan
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/Makefile/" class="post-category">
+                                    Makefile
+                                </a>
+                            
                             
                         </span>
                     </div>
                 </div>
 
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/Linux/">
+                        <span class="chip bg-color">Linux</span>
+                    </a>
+                    
+                    <a href="/tags/Makefile/">
+                        <span class="chip bg-color">Makefile</span>
+                    </a>
+                    
+                </div>
                 
             </div>
         </div>
@@ -1141,16 +942,16 @@
         
         <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge right-badge text-color">
-                本篇&nbsp;<i class="far fa-dot-circle"></i>
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/about/icon/tmp_about.html">
+                <a href="/2021/07/06/hello-world/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="">
+                        <img src="/medias/featureimages/12.jpg" class="responsive-img" alt="Hello World">
                         
-                        <span class="card-title"></span>
+                        <span class="card-title">Hello World</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1171,7 +972,6 @@
                         </span>
                     </div>
                 </div>
-
                 
             </div>
         </div>
