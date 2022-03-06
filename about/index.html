@@ -29,6 +29,15 @@
 
     <script src="/libs/jquery/jquery.min.js"></script>
     <script src="https://v1.hitokoto.cn/?c=d&c=h&c=j&k&f&encode=js&select=%23hitokoto" defer></script>
+
+    {% if theme.daovoice %}
+    <script>(function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:' == document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/10e33a0c.js","daovoice")</script>
+    daovoice('init', {
+        app_id: "{{theme.app_id}}"
+      });
+    daovoice('update');
+    </script>
+    {% endif %}
 <meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="薛定谔的猫🐱" type="application/atom+xml">
 <link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
 
@@ -594,7 +603,7 @@
                 type: 'pie',
                 radius: '50%',
                 color: ['#6772e5', '#ff9e0f', '#fa755a', '#3ecf8e', '#82d3f4', '#ab47bc', '#525f7f', '#f51c47', '#26A69A'],
-                data: [{"name":"gdb","value":1},{"name":"Linux","value":4},{"name":"Makefile","value":1},{"name":"多路IO","value":1},{"name":"MYSQL","value":1},{"name":"线程进程","value":1},{"name":"线程进程","value":1}],
+                data: [{"name":"Linux","value":4},{"name":"gdb","value":1},{"name":"Makefile","value":1},{"name":"线程进程","value":1},{"name":"MYSQL","value":1},{"name":"多路IO","value":1},{"name":"线程进程","value":1}],
                 itemStyle: {
                     emphasis: {
                         shadowBlur: 10,
@@ -618,7 +627,7 @@
         xAxis: [
             {
                 type: 'category',
-                data: ["Linux","线程进程","gdb","IPC","进程间通信","Makefile","多线程","多进程","并发","select"]
+                data: ["Linux","线程进程","gdb","IPC","进程间通信","Makefile","多线程","多进程","MYSQL","数据库"]
             }
         ],
         yAxis: [
@@ -751,6 +760,12 @@
             
             
             
+            <a href="/tags/%E7%BA%BF%E7%A8%8B%E8%BF%9B%E7%A8%8B/">
+                <span class="chip center-align waves-effect waves-light chip-default">线程进程</span>
+            </a>
+            
+            
+            
             <a href="/tags/gdb/">
                 <span class="chip center-align waves-effect waves-light chip-default">gdb</span>
             </a>
@@ -769,12 +784,6 @@
             
             
             
-            <a href="/tags/%E7%BA%BF%E7%A8%8B%E8%BF%9B%E7%A8%8B/">
-                <span class="chip center-align waves-effect waves-light chip-default">线程进程</span>
-            </a>
-            
-            
-            
             <a href="/tags/Makefile/">
                 <span class="chip center-align waves-effect waves-light chip-default">Makefile</span>
             </a>
@@ -789,6 +798,18 @@
             
             <a href="/tags/%E5%A4%9A%E8%BF%9B%E7%A8%8B/">
                 <span class="chip center-align waves-effect waves-light chip-default">多进程</span>
+            </a>
+            
+            
+            
+            <a href="/tags/MYSQL/">
+                <span class="chip center-align waves-effect waves-light chip-default">MYSQL</span>
+            </a>
+            
+            
+            
+            <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">
+                <span class="chip center-align waves-effect waves-light chip-default">数据库</span>
             </a>
             
             
@@ -813,18 +834,6 @@
             
             <a href="/tags/epoll/">
                 <span class="chip center-align waves-effect waves-light chip-default">epoll</span>
-            </a>
-            
-            
-            
-            <a href="/tags/MYSQL/">
-                <span class="chip center-align waves-effect waves-light chip-default">MYSQL</span>
-            </a>
-            
-            
-            
-            <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">
-                <span class="chip center-align waves-effect waves-light chip-default">数据库</span>
             </a>
             
             
@@ -942,7 +951,7 @@
         <meting-js class="col l8 offset-l2 m10 offset-m1 s12"
                    server="netease"
                    type="song"
-                   id="1921676493,1351183637,1921683713,492390949,1914485227"
+                   id="1921676493"
                    fixed='true'
                    autoplay='true'
                    theme='#42b983'
@@ -1233,6 +1242,25 @@ $(function () {
 
     
 
+    
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i["DaoVoiceObject"] = r;
+            i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date();
+            a = s.createElement(o), m = s.getElementsByTagName(o)[0];
+            a.async = 1;
+            a.src = g;
+            a.charset = "utf-8";
+            m.parentNode.insertBefore(a, m)
+        })(window, document, "script", ('https:' == document.location.protocol ? 'https:' : 'http:') +
+            "//widget.daovoice.io/widget/6984b559.js", "daovoice")
+        daovoice('init', {
+            app_id: "10e33a0c"
+        });
+        daovoice('update');
+    </script>
     
 
 	
