@@ -542,7 +542,7 @@
         },
         xAxis: {
             type: 'category',
-            data: ["2020-10","2020-11","2020-12","2021-01","2021-02","2021-03","2021-04","2021-05","2021-06","2021-07","2021-08","2021-09","2021-10"]
+            data: ["2021-03","2021-04","2021-05","2021-06","2021-07","2021-08","2021-09","2021-10","2021-11","2021-12","2022-01","2022-02","2022-03"]
         },
         yAxis: {
             type: 'value',
@@ -552,7 +552,7 @@
                 name: '文章篇数',
                 type: 'line',
                 color: ['#6772e5'],
-                data: [0,0,0,0,0,0,0,0,3,6,0,0,0],
+                data: [0,0,0,3,6,0,0,0,0,0,0,0,0],
                 markPoint: {
                     symbolSize: 45,
                     color: ['#fa755a','#3ecf8e','#82d3f4'],
@@ -594,7 +594,7 @@
                 type: 'pie',
                 radius: '50%',
                 color: ['#6772e5', '#ff9e0f', '#fa755a', '#3ecf8e', '#82d3f4', '#ab47bc', '#525f7f', '#f51c47', '#26A69A'],
-                data: [{"name":"gdb","value":1},{"name":"Linux","value":4},{"name":"Makefile","value":1},{"name":"MYSQL","value":1},{"name":"线程进程","value":1},{"name":"线程进程","value":1},{"name":"多路IO","value":1}],
+                data: [{"name":"gdb","value":1},{"name":"Linux","value":4},{"name":"Makefile","value":1},{"name":"多路IO","value":1},{"name":"MYSQL","value":1},{"name":"线程进程","value":1},{"name":"线程进程","value":1}],
                 itemStyle: {
                     emphasis: {
                         shadowBlur: 10,
@@ -618,7 +618,7 @@
         xAxis: [
             {
                 type: 'category',
-                data: ["Linux","线程进程","gdb","Makefile","多线程","多进程","MYSQL","数据库","线程","进程"]
+                data: ["Linux","线程进程","gdb","IPC","进程间通信","Makefile","并发","select","poll","epoll"]
             }
         ],
         yAxis: [
@@ -757,54 +757,6 @@
             
             
             
-            <a href="/tags/%E7%BA%BF%E7%A8%8B%E8%BF%9B%E7%A8%8B/">
-                <span class="chip center-align waves-effect waves-light chip-default">线程进程</span>
-            </a>
-            
-            
-            
-            <a href="/tags/Makefile/">
-                <span class="chip center-align waves-effect waves-light chip-default">Makefile</span>
-            </a>
-            
-            
-            
-            <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">
-                <span class="chip center-align waves-effect waves-light chip-default">多线程</span>
-            </a>
-            
-            
-            
-            <a href="/tags/%E5%A4%9A%E8%BF%9B%E7%A8%8B/">
-                <span class="chip center-align waves-effect waves-light chip-default">多进程</span>
-            </a>
-            
-            
-            
-            <a href="/tags/MYSQL/">
-                <span class="chip center-align waves-effect waves-light chip-default">MYSQL</span>
-            </a>
-            
-            
-            
-            <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">
-                <span class="chip center-align waves-effect waves-light chip-default">数据库</span>
-            </a>
-            
-            
-            
-            <a href="/tags/%E7%BA%BF%E7%A8%8B/">
-                <span class="chip center-align waves-effect waves-light chip-default">线程</span>
-            </a>
-            
-            
-            
-            <a href="/tags/%E8%BF%9B%E7%A8%8B/">
-                <span class="chip center-align waves-effect waves-light chip-default">进程</span>
-            </a>
-            
-            
-            
             <a href="/tags/IPC/">
                 <span class="chip center-align waves-effect waves-light chip-default">IPC</span>
             </a>
@@ -813,6 +765,18 @@
             
             <a href="/tags/%E8%BF%9B%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1/">
                 <span class="chip center-align waves-effect waves-light chip-default">进程间通信</span>
+            </a>
+            
+            
+            
+            <a href="/tags/%E7%BA%BF%E7%A8%8B%E8%BF%9B%E7%A8%8B/">
+                <span class="chip center-align waves-effect waves-light chip-default">线程进程</span>
+            </a>
+            
+            
+            
+            <a href="/tags/Makefile/">
+                <span class="chip center-align waves-effect waves-light chip-default">Makefile</span>
             </a>
             
             
@@ -841,8 +805,44 @@
             
             
             
+            <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">
+                <span class="chip center-align waves-effect waves-light chip-default">多线程</span>
+            </a>
+            
+            
+            
+            <a href="/tags/%E5%A4%9A%E8%BF%9B%E7%A8%8B/">
+                <span class="chip center-align waves-effect waves-light chip-default">多进程</span>
+            </a>
+            
+            
+            
+            <a href="/tags/MYSQL/">
+                <span class="chip center-align waves-effect waves-light chip-default">MYSQL</span>
+            </a>
+            
+            
+            
+            <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">
+                <span class="chip center-align waves-effect waves-light chip-default">数据库</span>
+            </a>
+            
+            
+            
             <a href="/tags/%E4%BF%A1%E5%8F%B7/">
                 <span class="chip center-align waves-effect waves-light chip-default">信号</span>
+            </a>
+            
+            
+            
+            <a href="/tags/%E7%BA%BF%E7%A8%8B/">
+                <span class="chip center-align waves-effect waves-light chip-default">线程</span>
+            </a>
+            
+            
+            
+            <a href="/tags/%E8%BF%9B%E7%A8%8B/">
+                <span class="chip center-align waves-effect waves-light chip-default">进程</span>
             </a>
             
             
@@ -964,7 +964,7 @@
         <div class="col s12 m8 l8 copy-right">
             Copyright&nbsp;&copy;
             
-                <span id="year">2020-2021</span>
+                <span id="year">2020-2022</span>
             
             <span id="year">2020</span>
             <a href="/about" target="_blank">AlanChan</a>

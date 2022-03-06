@@ -210,1203 +210,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Linux下线程的使用</title>
-    <url>/2021/06/25/linuxPthread/</url>
-    <content><![CDATA[<h1 id="Linux下线程的使用"><a href="#Linux下线程的使用" class="headerlink" title="Linux下线程的使用"></a>Linux下线程的使用</h1><h2 id="1、Linux线程"><a href="#1、Linux线程" class="headerlink" title="1、Linux线程"></a>1、Linux线程</h2><ul>
-<li><p>在早期的类Unix系统中是没有“线程”概念的，这是后面需求的才延伸出来的，它借助了进程机制实现出了线程的概念。因此在这类系统中，进程和线程关系密切。在Linux环境下的线程本质上还是进程，属于轻量级的进程（LWP：light weight process）。</p>
-</li>
-<li><p>实际上，无论是创建进程的fork，还是创建线程的pthread_create，底层实现都是调用同一个内核函数clone。</p>
-</li>
-<li>fork复制对方的地址空间，产生一个“进程”；pthread_create共享对方的地址空间，就产生一个“线程”。</li>
-</ul>
-<h2 id="2、Linux线程创建"><a href="#2、Linux线程创建" class="headerlink" title="2、Linux线程创建"></a>2、Linux线程创建</h2><blockquote>
-<p>使用下面所有的线程相关函数都必须做的工作：</p>
-<p>1、包含头文件  #include <pthread.h></p>
-<p>2、编译时链接线程库(线程库的名字叫pthread, 全名: libpthread.so libptread.a) -pthread</p>
-</blockquote>
-<h3 id="2-1获取线程ID（对应进程中-getpid-函数）"><a href="#2-1获取线程ID（对应进程中-getpid-函数）" class="headerlink" title="2.1获取线程ID（对应进程中 getpid() 函数）"></a>2.1获取线程ID（对应进程中 getpid() 函数）</h3><p>每一个线程都对应一个唯一的线程 ID（两个进程间，线程ID允许相同），ID 类型为 pthread_t，这个 ID 是一个无符号长整形数(%lu)，如果想要获取当前线程的线程 ID，可以调用如下函数：</p>
-<pre class=" language-lang-c"><code class="language-lang-c">pthread_t pthread_self(void);    // 返回当前线程的线程ID，man说这个函数总会执行成功
-</code></pre>
-<h3 id="2-2创建线程函数（对应进程中fork-函数）"><a href="#2-2创建线程函数（对应进程中fork-函数）" class="headerlink" title="2.2创建线程函数（对应进程中fork() 函数）"></a>2.2创建线程函数（对应进程中fork() 函数）</h3><pre class=" language-lang-c"><code class="language-lang-c">int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_routine) (void *), void *arg);
-</code></pre>
-<ul>
-<li><p>参数：</p>
-<ul>
-<li>thread：传出参数，创建成功时保存系统为我们分配好的线程ID。</li>
-<li>attr：通常传NULL，表示使用线程默认属性。也可自行修改。</li>
-<li>start_routine：函数指针，指向线程任务函数(线程体)，该函数运行结束，则线程结束。该函数在子线程中执行。</li>
-<li>arg：通过它把需要传递的参数传递到start_routine指向的函数体内部，如要传多个参数, 可以用结构封装。</li>
-</ul>
-</li>
-<li><p>返回值：成功返回0； 失败返回错误号。具体错误可通过strerror()函数输出。</p>
-</li>
-</ul>
-<h3 id="2-3实例"><a href="#2-3实例" class="headerlink" title="2.3实例"></a>2.3实例</h3><pre class=" language-lang-c"><code class="language-lang-c">// my_pthread_create.c 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <pthread.h>
-
-struct Test
-&#123;
-    int num;
-    int age;
-&#125;;
-void * mytask(void * arg)
-&#123;
-    for (int i = 0; i < 5; i++)
-    &#123;
-        printf("子线程：i = %d\n", i);
-    &#125;
-    printf("子线程TID：%ld\n", pthread_self());
-
-    struct Test * pt = (struct Test *)arg;
-    pt->num = 1000;
-    pt->age = 99;
-
-    return NULL;
-&#125;
-int main()
-&#123;
-    pthread_t tid;
-    struct Test test;
-
-    pthread_create(&tid, NULL, mytask, &test);
-    printf("子线程创建成功, 线程TID: %ld\n", tid);
-    printf("主线程TID：%ld\n", pthread_self());
-
-    return 0;
-&#125;
-</code></pre>
-<p>执行命令编译程序，<code>-lpthread</code>的意思是链接<code>pthread</code>线程库，要用线程相关函数除了包含头文件<code>#include &lt;pthread.h&gt;</code>以外，编译的时候还得指定链接线程库，否则编译失败。<code>-o app</code>的意思是指定输出的可执行文件名为<code>app</code>。</p>
-<pre class=" language-lang-shell"><code class="language-lang-shell">gcc my_pthread_create.c -lpthread -o app
-</code></pre>
-<pre class=" language-lang-shell"><code class="language-lang-shell">root@iZwz94euuu9omhoocm3l5uZ:~/07_article# gcc my_pthread_create.c -lpthread -o app
-root@iZwz94euuu9omhoocm3l5uZ:~/07_article# ls
-app  my_pthread_create.c
-root@iZwz94euuu9omhoocm3l5uZ:~/07_article# ./app 
-子线程创建成功, 线程TID: 139769949230848
-主线程TID：139769949235008
-root@iZwz94euuu9omhoocm3l5uZ:~/07_article#
-</code></pre>
-<p>编译执行后发现子线程虽然创建成功，但是子线程任务函数里面的打印并没有输出，原因是：</p>
-<p>主线程一直在运行，执行期间创建出了子线程，接下来主线程和子线程“并发”，分道扬镳，各自执行自己的函数。子线程刚被创建出来，需要去抢CPU时间片，抢到了CPU时间片子线程的任务函数才能运行。</p>
-<p>很明显，此时此刻，子线程并没有抢到CPU时间片，而主线程却抢到了。然后主线程去执行printf，执行完后发现没有工作要做了就直接返回退出了。</p>
-<p>但主线程退出了, 虚拟地址空间就被释放了, 子线程就一并被销毁了，这样子线程任务函数里的printf就肯定没法运行了。</p>
-<h2 id="3、Linux线程退出"><a href="#3、Linux线程退出" class="headerlink" title="3、Linux线程退出"></a>3、Linux线程退出</h2><p>在多线程进程中，要让主线程退出不导致虚拟地址空间的释放，剩下的子线程继续正常运行，可以在主线程中调用线程退出函数。线程退出函数会让当前线程马上退出，而且不会释放虚拟地址空间，不会影响到其他线程的正常运行。线程退出函数可以在子线程或者主线程中都使用。</p>
-<h3 id="3-1线程退出函数"><a href="#3-1线程退出函数" class="headerlink" title="3.1线程退出函数"></a>3.1线程退出函数</h3><pre class=" language-lang-c"><code class="language-lang-c">void pthread_exit(void *retval);
-</code></pre>
-<ul>
-<li>参数：线程退出的时候携带的数据，当前子线程的主线程会得到该数据。如果不需要使用，指定为 NULL。一般使用的这个线程退出带出数据的功能的时候，需要在线程创建的时候把一块堆内存的指针传进去。</li>
-</ul>
-<h3 id="3-2实例"><a href="#3-2实例" class="headerlink" title="3.2实例"></a>3.2实例</h3><pre class=" language-lang-c"><code class="language-lang-c">#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <pthread.h>
-
-struct Test
-&#123;
-    int num;
-    int age;
-&#125;;
-void * mytask(void * arg)
-&#123;
-    for (int i = 0; i < 10; i++)
-    &#123;
-        printf("子线程：i = %d\n", i);
-        if(i == 7)
-        &#123;
-            pthread_exit(NULL); // 直接退出子线程
-        &#125;
-    &#125;
-    printf("子线程TID：%ld\n", pthread_self());
-
-    struct Test * pt = (struct Test *)arg;
-    pt->num = 1000;
-    pt->age = 99;
-
-    return NULL;
-&#125;
-int main()
-&#123;
-    pthread_t tid;
-    struct Test test;
-
-    pthread_create(&tid, NULL, mytask, &test);
-    printf("子线程创建成功, 线程TID: %ld\n", tid);
-    printf("主线程TID：%ld\n", pthread_self());
-
-    pthread_exit(NULL); // 主线程退出，不会释放虚拟地址空间，不影响子线程运行
-    return 0;
-&#125;
-</code></pre>
-<p>编译执行结果：</p>
-<pre class=" language-lang-shell"><code class="language-lang-shell">root@iZwz94euuu9omhoocm3l5uZ:~/07_article# gcc my_pthread_create.c -lpthread -o app
-root@iZwz94euuu9omhoocm3l5uZ:~/07_article# ./app 
-子线程创建成功, 线程TID: 139901666547456
-主线程TID：139901666551616
-子线程：i = 0
-子线程：i = 1
-子线程：i = 2
-子线程：i = 3
-子线程：i = 4
-子线程：i = 5
-子线程：i = 6
-子线程：i = 7
-root@iZwz94euuu9omhoocm3l5uZ:~/07_article#
-</code></pre>
-<p>上面的程序执行结果说明，主线程执行<code>printf</code>就先退出了，此时虚拟地址空间还没有被释放，子线程继续执行<code>printf</code>，直到子线程执行到<code>pthread_exit</code>子线程就退出了，然后虚拟地址空间被释放，进程退出。</p>
-<h2 id="4、Linux线程回收"><a href="#4、Linux线程回收" class="headerlink" title="4、Linux线程回收"></a>4、Linux线程回收</h2><p>子线程在一般情况下都是由主线程创建并启动的，如果子线程相对主线程而言要进行大量的耗时的运算，那么主线程就会先于子线程结束，就好比如<code>3.2实例</code>。但是如果主线程处理完其他的事务后，需要用到子线程的处理结果，也就是主线程需要等待子线程执行完成之后再结束线程和进程，这种情况该怎么处理呢？</p>
-<p>这就是线程回收函数 <code>pthread_join</code>的应用场景了，这个函数是一个阻塞函数，如果子线程还在运行，该函数就会一直阻塞，子线程退出函数解除阻塞进行资源的回收。函数被调用一次，只能回收一个子线程，如果有多个子线程则需要循环进行回收。</p>
-<h3 id="4-1线程回收函数（对应进程中-waitpid-函数）"><a href="#4-1线程回收函数（对应进程中-waitpid-函数）" class="headerlink" title="4.1线程回收函数（对应进程中 waitpid() 函数）"></a>4.1线程回收函数（对应进程中 waitpid() 函数）</h3><pre class=" language-lang-c"><code class="language-lang-c">// 这是一个阻塞函数, 由主线程调用，然后就阻塞在这，直到thread子线程退出，然后返回。
-// 回收对应的子线程资源
-int pthread_join(pthread_t thread, void **retval);
-</code></pre>
-<ul>
-<li>参数：<ul>
-<li>thread：要被回收的子线程的线程 ID</li>
-<li>retval：被回收的子线程通过它传出 <code>pthread_exit</code>的参数，即要传出的数据。</li>
-</ul>
-</li>
-</ul>
-<h3 id="4-2实例"><a href="#4-2实例" class="headerlink" title="4.2实例"></a>4.2实例</h3><pre class=" language-lang-c"><code class="language-lang-c">#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <pthread.h>
-
-struct Test
-&#123;
-    int num;
-    int age;
-&#125;;
-void * mytask(void * arg)
-&#123;
-    struct Test * pt = (struct Test *)arg;
-    pt->num = 1000;
-    pt->age = 99;
-    for (int i = 0; i < 10; i++)
-    &#123;
-        printf("子线程：i = %d\n", i);
-        if(i == 7)
-        &#123;
-            pthread_exit(pt); // 直接退出子线程
-        &#125;
-    &#125;
-    printf("子线程TID：%ld\n", pthread_self());
-
-    return NULL;
-&#125;
-int main()
-&#123;
-    pthread_t tid;
-    struct Test test;
-
-    // 子线程用到了主线程的栈空间test，所以主线程必须等子线程退出后再退出
-    pthread_create(&tid, NULL, mytask, &test);
-    printf("子线程创建成功, 线程TID: %ld\n", tid);
-    printf("主线程TID：%ld\n", pthread_self());
-
-    void* ptr = NULL;
-    // ptr是一个传出参数, 子线程回收资源被存放在此
-    // 这个内存地址就是pthread_exit() 参数指向的内存
-    // 阻塞等待子线程退出
-    pthread_join(tid, &ptr);
-
-    struct Test* tmp = (struct Test*)ptr;
-    printf("子线程返回数据: age: %d, num: %d\n", tmp->age, tmp->num);
-    printf("子线程资源被成功回收...\n");
-
-    return 0;
-&#125;
-</code></pre>
-<p>编译执行结果：</p>
-<pre class=" language-lang-shell"><code class="language-lang-shell">root@iZwz94euuu9omhoocm3l5uZ:~/07_article# gcc my_pthread_create.c -lpthread -o app
-root@iZwz94euuu9omhoocm3l5uZ:~/07_article# ./app 
-子线程创建成功, 线程TID: 140123287721728
-主线程TID：140123287725888
-子线程：i = 0
-子线程：i = 1
-子线程：i = 2
-子线程：i = 3
-子线程：i = 4
-子线程：i = 5
-子线程：i = 6
-子线程：i = 7
-子线程返回数据: age: 99, num: 1000
-子线程资源被成功回收...
-root@iZwz94euuu9omhoocm3l5uZ:~/07_article#
-</code></pre>
-<p>注意：虽然每个线程都有属于自己的栈区空间，但是位于同一个地址空间的多个线程是可以相互访问对方的栈空间上的数据的。当然，线程创建函数<code>pthread_create</code>的参数<code>arg</code>也可以是全局变量或者堆存的内存。</p>
-<h2 id="5、Linux线程分离"><a href="#5、Linux线程分离" class="headerlink" title="5、Linux线程分离"></a>5、Linux线程分离</h2><p>有时候，进程中的主线程也有自己的业务处理流程，如果还是让主线程负责子线程的资源回收，调用 <code>pthread_join</code>后，只要子线程不退出主线程就会一直被阻塞，主线程就没办法执行自己的业务处理流程了。</p>
-<p>这就是线程分离函数<code>pthread_detach</code>的应用场景了，调用线程分离函数之后指定的子线程就可以和主线程分离，当子线程退出的时候，其占用的内核资源会被系统的其他进程接管并回收了。线程分离之后在主线程中使用 <code>pthread_join</code>是回收不到子线程资源了的。</p>
-<h3 id="5-1线程分离函数"><a href="#5-1线程分离函数" class="headerlink" title="5.1线程分离函数"></a>5.1线程分离函数</h3><pre class=" language-lang-c"><code class="language-lang-c">int pthread_detach(pthread_t thread);
-</code></pre>
-<ul>
-<li><p>参数：</p>
-<ul>
-<li>thread：要与主线程分离的子线程的线程ID。</li>
-</ul>
-</li>
-<li><p>返回值：成功返回0，失败返回错误码。</p>
-</li>
-</ul>
-<h3 id="5-2实例"><a href="#5-2实例" class="headerlink" title="5.2实例"></a>5.2实例</h3><pre class=" language-lang-c"><code class="language-lang-c">#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <pthread.h>
-
-void * mytask(void * arg)
-&#123;
-
-    for (int i = 0; i < 10; i++)
-    &#123;
-        printf("子线程：i = %d\n", i);
-
-    &#125;
-    printf("子线程TID：%ld\n", pthread_self());
-
-    return NULL;
-&#125;
-int main()
-&#123;
-    pthread_t tid;
-
-    pthread_create(&tid, NULL, mytask, NULL);
-    printf("子线程创建成功, 线程TID: %ld\n", tid);
-    printf("主线程TID：%ld\n", pthread_self());
-
-    // 主线程子线程分离
-    pthread_detach(tid);
-
-    // 主线程你自己先退出吧，不用管我，我一个“人”很好
-    pthread_exit(NULL);
-
-    return 0;
-&#125;
-</code></pre>
-<p>程序编译运行结果：</p>
-<pre class=" language-lang-shell"><code class="language-lang-shell">root@iZwz94euuu9omhoocm3l5uZ:~/07_article# gcc my_pthread_create.c -lpthread -o app
-root@iZwz94euuu9omhoocm3l5uZ:~/07_article# ./app 
-子线程创建成功, 线程TID: 139791846512384
-主线程TID：139791846516544
-子线程：i = 0
-子线程：i = 1
-子线程：i = 2
-子线程：i = 3
-子线程：i = 4
-子线程：i = 5
-子线程：i = 6
-子线程：i = 7
-子线程：i = 8
-子线程：i = 9
-子线程TID：139791846512384
-root@iZwz94euuu9omhoocm3l5uZ:~/07_article#
-</code></pre>
-<h2 id="6、Linux其它线程函数"><a href="#6、Linux其它线程函数" class="headerlink" title="6、Linux其它线程函数"></a>6、Linux其它线程函数</h2><h3 id="6-1线程取消函数（对应进程中-kill-函数）"><a href="#6-1线程取消函数（对应进程中-kill-函数）" class="headerlink" title="6.1线程取消函数（对应进程中 kill() 函数）"></a>6.1线程取消函数（对应进程中 kill() 函数）</h3><p>杀死（取消）线程 其作用。但不会立刻杀死（取消）进程，只有当<code>thread</code>进行了一次系统调用（从用户区切换到内核区），才会死掉。</p>
-<pre class=" language-lang-c"><code class="language-lang-c">int pthread_cancel(pthread_t thread);
-</code></pre>
-<ul>
-<li><p>参数：</p>
-<ul>
-<li>thread：要杀死（取消）线程的线程ID。</li>
-</ul>
-</li>
-<li><p>返回值：成功返回0，失败返回错误码。</p>
-</li>
-</ul>
-<h3 id="6-2线程ID是否相同函数"><a href="#6-2线程ID是否相同函数" class="headerlink" title="6.2线程ID是否相同函数"></a>6.2线程ID是否相同函数</h3><pre class=" language-lang-c"><code class="language-lang-c">int pthread_equal(pthread_t t1, pthread_t t2);
-</code></pre>
-<ul>
-<li><p>参数：两个要比较的线程ID。</p>
-</li>
-<li><p>返回值：两个线程 ID 相等返回非 0 值，如果不相等返回 0。</p>
-</li>
-</ul>
-<h2 id="7、埋个坑"><a href="#7、埋个坑" class="headerlink" title="7、埋个坑"></a>7、埋个坑</h2><ol>
-<li>多线程的同步与互斥使用</li>
-<li>线程池</li>
-<li>高并发</li>
-</ol>
-]]></content>
-      <categories>
-        <category>Linux</category>
-        <category>线程进程</category>
-      </categories>
-      <tags>
-        <tag>Linux</tag>
-        <tag>线程进程</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>基本的Makefile使用</title>
-    <url>/2021/07/07/makefile-simple/</url>
-    <content><![CDATA[<h1 id="Makefile"><a href="#Makefile" class="headerlink" title="Makefile"></a>Makefile</h1><h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p>makefile是一个代码管理工具，它定义了一系列的规则来指定那些文件需要先编译，哪些文件需要后编译，哪些文件需要重新编译。</p>
-<p>最大的好处就是，只要把makefile写好，然后执行一个make命令就完成所有的编译了。</p>
-<p>不然每次编译都要敲一大串命令，很容易把我们累死。例如：</p>
-<pre class=" language-lang-shell"><code class="language-lang-shell">gcc *.c -Include ./ -Wall -g -O3 -D DEBUG -L
-</code></pre>
-<h2 id="makefile的命名"><a href="#makefile的命名" class="headerlink" title="makefile的命名"></a>makefile的命名</h2><p>makefile命名只有两种情况，任选其一即可：makefile、Makefile。</p>
-<h2 id="makefile的规则"><a href="#makefile的规则" class="headerlink" title="makefile的规则"></a>makefile的规则</h2><p>规则中的三要素：目标，依赖，规则。一条规则的形式如下：</p>
-<blockquote>
-<p>目标：依赖条件</p>
-<p>​    命令</p>
-</blockquote>
-<p>注意命令前面必须是一个Table缩进。</p>
-<p>如果makefile中有多条规则，则默认第一条规则中的目标是我们的终极目标。makefile向下检索，构建出一颗关系树，从下往上执行命令。</p>
-<p>make命令生成的目标都是终极目标。</p>
-<p><img src="https://i.loli.net/2021/07/07/5IrjAsQVm8TaPDC.png" alt="makefile工作原理.png"></p>
-<p>例子：</p>
-<pre class=" language-lang-makefile"><code class="language-lang-makefile">main:main.c sub.c add.c
-    gcc main.c sub.c add.c -o main
-</code></pre>
-<p>可见，目标就是我们想要生成的文件，依赖就是我们的源文件，命令就是我们用依赖生成目标的命令，例如这里的就是gcc编译的命令。</p>
-<p>上面例子是makefile和main.c 、sub.c、add.c是处于同一目录下的，如果不处于同一目录，需要显示指出源文件的目录。</p>
-<h2 id="makefile的分文件编译"><a href="#makefile的分文件编译" class="headerlink" title="makefile的分文件编译"></a>makefile的分文件编译</h2><p>当一个项目的源文件很多很多时，需要对文件的进行分文件编译，否则修改了其中一个源文件，就会导致整个项目的源文件都重新编译了一次，浪费时间。</p>
-<pre class=" language-lang-makefile"><code class="language-lang-makefile">main:main.o sub.o add.o
-    gcc main.o sub.o add.o
-
-main.o:main.c
-    gcc -c main.c
-
-sub.o:sub.c
-    gcc -c sub.c
-
-add.o:add.c
-    gcc -c add.c
-</code></pre>
-<h2 id="makefile的变量"><a href="#makefile的变量" class="headerlink" title="makefile的变量"></a>makefile的变量</h2><p>makefile定义变量不需要数据类型，直接定义即可，但要取变量里的内容则需在其前加<code>$</code>符号，一般也会将变量用<code>()</code>括起来。</p>
-<pre class=" language-lang-makefile"><code class="language-lang-makefile">obj = main.o sub.o add.o
-target = main
-
-$(target):$(obj)
-    gcc $(obj) -o $(target)
-
-main.o:main.c
-    gcc -c main.c
-
-sub.o:sub.c
-    gcc -c sub.c
-
-add.o:add.c
-    gcc -c add.c
-</code></pre>
-<h2 id="makefile的自动变量"><a href="#makefile的自动变量" class="headerlink" title="makefile的自动变量"></a>makefile的自动变量</h2><p>%&lt;：规则中的第一个依赖</p>
-<p>%@：规则中的目标</p>
-<p>%^：规则中的所有依赖</p>
-<p><strong>只能在规则中的命令使用。</strong></p>
-<h2 id="makefile的“-”"><a href="#makefile的“-”" class="headerlink" title="makefile的“=”"></a>makefile的“=”</h2><div class="table-container">
-<table>
-<thead>
-<tr>
-<th>符号</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>=</td>
-<td>最基本的赋值</td>
-</tr>
-<tr>
-<td>:=</td>
-<td>覆盖之前的值</td>
-</tr>
-<tr>
-<td>?=</td>
-<td>如果没有被赋值过就赋予等号后面的值</td>
-</tr>
-<tr>
-<td>+=</td>
-<td>添加等号后面的值</td>
-</tr>
-</tbody>
-</table>
-</div>
-<h2 id="makefile的模式规则"><a href="#makefile的模式规则" class="headerlink" title="makefile的模式规则"></a>makefile的模式规则</h2><p>在规则的目标定义使用%，在规则的依赖条件使用%。</p>
-<pre class=" language-lang-makefile"><code class="language-lang-makefile">obj = main.o sub.o add.o
-target = main
-
-$(target):$(obj)
-    gcc $(obj) -o $(target)
-
-%.o:%.c
-    gcc -c $< -o $@
-</code></pre>
-<p>%.o:%.c 相当于 main.o:main.c、sub.0:sub.c、add.o:add.c。模式规则会帮我们自动匹配上。</p>
-<h2 id="makefile自己维护的变量"><a href="#makefile自己维护的变量" class="headerlink" title="makefile自己维护的变量"></a>makefile自己维护的变量</h2><p>特征：通常变量名全大写</p>
-<p>CC：默认值为cc，cc其实也就是gcc。</p>
-<p>CPPFLAGS：预处理的时候使用的参数。例如：</p>
-<p><code>CPPFLAGS = -I</code>预处理的时候指定头文件路径。</p>
-<p>CFLAGS：编译的时候使用的参数。例如：</p>
-<p><code>CFLAGS = -Wall -g -c</code>编译的时候显示警告、加入调试信息、只编译</p>
-<p>LDFLAGS：链接库的时候使用的选项。</p>
-<p><code>LDFLAGS = -L -l</code>链接库的时候指定库路径、库名。</p>
-<pre class=" language-lang-makefile"><code class="language-lang-makefile">obj = main.o sub.o add.o
-target = main
-CC = gcc
-CPPFLAGS = -I
-$(target):$(obj)
-    $(CC) $(obj) -o $(target)
-
-%.o:%.c
-    $(CC) -c $< -o $@
-</code></pre>
-<h2 id="makefile的函数"><a href="#makefile的函数" class="headerlink" title="makefile的函数"></a>makefile的函数</h2><p>makefile中使用的所有函数都是有返回值的，函数名与参数通过空格分开，参数与参数之间通过逗号分开。</p>
-<p>$(wildcard <pattern>…)</p>
-<p>$(patsubst <pattern>,<replacement>,<text>)</p>
-<p>一般这两个函数结合使用。wildcard 通过通配符找到相关的.c源文件，返回它们的字符串，再通过 patsubst 模式替换将.c源文件的名称的字符串替换成对应的.o目标文件。</p>
-<pre class=" language-lang-makefile"><code class="language-lang-makefile">target = main
-src = $(wildcard ./*.c)
-obj = $(patsubst ./%.c, ./%.o, $(src))
-CC = gcc
-CPPFLAGS = -I
-$(target):$(obj)
-    $(CC) $(obj) -o $(target)
-
-%.o:%.c
-    $(CC) -c $< -o $@
-</code></pre>
-<h2 id="clean"><a href="#clean" class="headerlink" title="clean"></a>clean</h2><p>伪目标，没有依赖。用于删除所有被 make 创建的文件。</p>
-<pre class=" language-lang-makefile"><code class="language-lang-makefile">target = main
-src = $(wildcard ./*.c)
-obj = $(patsubst ./%.c, ./%.o, $(src))
-CC = gcc
-CPPFLAGS = -I
-$(target):$(obj)
-    $(CC) $(obj) -o $(target)
-
-%.o:%.c
-    $(CC) -c $< -o $@
-
-.PHONY:clean
-clean:
-    -rm $(target) $(obj) -f
-</code></pre>
-<p>-：如果出错，忽略当前命令，继续向下执行下面的命令。</p>
-<p>-f：强制执行，不管有没有对应的文件都删除。</p>
-<p>.PHONY:clean：声明clean为伪目标。</p>
-]]></content>
-      <categories>
-        <category>Makefile</category>
-      </categories>
-      <tags>
-        <tag>Linux</tag>
-        <tag>Makefile</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>多进程、线程并发服务器</title>
-    <url>/2021/07/05/multi-proc-pthread-server/</url>
-    <content><![CDATA[<h1 id="多进程、线程并发服务器"><a href="#多进程、线程并发服务器" class="headerlink" title="多进程、线程并发服务器"></a>多进程、线程并发服务器</h1><h2 id="多进程并发服务器"><a href="#多进程并发服务器" class="headerlink" title="多进程并发服务器"></a>多进程并发服务器</h2><h3 id="server-c"><a href="#server-c" class="headerlink" title="server.c"></a>server.c</h3><pre class=" language-lang-c"><code class="language-lang-c">#include <stdio.h>
-#include <arpa/inet.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <strings.h>
-#include <unistd.h>
-#include <signal.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-
-#include "wrap.h"
-#define SERV_PORT 8888
-
-void wait_chld(int signo)
-&#123;
-  while(waitpid(0, NULL, WNOHANG) > 0); // 0：回收属于同一进程组的所有子进程， WNOHANG：不阻塞
-  return;
-&#125;
-
-int main(void)
-&#123;
-        pid_t pid;
-        int i, n;
-        int lfd, cfd;
-        struct sockaddr_in serv_addr, clie_addr;
-        socklen_t clie_addr_len;
-        char buf[1024] = &#123;0&#125;;
-        char clientip[1024] = &#123;0&#125;;
-        lfd = Socket(AF_INET, SOCK_STREAM, 0);
-
-        bzero(&serv_addr, sizeof(serv_addr));
-
-        serv_addr.sin_family = AF_INET;
-        serv_addr.sin_port = htons(SERV_PORT);
-        serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-        //inet_pton(AF_INET, "192.168.10.100", &serv_addr.sin_addr.s_addr);
-        Bind(lfd, (const struct sockaddr *)&serv_addr, (socklen_t)sizeof(serv_addr));
-
-        Listen(lfd, 128); // 操作系统运行最大监听数为128
-
-        while(1)
-        &#123;
-                clie_addr_len = sizeof(clie_addr);
-                cfd = Accept(lfd, (struct sockaddr *)&clie_addr, &clie_addr_len);
-                printf("client ip:%s, port:%d\n", inet_ntop(AF_INET, &clie_addr.sin_addr.s_addr, clientip, sizeof(clientip)),
-                                ntohs(clie_addr.sin_port));
-
-                pid = fork();
-                if(pid < 0)
-                &#123;
-                        perror("fork error");
-                        exit(1);
-                &#125;
-                else if(pid == 0)
-                &#123;
-                        close(lfd);
-                        break;
-                &#125;
-                else
-                &#123;
-                        close(cfd);
-                        signal(SIGCHLD, wait_chld);
-                &#125;
-        &#125;
-
-        if(pid == 0)
-        &#123;
-                while(1)
-                &#123;
-                        n = Read(cfd, buf, sizeof(buf));
-                        if(n == 0) // 0表示对方连接断开
-                        &#123;
-                                close(cfd);
-                                return 0;
-                        &#125;
-                        else if(n == -1)
-                        &#123;
-                                perror("read error");
-                                exit(1);
-                        &#125;
-                        else
-                        &#123;
-                                for(i = 0; i < n; i++)
-                                &#123;
-                                        buf[i] = toupper(buf[i]);
-                                &#125;
-                                write(cfd, buf, n);
-                                write(STDOUT_FILENO, buf, n);
-                        &#125;
-                &#125;
-        &#125;
-        return 0;
-&#125;
-</code></pre>
-<h3 id="wrap-c"><a href="#wrap-c" class="headerlink" title="wrap.c"></a>wrap.c</h3><pre class=" language-lang-c"><code class="language-lang-c">#include <stdio.h>
-#include <wrap.h>
-#include <unistd.h>
-#include <errno.h>
-void err_sys(const char* x)
-&#123;
-    perror(x);
-    exit(1);
-&#125;
-
-int Socket(int domain, int type, int protocol)
-&#123;
-  int n;
-  if ((n = socket(domain, type, protocol)) < 0)
-    err_sys("socket error");
-  return (n);
-&#125;
-
-int Bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
-&#123;
-  int n;
-  if ((n = bind(sockfd, addr, addrlen)) < 0)
-    err_sys("bind error");
-  return (n);
-
-&#125;
-
-int Listen(int sockfd, int backlog)
-&#123;
-  int n;
-  if ((n = listen(sockfd, backlog)) < 0)
-    err_sys("listen error");
-  return (n);
-
-&#125;
-
-int Accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen)
-&#123;
-  int n;
-
-  do &#123;
-
-    if ((n = accept(sockfd, addr, addrlen)) < 0)
-    &#123;
-      if((errno == ECONNABORTED) || (errno == EINTR))
-      &#123;
-
-      &#125;
-      else
-      &#123;
-        err_sys("accept error");
-        break;
-      &#125;
-    &#125;
-  &#125; while(n < 0);
-  return (n);
-
-&#125;
-
-int Connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
-&#123;
-  int n;
-  if ((n = connect(sockfd, addr, addrlen)) < 0)
-    err_sys("connect error");
-  return (n);
-
-&#125;
-
-ssize_t Read(int fd, void *buf, size_t count)
-&#123;
-  ssize_t n;
-
-again:
-  if((n = read(fd, buf, count)) == -1)
-  &#123;
-    if(errno == EINTR)
-    &#123;
-      goto again;
-    &#125;
-    return -1;
-  &#125;
-
-  return n;
-&#125;
-
-ssize_t Write(int fd, const void *buf, size_t count)
-&#123;
-  ssize_t n;
-
-  do &#123;
-    if((n = write(fd, buf, count)) == -1)
-    &#123;
-      if(errno != EINTR)
-      &#123;
-        return -1;
-      &#125;
-    &#125;
-  &#125; while(n != -1);
-
-  return n;
-&#125;
-
-int Close(int fd)
-&#123;
-  int n;
-  if((n = close(fd)) == -1)
-      err_sys("connect error");
-  return n;
-&#125;
-
-ssize_t Readn(int fd, void *vptr, ssize_t n)
-&#123;
-  size_t nleft;   // unsigned int 剩余未读取的字节数
-  ssize_t nread;  // int 实际读到的字节数
-
-  const char *ptr = vptr;
-  nleft = n;      // n 未读取的字节数
-
-
-  while(nleft > 0)
-  &#123;
-    if((nread = read(fd, (void *)ptr, nleft)) < 0)
-    &#123;
-      if(errno == EINTR)
-        nread = 0;
-      else
-        return -1;
-    &#125;
-    else if(nread == 0)
-      break;
-
-    nleft -= nread;
-    ptr += nread;
-  &#125;
-
-  return n - nleft;
-&#125;
-
-ssize_t Writen(int fd, const void *vptr, size_t n)
-&#123;
-  size_t nleft;   // unsigned int 剩余未写出的字节数
-  ssize_t nwriten;  // int 实际写出的字节数
-
-  const char *ptr = vptr;
-  nleft = n;      // n 未写出的字节数
-
-
-  while(nleft > 0)
-  &#123;
-    if((nwriten = write(fd, ptr, nleft)) <= 0)
-    &#123;
-      if(errno == EINTR && nwriten < 0)
-        nwriten = 0;
-      else
-        return -1;
-    &#125;
-    else if(nwriten == 0)
-      break;
-
-    nleft -= nwriten;
-    ptr += nwriten;
-  &#125;
-
-  return n - nleft;
-
-&#125;
-</code></pre>
-<h3 id="wrap-h"><a href="#wrap-h" class="headerlink" title="wrap.h"></a>wrap.h</h3><pre class=" language-lang-c"><code class="language-lang-c">#ifndef __WRAP_H
-#define __WRAP_H
-
-#include <stdlib.h>
-#include <sys/types.h>          /* See NOTES */
-#include <sys/socket.h>
-
-#define offsetof(type, member) ((int)&((type *)0)->member)
-
-int Socket(int domain, int type, int protocol);
-int Bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
-int Listen(int sockfd, int backlog);
-int Accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
-int Connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
-ssize_t Read(int fd, void *buf, size_t count);
-ssize_t Write(int fd, const void *buf, size_t count);
-int Close(int fd);
-ssize_t Readn(int fd, void *vptr, ssize_t n);
-ssize_t Writen(int fd, const void *vptr, size_t n);
-
-#endif
-</code></pre>
-<h3 id="Makefile"><a href="#Makefile" class="headerlink" title="Makefile"></a>Makefile</h3><pre class=" language-lang-makefile"><code class="language-lang-makefile">all : server
-.PHONY : all
-
-src = $(wildcard ./*.c) # wildcard函数：显示指定路径下指定文件类型的所有文件
-obj = $(patsubst ./%.c, ./%.o, $(src)) # patsubst函数：.c 替换成 .o
-
-# LIBS := -lpthread
-CFLAGS = -I. -g -Wall
-CC = gcc
-CXX = g++
-
-server : $(obj)
-        $(CC) -o server $(obj) $(CFLAGS) $(LIBS)
-
-# $@  表示目标文件
-# $<  表示第一个依赖文件
-%.o : %.c
-        $(CC) -c $(CFLAGS) $< -o $@
-
-
-# -  即使出错也继续执行后面
-.PHONY : clean  # .PHONY 伪目标，有了这句，不管怎样都执行clean
-clean :
-        -$(RM) server  $(obj)
-</code></pre>
-<h2 id="多线程并发服务器"><a href="#多线程并发服务器" class="headerlink" title="多线程并发服务器"></a>多线程并发服务器</h2><h3 id="server-c-1"><a href="#server-c-1" class="headerlink" title="server.c"></a>server.c</h3><pre class=" language-lang-c"><code class="language-lang-c">#include <stdio.h>
-#include <arpa/inet.h>
-#include <ctype.h>
-#include <string.h>
-#include <unistd.h>
-#include <pthread.h>
-#include <fcntl.h>
-#include "wrap.h"
-
-#define MAXSIZE 8192
-#define SERV_PORT 8888
-// 定义i一个结构体，将结构体跟cfd捆绑
-struct s_info&#123;
-  struct sockaddr_in clieaddr;
-  int connfd;
-&#125;;
-
-
-void *dowork(void * arg)
-&#123;
-  int n, i;
-  struct s_info *ts = (struct s_info *)arg;
-  char buf[MAXSIZE] = &#123;0&#125;;
-  char str[INET_ADDRSTRLEN]; // #define INET_ADDRSRTLEN 16 可用"[+d"查看
-
-  while(1)
-  &#123;
-    n = Read(ts->connfd, buf, MAXSIZE);   // 读客户端
-    if(n == 0)
-    &#123;
-      printf("the client %d closed...\n", ts->connfd);
-      break; // 对端关闭连接
-    &#125;
-    printf("reaeived from %s at port %d",
-                    inet_ntop(AF_INET, &ts->clieaddr.sin_addr.s_addr, str, sizeof(str)),
-                    ntohs(ts->clieaddr.sin_port)); // 打印客户端信息
-
-    for(i = 0; i < n; i++)
-    &#123;
-      buf[i] = toupper(buf[i]);
-    &#125;
-
-    Write(STDOUT_FILENO, buf, n); // 打印到屏幕
-    Write(ts->connfd, buf, n);  // 回显给客户端
-
-  &#125;
-  Close(ts->connfd);
-  return (void *)0;
-&#125;
-
-int main(void)
-&#123;
-        int i;
-        int lfd, cfd;
-        struct sockaddr_in serv_addr, clie_addr;
-        socklen_t clie_addr_len;
-        pthread_t tid;
-        struct s_info ts[256]; // 根据最大线程数创建结数组
-        char clientip[256];
-
-        lfd = Socket(AF_INET, SOCK_STREAM, 0);
-
-        bzero(&serv_addr, sizeof(serv_addr));
-
-        serv_addr.sin_family = AF_INET;
-        serv_addr.sin_port = htons(SERV_PORT);
-        serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);  // 指定本地任意IP
-        //inet_pton(AF_INET, "192.168.10.100", &serv_addr.sin_addr.s_addr);
-        Bind(lfd, (const struct sockaddr *)&serv_addr, (socklen_t)sizeof(serv_addr));
-
-        Listen(lfd, 128); // 设置同一时刻连接服务器的上限，操作系统运行最大监听数为128
-
-        printf("Accepting client connect ...\n");
-        while(1)
-        &#123;
-                clie_addr_len = sizeof(clie_addr);
-                cfd = Accept(lfd, (struct sockaddr *)&clie_addr, &clie_addr_len); // 阻塞监听客户端连接请求
-                printf("client ip:%s, port:%d\n", inet_ntop(AF_INET, &clie_addr.sin_addr.s_addr, clientip, sizeof(clientip)),
-                                ntohs(clie_addr.sin_port));
-                ts[i].clieaddr = clie_addr;
-                ts[i].connfd = cfd;
-
-                /* 达到最大线程数时，pthread_create出错处理，增加系统服务稳定性*/
-                pthread_create(&tid, NULL, dowork, (void *)&ts[i]);
-                pthread_detach(tid); // 子线程分离，防止僵尸线程产生
-                i++;
-        &#125;
-        return 0;
-&#125;
-</code></pre>
-<h3 id="wrap-c-1"><a href="#wrap-c-1" class="headerlink" title="wrap.c"></a>wrap.c</h3><p>跟前面多进程版一致</p>
-<h3 id="wrap-h-1"><a href="#wrap-h-1" class="headerlink" title="wrap.h"></a>wrap.h</h3><p>跟前面多进程版一致</p>
-<h3 id="Makefile-1"><a href="#Makefile-1" class="headerlink" title="Makefile"></a>Makefile</h3><pre class=" language-lang-makefile"><code class="language-lang-makefile">all : server
-.PHONY : all
-
-src = $(wildcard ./*.c) # wildcard函数：显示指定路径下指定文件类型的所有文件
-obj = $(patsubst ./%.c, ./%.o, $(src)) # patsubst函数：.c 替换成 .o
-
-LIBS := -lpthread #相比多进程只是多了这一句，这句为链接线程库pthread
-CFLAGS = -I. -g -Wall
-CC = gcc
-CXX = g++
-
-server : $(obj)
-        $(CC) -o server $(obj) $(CFLAGS) $(LIBS)
-
-# $@  表示目标文件
-# $<  表示第一个依赖文件
-%.o : %.c
-        $(CC) -c $(CFLAGS) $< -o $@
-
-
-# -  即使出错也继续执行后面
-.PHONY : clean  # .PHONY 伪目标，有了这句，不管怎样都执行clean
-clean :
-        -$(RM) server  $(obj)
-</code></pre>
-]]></content>
-      <categories>
-        <category>Linux</category>
-      </categories>
-      <tags>
-        <tag>Linux</tag>
-        <tag>多线程</tag>
-        <tag>多进程</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>MYSQL数据库的基本操作</title>
-    <url>/2021/07/03/mysql/</url>
-    <content><![CDATA[<h1 id="MYSQL数据库的基本操作"><a href="#MYSQL数据库的基本操作" class="headerlink" title="MYSQL数据库的基本操作"></a>MYSQL数据库的基本操作</h1><h2 id="1、root登录mysql"><a href="#1、root登录mysql" class="headerlink" title="1、root登录mysql"></a>1、root登录mysql</h2><pre class=" language-lang-sql"><code class="language-lang-sql">mysql -uroot -p
-Enter password: *****
-Welcome to the MySQL monitor.  Commands end with ; or \g.
-Your MySQL connection id is 8
-Server version: 8.0.25 MySQL Community Server - GPL
-
-Copyright (c) 2000, 2021, Oracle and/or its affiliates.
-
-Oracle is a registered trademark of Oracle Corporation and/or its
-affiliates. Other names may be trademarks of their respective
-owners.
-
-Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
-</code></pre>
-<h2 id="2、查看数据库"><a href="#2、查看数据库" class="headerlink" title="2、查看数据库"></a>2、查看数据库</h2><pre class=" language-lang-sql"><code class="language-lang-sql">mysql> show databases;
-+--------------------+
-| Database           |
-+--------------------+
-| information_schema |
-| mysql              |
-| performance_schema |
-| sys                |
-+--------------------+
-</code></pre>
-<h2 id="3、查看表"><a href="#3、查看表" class="headerlink" title="3、查看表"></a>3、查看表</h2><pre class=" language-lang-sql"><code class="language-lang-sql">mysql> use mysql
-Database changed
-mysql> show tables;
-+------------------------------------------------------+
-| Tables_in_mysql                                      |
-+------------------------------------------------------+
-| columns_priv                                         |
-| component                                            |
-| db                                                   |
-| default_roles                                        |
-| engine_cost                                          |
-| func                                                 |
-| general_log                                          |
-| global_grants                                        |
-| gtid_executed                                        |
-| help_category                                        |
-| help_keyword                                         |
-| help_relation                                        |
-| help_topic                                           |
-| innodb_index_stats                                   |
-| innodb_table_stats                                   |
-| password_history                                     |
-| plugin                                               |
-| procs_priv                                           |
-| proxies_priv                                         |
-| replication_asynchronous_connection_failover         |
-| replication_asynchronous_connection_failover_managed |
-| role_edges                                           |
-| server_cost                                          |
-| servers                                              |
-| slave_master_info                                    |
-| slave_relay_log_info                                 |
-| slave_worker_info                                    |
-| slow_log                                             |
-| tables_priv                                          |
-| time_zone                                            |
-| time_zone_leap_second                                |
-| time_zone_name                                       |
-| time_zone_transition                                 |
-| time_zone_transition_type                            |
-| user                                                 |
-+------------------------------------------------------+
-</code></pre>
-<h2 id="4、退出数据库"><a href="#4、退出数据库" class="headerlink" title="4、退出数据库"></a>4、退出数据库</h2><pre class=" language-lang-sql"><code class="language-lang-sql">mysql> exit;
-Bye
-</code></pre>
-<h2 id="5、创建数据库"><a href="#5、创建数据库" class="headerlink" title="5、创建数据库"></a>5、创建数据库</h2><pre class=" language-lang-sql"><code class="language-lang-sql">mysql> create database mydb01;
-</code></pre>
-<h2 id="6、创建表"><a href="#6、创建表" class="headerlink" title="6、创建表"></a>6、创建表</h2><pre class=" language-lang-sql"><code class="language-lang-sql">mysql> create table employee(id int, name varchar(30), sex int, birthday date, salary double, entry_date date, resume text);
-</code></pre>
-<h2 id="7、创建表数据"><a href="#7、创建表数据" class="headerlink" title="7、创建表数据"></a>7、创建表数据</h2><pre class=" language-lang-sql"><code class="language-lang-sql">insert into employee values(1,'韩信',1,'1997-07-07',15000,'2020-02-02','突进刺客');
-insert into employee(id,name,sex,birthday,salary,entry_date,resume) values(2,'兰陵王',1,'1996-06-06',12000,'2020-01-01','脆皮刺客');
-insert into employee(id,name,sex,birthday,salary,entry_date,resume) values(3,'亚瑟',1,'1000-01-01',8000,'2020-10-01','前排坦克');
-</code></pre>
-<h2 id="查看表信息"><a href="#查看表信息" class="headerlink" title="查看表信息"></a>查看表信息</h2><pre class=" language-lang-sql"><code class="language-lang-sql">mysql> desc employee;
-+------------+-------------+------+-----+---------+-------+
-| Field      | Type        | Null | Key | Default | Extra |
-+------------+-------------+------+-----+---------+-------+
-| id         | int         | YES  |     | NULL    |       |
-| name       | varchar(30) | YES  |     | NULL    |       |
-| sex        | int         | YES  |     | NULL    |       |
-| birthday   | date        | YES  |     | NULL    |       |
-| salary     | double      | YES  |     | NULL    |       |
-| entry_date | date        | YES  |     | NULL    |       |
-| resume     | text        | YES  |     | NULL    |       |
-+------------+-------------+------+-----+---------+-------+
-</code></pre>
-<h2 id="8、查看表数据"><a href="#8、查看表数据" class="headerlink" title="8、查看表数据"></a>8、查看表数据</h2><pre class=" language-lang-sql"><code class="language-lang-sql">mysql> select * from employee;
-+------+--------+------+------------+--------+------------+----------+
-| id   | name   | sex  | birthday   | salary | entry_date | resume   |
-+------+--------+------+------------+--------+------------+----------+
-|    1 | 韩信   |    1 | 1997-07-07 |  15000 | 2020-02-02 | 突进刺客 |
-|    2 | 兰陵王 |    1 | 1996-06-06 |  12000 | 2020-01-01 | 脆皮刺客 |
-|    3 | 亚瑟   |    1 | 1000-01-01 |   8000 | 2020-10-01 | 前排坦克 |
-+------+--------+------+------------+--------+------------+----------+
-</code></pre>
-<h2 id="修改某个项的内容"><a href="#修改某个项的内容" class="headerlink" title="修改某个项的内容"></a>修改某个项的内容</h2><pre class=" language-lang-sql"><code class="language-lang-sql">mysql> update employee set resume='偷家小贼' where id=1;
-Query OK, 1 row affected (0.01 sec)
-
-mysql> select * from employee;
-+------+--------+------+------------+--------+------------+----------+
-| id   | name   | sex  | birthday   | salary | entry_date | resume   |
-+------+--------+------+------------+--------+------------+----------+
-|    1 | 韩信   |    1 | 1997-07-07 |  15000 | 2020-02-02 | 偷家小贼 |
-|    2 | 兰陵王 |    1 | 1996-06-06 |  12000 | 2020-01-01 | 脆皮刺客 |
-|    3 | 亚瑟   |    1 | 1000-01-01 |   8000 | 2020-10-01 | 前排坦克 |
-+------+--------+------+------------+--------+------------+----------+
-</code></pre>
-<h1 id="example"><a href="#example" class="headerlink" title="example"></a>example</h1><pre class=" language-lang-sql"><code class="language-lang-sql">create table students(id int, name varchar(20), chinese int, english int, math int);
-insert into students(id, name, chinese, english, math) values(1, '黄真', 80, 85, 90);
-insert into students(id, name, chinese, english, math) values(2, '归辛树', 90, 95, 95);
-insert into students(id, name, chinese, english, math) values(3, '李寻欢', 80, 96, 96);
-insert into students(id, name, chinese, english, math) values(4, '叶开', 81, 97, 85);
-insert into students(id, name, chinese, english, math) values(5, '袁承志', 85, 84, 90);
-insert into students(id, name, chinese, english, math) values(6, '何红药', 92, 85, 87);
-insert into students(id, name, chinese, english, math) values(7, '何铁手', 75, 81, 80);
-insert into students(id, name, chinese, english, math) values(8, '夏雪宜', 77, 80, 79);
-insert into students(id, name, chinese, english, math) values(9, '任我行', 95, 85, 85);
-insert into students(id, name, chinese, english, math) values(10, '岳不群', 94, 85, 84);
-
-
-增加一列：
-alter table students add class_id int;
-
-id <= 5 为1班， id > 5 为2班
-update students set class_id=1 where id <= 5;
-
-select ceil(id/5),id from students;
-
-update students set class_id=ceil(id/5);
-
-求平均
-select avg(english),class_id from students group by class_id;
-
-求和
-select sum(chinese+math+english), class_id from students group by class_id;
-+---------------------------+----------+
-| sum(chinese+math+english) | class_id |
-+---------------------------+----------+
-|                      1329 |        1 |
-|                      1264 |        2 |
-+---------------------------+----------+
-
-找到总分大于1300的
-select sum(chinese+english+math), class_id from students group by class_id having sum(chinese+english+math)>1300;
-+---------------------------+----------+
-| sum(chinese+english+math) | class_id |
-+---------------------------+----------+
-|                      1329 |        1 |
-+---------------------------+----------+
-
-查看当前时间
-select now() from dual;
-+---------------------+
-| now()               |
-+---------------------+
-| 2021-06-19 14:44:07 |
-+---------------------+
-
-
-select now()-1,now(),now()+1 from dual;
-+----------------+---------------------+----------------+
-| now()-1        | now()               | now()+1        |
-+----------------+---------------------+----------------+
-| 20210619164648 | 2021-06-19 16:46:49 | 20210619164650 |
-+----------------+---------------------+----------------+
-
-
-求今天、昨天、明天
-select date_add(now(), interval -1 day), now(), date_add(now(), interval 1 day) from dual;
-+----------------------------------+---------------------+---------------------------------+
-| date_add(now(), interval -1 day) | now()               | date_add(now(), interval 1 day) |
-+----------------------------------+---------------------+---------------------------------+
-| 2021-06-18 16:53:37              | 2021-06-19 16:53:37 | 2021-06-20 16:53:37             |
-+----------------------------------+---------------------+---------------------------------+
-1 row in set (0.07 sec)
-
-select addtime(now(),'0:1:0'),now() from dual;
-+------------------------+---------------------+
-| addtime(now(),'0:1:0') | now()               |
-+------------------------+---------------------+
-| 2021-06-19 17:00:34    | 2021-06-19 16:59:34 |
-+------------------------+---------------------+
-
-字符串
-select concat('hello ', 'mysql', 'yyds', '123.') from dual;
-+-------------------------------------------+
-| concat('hello ', 'mysql', 'yyds', '123.') |
-+-------------------------------------------+
-| hello mysqlyyds123.                       |
-+-------------------------------------------+
-1 row in set (0.00 sec)
-</code></pre>
-]]></content>
-      <categories>
-        <category>MYSQL</category>
-      </categories>
-      <tags>
-        <tag>MYSQL</tag>
-        <tag>数据库</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>进程、线程</title>
-    <url>/2021/06/25/threadDescription/</url>
-    <content><![CDATA[<h1 id="进程、线程"><a href="#进程、线程" class="headerlink" title="进程、线程"></a>进程、线程</h1><hr>
-<h3 id="1、什么是进程、线程"><a href="#1、什么是进程、线程" class="headerlink" title="1、什么是进程、线程"></a>1、什么是进程、线程</h3><p>进程是一个程序被加载到内存执行的过程，它是一个动态的概念。线程是程序执行中一个单一的顺序控制流程，是程序执行流的最小单元。进程是操作系统分配资源的最小单位，线程是操作系统调度执行的最小单位。打个比喻，操作系统是好像一个大工厂，工厂里面的一条条流水线就是一个个的进程，然后流水线上的工人负责整个流水作业的全部或者一小部分，这就叫线程。进程是真正的“打工人”，干活的实体。</p>
-<hr>
-<h3 id="2、进程和线程的区别"><a href="#2、进程和线程的区别" class="headerlink" title="2、进程和线程的区别"></a>2、进程和线程的区别</h3><ul>
-<li>进程有自己独立的地址空间（每个进程都有拥有4GBytes的虚拟地址空间），多个线程共用同一个地址空间。</li>
-<li>同一进程内的每个线程共享代码段(.text)，堆区(heap)，全局数据区(.data.bss)，文件描述符表。</li>
-<li>同一进程内的每个线程独享自己的栈、寄存器。</li>
-</ul>
-<hr>
-<h3 id="3、进程线程的特点"><a href="#3、进程线程的特点" class="headerlink" title="3、进程线程的特点"></a>3、进程线程的特点</h3><ul>
-<li><p>进程</p>
-<ul>
-<li>进程拥有自己的地址空间，各进程间相互独立，一个进程挂死，不会影响到其他进程。</li>
-</ul>
-</li>
-<li><p>线程</p>
-<ul>
-<li><p>线程占更小的系统资源，线程的上下文切换比进程要快的多。</p>
-<blockquote>
-<p>上下文切换：进程 / 线程分时复用 CPU 时间片，在切换之前会将上一个任务的状态进行保存，下次切换回这个任务的时候，加载这个状态继续运行，任务从保存到再次加载这个过程就是一次上下文切换。</p>
-</blockquote>
-</li>
-<li><p>线程启动速度快，退出也快，对系统资源的冲击小。</p>
-</li>
-<li><p>一个进程内的某一个线程挂掉，那么整个进程就会挂掉。</p>
-</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="4、进程间的通讯方式"><a href="#4、进程间的通讯方式" class="headerlink" title="4、进程间的通讯方式"></a>4、进程间的通讯方式</h3><ol>
-<li>管道pipe。半双工，数据只能单向流动，而且只能在具有亲缘关系的进程间使用，常见于父子进程。</li>
-<li>有名管道FIFO。半双工，数据只能单向流动，允许无亲缘关系进程间的通信。</li>
-<li>消息队列MessageQueue。消息队列是由消息的链表，存放在内核中并由消息队列标识符标识。消息队列克服了信号传递信息少、管道只能承载无格式字节流以及缓冲区大小受限等缺点。</li>
-<li>信号量Semaphore：信号量是一个计数器，可以用来控制多个进程对共享资源的访问，防止多进程访问共享资源时产生竞争。是进程同步的一种手段。</li>
-<li>套接字Socket：用于不同机器间的进程通信，网络通信少不了它。</li>
-<li>信号 Signal： 段错误、kill -9 的时候就是这种信号。</li>
-</ol>
-<hr>
-<h3 id="5、线程间通信方式"><a href="#5、线程间通信方式" class="headerlink" title="5、线程间通信方式"></a>5、线程间通信方式</h3><blockquote>
-<p>线程间的通信目的主要是用于线程同步，所以线程没有像进程通信中的用于数据交换的通信机制。</p>
-</blockquote>
-<ol>
-<li>锁机制：包括互斥锁、条件变量、读写锁。<ul>
-<li>互斥锁提供了以排他方式防止数据结构被并发修改的方法，常用于多线程间对共享资源的访问保护。</li>
-<li>读写锁允许多个线程同时读共享数据，而对写操作是互斥的。</li>
-<li>条件变量可以以原子的方式阻塞进程，直到某个特定条件为真为止。对条件的测试是在互斥锁的保护下进行的。条件变量始终与互斥锁一起使用。</li>
-</ul>
-</li>
-<li>信号量机制(Semaphore)：信号量既是是进程同步的一种手段，也是线程同步的一种手段。</li>
-<li>信号机制(Signal)：类似进程间的信号处理。线程间的通信目的主要是用于线程同步，所以线程没有像进程通信中的用于数据交换的通信机制。</li>
-</ol>
-]]></content>
-      <categories>
-        <category>线程进程</category>
-      </categories>
-      <tags>
-        <tag>线程进程</tag>
-        <tag>线程</tag>
-        <tag>进程</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>进程间通信IPC</title>
     <url>/2021/06/29/ipc/</url>
     <content><![CDATA[<h1 id="进程间通信IPC"><a href="#进程间通信IPC" class="headerlink" title="进程间通信IPC"></a>进程间通信IPC</h1><p>IPC（Inter-Process Communication，进程间通信）。进程间通信是指两个进程的数据之间产生交互。</p>
@@ -2123,6 +926,491 @@ clean :
       <tags>
         <tag>IPC</tag>
         <tag>进程间通信</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linux下线程的使用</title>
+    <url>/2021/06/25/linuxPthread/</url>
+    <content><![CDATA[<h1 id="Linux下线程的使用"><a href="#Linux下线程的使用" class="headerlink" title="Linux下线程的使用"></a>Linux下线程的使用</h1><h2 id="1、Linux线程"><a href="#1、Linux线程" class="headerlink" title="1、Linux线程"></a>1、Linux线程</h2><ul>
+<li><p>在早期的类Unix系统中是没有“线程”概念的，这是后面需求的才延伸出来的，它借助了进程机制实现出了线程的概念。因此在这类系统中，进程和线程关系密切。在Linux环境下的线程本质上还是进程，属于轻量级的进程（LWP：light weight process）。</p>
+</li>
+<li><p>实际上，无论是创建进程的fork，还是创建线程的pthread_create，底层实现都是调用同一个内核函数clone。</p>
+</li>
+<li>fork复制对方的地址空间，产生一个“进程”；pthread_create共享对方的地址空间，就产生一个“线程”。</li>
+</ul>
+<h2 id="2、Linux线程创建"><a href="#2、Linux线程创建" class="headerlink" title="2、Linux线程创建"></a>2、Linux线程创建</h2><blockquote>
+<p>使用下面所有的线程相关函数都必须做的工作：</p>
+<p>1、包含头文件  #include <pthread.h></p>
+<p>2、编译时链接线程库(线程库的名字叫pthread, 全名: libpthread.so libptread.a) -pthread</p>
+</blockquote>
+<h3 id="2-1获取线程ID（对应进程中-getpid-函数）"><a href="#2-1获取线程ID（对应进程中-getpid-函数）" class="headerlink" title="2.1获取线程ID（对应进程中 getpid() 函数）"></a>2.1获取线程ID（对应进程中 getpid() 函数）</h3><p>每一个线程都对应一个唯一的线程 ID（两个进程间，线程ID允许相同），ID 类型为 pthread_t，这个 ID 是一个无符号长整形数(%lu)，如果想要获取当前线程的线程 ID，可以调用如下函数：</p>
+<pre class=" language-lang-c"><code class="language-lang-c">pthread_t pthread_self(void);    // 返回当前线程的线程ID，man说这个函数总会执行成功
+</code></pre>
+<h3 id="2-2创建线程函数（对应进程中fork-函数）"><a href="#2-2创建线程函数（对应进程中fork-函数）" class="headerlink" title="2.2创建线程函数（对应进程中fork() 函数）"></a>2.2创建线程函数（对应进程中fork() 函数）</h3><pre class=" language-lang-c"><code class="language-lang-c">int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_routine) (void *), void *arg);
+</code></pre>
+<ul>
+<li><p>参数：</p>
+<ul>
+<li>thread：传出参数，创建成功时保存系统为我们分配好的线程ID。</li>
+<li>attr：通常传NULL，表示使用线程默认属性。也可自行修改。</li>
+<li>start_routine：函数指针，指向线程任务函数(线程体)，该函数运行结束，则线程结束。该函数在子线程中执行。</li>
+<li>arg：通过它把需要传递的参数传递到start_routine指向的函数体内部，如要传多个参数, 可以用结构封装。</li>
+</ul>
+</li>
+<li><p>返回值：成功返回0； 失败返回错误号。具体错误可通过strerror()函数输出。</p>
+</li>
+</ul>
+<h3 id="2-3实例"><a href="#2-3实例" class="headerlink" title="2.3实例"></a>2.3实例</h3><pre class=" language-lang-c"><code class="language-lang-c">// my_pthread_create.c 
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <pthread.h>
+
+struct Test
+&#123;
+    int num;
+    int age;
+&#125;;
+void * mytask(void * arg)
+&#123;
+    for (int i = 0; i < 5; i++)
+    &#123;
+        printf("子线程：i = %d\n", i);
+    &#125;
+    printf("子线程TID：%ld\n", pthread_self());
+
+    struct Test * pt = (struct Test *)arg;
+    pt->num = 1000;
+    pt->age = 99;
+
+    return NULL;
+&#125;
+int main()
+&#123;
+    pthread_t tid;
+    struct Test test;
+
+    pthread_create(&tid, NULL, mytask, &test);
+    printf("子线程创建成功, 线程TID: %ld\n", tid);
+    printf("主线程TID：%ld\n", pthread_self());
+
+    return 0;
+&#125;
+</code></pre>
+<p>执行命令编译程序，<code>-lpthread</code>的意思是链接<code>pthread</code>线程库，要用线程相关函数除了包含头文件<code>#include &lt;pthread.h&gt;</code>以外，编译的时候还得指定链接线程库，否则编译失败。<code>-o app</code>的意思是指定输出的可执行文件名为<code>app</code>。</p>
+<pre class=" language-lang-shell"><code class="language-lang-shell">gcc my_pthread_create.c -lpthread -o app
+</code></pre>
+<pre class=" language-lang-shell"><code class="language-lang-shell">root@iZwz94euuu9omhoocm3l5uZ:~/07_article# gcc my_pthread_create.c -lpthread -o app
+root@iZwz94euuu9omhoocm3l5uZ:~/07_article# ls
+app  my_pthread_create.c
+root@iZwz94euuu9omhoocm3l5uZ:~/07_article# ./app 
+子线程创建成功, 线程TID: 139769949230848
+主线程TID：139769949235008
+root@iZwz94euuu9omhoocm3l5uZ:~/07_article#
+</code></pre>
+<p>编译执行后发现子线程虽然创建成功，但是子线程任务函数里面的打印并没有输出，原因是：</p>
+<p>主线程一直在运行，执行期间创建出了子线程，接下来主线程和子线程“并发”，分道扬镳，各自执行自己的函数。子线程刚被创建出来，需要去抢CPU时间片，抢到了CPU时间片子线程的任务函数才能运行。</p>
+<p>很明显，此时此刻，子线程并没有抢到CPU时间片，而主线程却抢到了。然后主线程去执行printf，执行完后发现没有工作要做了就直接返回退出了。</p>
+<p>但主线程退出了, 虚拟地址空间就被释放了, 子线程就一并被销毁了，这样子线程任务函数里的printf就肯定没法运行了。</p>
+<h2 id="3、Linux线程退出"><a href="#3、Linux线程退出" class="headerlink" title="3、Linux线程退出"></a>3、Linux线程退出</h2><p>在多线程进程中，要让主线程退出不导致虚拟地址空间的释放，剩下的子线程继续正常运行，可以在主线程中调用线程退出函数。线程退出函数会让当前线程马上退出，而且不会释放虚拟地址空间，不会影响到其他线程的正常运行。线程退出函数可以在子线程或者主线程中都使用。</p>
+<h3 id="3-1线程退出函数"><a href="#3-1线程退出函数" class="headerlink" title="3.1线程退出函数"></a>3.1线程退出函数</h3><pre class=" language-lang-c"><code class="language-lang-c">void pthread_exit(void *retval);
+</code></pre>
+<ul>
+<li>参数：线程退出的时候携带的数据，当前子线程的主线程会得到该数据。如果不需要使用，指定为 NULL。一般使用的这个线程退出带出数据的功能的时候，需要在线程创建的时候把一块堆内存的指针传进去。</li>
+</ul>
+<h3 id="3-2实例"><a href="#3-2实例" class="headerlink" title="3.2实例"></a>3.2实例</h3><pre class=" language-lang-c"><code class="language-lang-c">#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <pthread.h>
+
+struct Test
+&#123;
+    int num;
+    int age;
+&#125;;
+void * mytask(void * arg)
+&#123;
+    for (int i = 0; i < 10; i++)
+    &#123;
+        printf("子线程：i = %d\n", i);
+        if(i == 7)
+        &#123;
+            pthread_exit(NULL); // 直接退出子线程
+        &#125;
+    &#125;
+    printf("子线程TID：%ld\n", pthread_self());
+
+    struct Test * pt = (struct Test *)arg;
+    pt->num = 1000;
+    pt->age = 99;
+
+    return NULL;
+&#125;
+int main()
+&#123;
+    pthread_t tid;
+    struct Test test;
+
+    pthread_create(&tid, NULL, mytask, &test);
+    printf("子线程创建成功, 线程TID: %ld\n", tid);
+    printf("主线程TID：%ld\n", pthread_self());
+
+    pthread_exit(NULL); // 主线程退出，不会释放虚拟地址空间，不影响子线程运行
+    return 0;
+&#125;
+</code></pre>
+<p>编译执行结果：</p>
+<pre class=" language-lang-shell"><code class="language-lang-shell">root@iZwz94euuu9omhoocm3l5uZ:~/07_article# gcc my_pthread_create.c -lpthread -o app
+root@iZwz94euuu9omhoocm3l5uZ:~/07_article# ./app 
+子线程创建成功, 线程TID: 139901666547456
+主线程TID：139901666551616
+子线程：i = 0
+子线程：i = 1
+子线程：i = 2
+子线程：i = 3
+子线程：i = 4
+子线程：i = 5
+子线程：i = 6
+子线程：i = 7
+root@iZwz94euuu9omhoocm3l5uZ:~/07_article#
+</code></pre>
+<p>上面的程序执行结果说明，主线程执行<code>printf</code>就先退出了，此时虚拟地址空间还没有被释放，子线程继续执行<code>printf</code>，直到子线程执行到<code>pthread_exit</code>子线程就退出了，然后虚拟地址空间被释放，进程退出。</p>
+<h2 id="4、Linux线程回收"><a href="#4、Linux线程回收" class="headerlink" title="4、Linux线程回收"></a>4、Linux线程回收</h2><p>子线程在一般情况下都是由主线程创建并启动的，如果子线程相对主线程而言要进行大量的耗时的运算，那么主线程就会先于子线程结束，就好比如<code>3.2实例</code>。但是如果主线程处理完其他的事务后，需要用到子线程的处理结果，也就是主线程需要等待子线程执行完成之后再结束线程和进程，这种情况该怎么处理呢？</p>
+<p>这就是线程回收函数 <code>pthread_join</code>的应用场景了，这个函数是一个阻塞函数，如果子线程还在运行，该函数就会一直阻塞，子线程退出函数解除阻塞进行资源的回收。函数被调用一次，只能回收一个子线程，如果有多个子线程则需要循环进行回收。</p>
+<h3 id="4-1线程回收函数（对应进程中-waitpid-函数）"><a href="#4-1线程回收函数（对应进程中-waitpid-函数）" class="headerlink" title="4.1线程回收函数（对应进程中 waitpid() 函数）"></a>4.1线程回收函数（对应进程中 waitpid() 函数）</h3><pre class=" language-lang-c"><code class="language-lang-c">// 这是一个阻塞函数, 由主线程调用，然后就阻塞在这，直到thread子线程退出，然后返回。
+// 回收对应的子线程资源
+int pthread_join(pthread_t thread, void **retval);
+</code></pre>
+<ul>
+<li>参数：<ul>
+<li>thread：要被回收的子线程的线程 ID</li>
+<li>retval：被回收的子线程通过它传出 <code>pthread_exit</code>的参数，即要传出的数据。</li>
+</ul>
+</li>
+</ul>
+<h3 id="4-2实例"><a href="#4-2实例" class="headerlink" title="4.2实例"></a>4.2实例</h3><pre class=" language-lang-c"><code class="language-lang-c">#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <pthread.h>
+
+struct Test
+&#123;
+    int num;
+    int age;
+&#125;;
+void * mytask(void * arg)
+&#123;
+    struct Test * pt = (struct Test *)arg;
+    pt->num = 1000;
+    pt->age = 99;
+    for (int i = 0; i < 10; i++)
+    &#123;
+        printf("子线程：i = %d\n", i);
+        if(i == 7)
+        &#123;
+            pthread_exit(pt); // 直接退出子线程
+        &#125;
+    &#125;
+    printf("子线程TID：%ld\n", pthread_self());
+
+    return NULL;
+&#125;
+int main()
+&#123;
+    pthread_t tid;
+    struct Test test;
+
+    // 子线程用到了主线程的栈空间test，所以主线程必须等子线程退出后再退出
+    pthread_create(&tid, NULL, mytask, &test);
+    printf("子线程创建成功, 线程TID: %ld\n", tid);
+    printf("主线程TID：%ld\n", pthread_self());
+
+    void* ptr = NULL;
+    // ptr是一个传出参数, 子线程回收资源被存放在此
+    // 这个内存地址就是pthread_exit() 参数指向的内存
+    // 阻塞等待子线程退出
+    pthread_join(tid, &ptr);
+
+    struct Test* tmp = (struct Test*)ptr;
+    printf("子线程返回数据: age: %d, num: %d\n", tmp->age, tmp->num);
+    printf("子线程资源被成功回收...\n");
+
+    return 0;
+&#125;
+</code></pre>
+<p>编译执行结果：</p>
+<pre class=" language-lang-shell"><code class="language-lang-shell">root@iZwz94euuu9omhoocm3l5uZ:~/07_article# gcc my_pthread_create.c -lpthread -o app
+root@iZwz94euuu9omhoocm3l5uZ:~/07_article# ./app 
+子线程创建成功, 线程TID: 140123287721728
+主线程TID：140123287725888
+子线程：i = 0
+子线程：i = 1
+子线程：i = 2
+子线程：i = 3
+子线程：i = 4
+子线程：i = 5
+子线程：i = 6
+子线程：i = 7
+子线程返回数据: age: 99, num: 1000
+子线程资源被成功回收...
+root@iZwz94euuu9omhoocm3l5uZ:~/07_article#
+</code></pre>
+<p>注意：虽然每个线程都有属于自己的栈区空间，但是位于同一个地址空间的多个线程是可以相互访问对方的栈空间上的数据的。当然，线程创建函数<code>pthread_create</code>的参数<code>arg</code>也可以是全局变量或者堆存的内存。</p>
+<h2 id="5、Linux线程分离"><a href="#5、Linux线程分离" class="headerlink" title="5、Linux线程分离"></a>5、Linux线程分离</h2><p>有时候，进程中的主线程也有自己的业务处理流程，如果还是让主线程负责子线程的资源回收，调用 <code>pthread_join</code>后，只要子线程不退出主线程就会一直被阻塞，主线程就没办法执行自己的业务处理流程了。</p>
+<p>这就是线程分离函数<code>pthread_detach</code>的应用场景了，调用线程分离函数之后指定的子线程就可以和主线程分离，当子线程退出的时候，其占用的内核资源会被系统的其他进程接管并回收了。线程分离之后在主线程中使用 <code>pthread_join</code>是回收不到子线程资源了的。</p>
+<h3 id="5-1线程分离函数"><a href="#5-1线程分离函数" class="headerlink" title="5.1线程分离函数"></a>5.1线程分离函数</h3><pre class=" language-lang-c"><code class="language-lang-c">int pthread_detach(pthread_t thread);
+</code></pre>
+<ul>
+<li><p>参数：</p>
+<ul>
+<li>thread：要与主线程分离的子线程的线程ID。</li>
+</ul>
+</li>
+<li><p>返回值：成功返回0，失败返回错误码。</p>
+</li>
+</ul>
+<h3 id="5-2实例"><a href="#5-2实例" class="headerlink" title="5.2实例"></a>5.2实例</h3><pre class=" language-lang-c"><code class="language-lang-c">#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <pthread.h>
+
+void * mytask(void * arg)
+&#123;
+
+    for (int i = 0; i < 10; i++)
+    &#123;
+        printf("子线程：i = %d\n", i);
+
+    &#125;
+    printf("子线程TID：%ld\n", pthread_self());
+
+    return NULL;
+&#125;
+int main()
+&#123;
+    pthread_t tid;
+
+    pthread_create(&tid, NULL, mytask, NULL);
+    printf("子线程创建成功, 线程TID: %ld\n", tid);
+    printf("主线程TID：%ld\n", pthread_self());
+
+    // 主线程子线程分离
+    pthread_detach(tid);
+
+    // 主线程你自己先退出吧，不用管我，我一个“人”很好
+    pthread_exit(NULL);
+
+    return 0;
+&#125;
+</code></pre>
+<p>程序编译运行结果：</p>
+<pre class=" language-lang-shell"><code class="language-lang-shell">root@iZwz94euuu9omhoocm3l5uZ:~/07_article# gcc my_pthread_create.c -lpthread -o app
+root@iZwz94euuu9omhoocm3l5uZ:~/07_article# ./app 
+子线程创建成功, 线程TID: 139791846512384
+主线程TID：139791846516544
+子线程：i = 0
+子线程：i = 1
+子线程：i = 2
+子线程：i = 3
+子线程：i = 4
+子线程：i = 5
+子线程：i = 6
+子线程：i = 7
+子线程：i = 8
+子线程：i = 9
+子线程TID：139791846512384
+root@iZwz94euuu9omhoocm3l5uZ:~/07_article#
+</code></pre>
+<h2 id="6、Linux其它线程函数"><a href="#6、Linux其它线程函数" class="headerlink" title="6、Linux其它线程函数"></a>6、Linux其它线程函数</h2><h3 id="6-1线程取消函数（对应进程中-kill-函数）"><a href="#6-1线程取消函数（对应进程中-kill-函数）" class="headerlink" title="6.1线程取消函数（对应进程中 kill() 函数）"></a>6.1线程取消函数（对应进程中 kill() 函数）</h3><p>杀死（取消）线程 其作用。但不会立刻杀死（取消）进程，只有当<code>thread</code>进行了一次系统调用（从用户区切换到内核区），才会死掉。</p>
+<pre class=" language-lang-c"><code class="language-lang-c">int pthread_cancel(pthread_t thread);
+</code></pre>
+<ul>
+<li><p>参数：</p>
+<ul>
+<li>thread：要杀死（取消）线程的线程ID。</li>
+</ul>
+</li>
+<li><p>返回值：成功返回0，失败返回错误码。</p>
+</li>
+</ul>
+<h3 id="6-2线程ID是否相同函数"><a href="#6-2线程ID是否相同函数" class="headerlink" title="6.2线程ID是否相同函数"></a>6.2线程ID是否相同函数</h3><pre class=" language-lang-c"><code class="language-lang-c">int pthread_equal(pthread_t t1, pthread_t t2);
+</code></pre>
+<ul>
+<li><p>参数：两个要比较的线程ID。</p>
+</li>
+<li><p>返回值：两个线程 ID 相等返回非 0 值，如果不相等返回 0。</p>
+</li>
+</ul>
+<h2 id="7、埋个坑"><a href="#7、埋个坑" class="headerlink" title="7、埋个坑"></a>7、埋个坑</h2><ol>
+<li>多线程的同步与互斥使用</li>
+<li>线程池</li>
+<li>高并发</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Linux</category>
+        <category>线程进程</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>线程进程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>基本的Makefile使用</title>
+    <url>/2021/07/07/makefile-simple/</url>
+    <content><![CDATA[<h1 id="Makefile"><a href="#Makefile" class="headerlink" title="Makefile"></a>Makefile</h1><h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p>makefile是一个代码管理工具，它定义了一系列的规则来指定那些文件需要先编译，哪些文件需要后编译，哪些文件需要重新编译。</p>
+<p>最大的好处就是，只要把makefile写好，然后执行一个make命令就完成所有的编译了。</p>
+<p>不然每次编译都要敲一大串命令，很容易把我们累死。例如：</p>
+<pre class=" language-lang-shell"><code class="language-lang-shell">gcc *.c -Include ./ -Wall -g -O3 -D DEBUG -L
+</code></pre>
+<h2 id="makefile的命名"><a href="#makefile的命名" class="headerlink" title="makefile的命名"></a>makefile的命名</h2><p>makefile命名只有两种情况，任选其一即可：makefile、Makefile。</p>
+<h2 id="makefile的规则"><a href="#makefile的规则" class="headerlink" title="makefile的规则"></a>makefile的规则</h2><p>规则中的三要素：目标，依赖，规则。一条规则的形式如下：</p>
+<blockquote>
+<p>目标：依赖条件</p>
+<p>​    命令</p>
+</blockquote>
+<p>注意命令前面必须是一个Table缩进。</p>
+<p>如果makefile中有多条规则，则默认第一条规则中的目标是我们的终极目标。makefile向下检索，构建出一颗关系树，从下往上执行命令。</p>
+<p>make命令生成的目标都是终极目标。</p>
+<p><img src="https://i.loli.net/2021/07/07/5IrjAsQVm8TaPDC.png" alt="makefile工作原理.png"></p>
+<p>例子：</p>
+<pre class=" language-lang-makefile"><code class="language-lang-makefile">main:main.c sub.c add.c
+    gcc main.c sub.c add.c -o main
+</code></pre>
+<p>可见，目标就是我们想要生成的文件，依赖就是我们的源文件，命令就是我们用依赖生成目标的命令，例如这里的就是gcc编译的命令。</p>
+<p>上面例子是makefile和main.c 、sub.c、add.c是处于同一目录下的，如果不处于同一目录，需要显示指出源文件的目录。</p>
+<h2 id="makefile的分文件编译"><a href="#makefile的分文件编译" class="headerlink" title="makefile的分文件编译"></a>makefile的分文件编译</h2><p>当一个项目的源文件很多很多时，需要对文件的进行分文件编译，否则修改了其中一个源文件，就会导致整个项目的源文件都重新编译了一次，浪费时间。</p>
+<pre class=" language-lang-makefile"><code class="language-lang-makefile">main:main.o sub.o add.o
+    gcc main.o sub.o add.o
+
+main.o:main.c
+    gcc -c main.c
+
+sub.o:sub.c
+    gcc -c sub.c
+
+add.o:add.c
+    gcc -c add.c
+</code></pre>
+<h2 id="makefile的变量"><a href="#makefile的变量" class="headerlink" title="makefile的变量"></a>makefile的变量</h2><p>makefile定义变量不需要数据类型，直接定义即可，但要取变量里的内容则需在其前加<code>$</code>符号，一般也会将变量用<code>()</code>括起来。</p>
+<pre class=" language-lang-makefile"><code class="language-lang-makefile">obj = main.o sub.o add.o
+target = main
+
+$(target):$(obj)
+    gcc $(obj) -o $(target)
+
+main.o:main.c
+    gcc -c main.c
+
+sub.o:sub.c
+    gcc -c sub.c
+
+add.o:add.c
+    gcc -c add.c
+</code></pre>
+<h2 id="makefile的自动变量"><a href="#makefile的自动变量" class="headerlink" title="makefile的自动变量"></a>makefile的自动变量</h2><p>%&lt;：规则中的第一个依赖</p>
+<p>%@：规则中的目标</p>
+<p>%^：规则中的所有依赖</p>
+<p><strong>只能在规则中的命令使用。</strong></p>
+<h2 id="makefile的“-”"><a href="#makefile的“-”" class="headerlink" title="makefile的“=”"></a>makefile的“=”</h2><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>=</td>
+<td>最基本的赋值</td>
+</tr>
+<tr>
+<td>:=</td>
+<td>覆盖之前的值</td>
+</tr>
+<tr>
+<td>?=</td>
+<td>如果没有被赋值过就赋予等号后面的值</td>
+</tr>
+<tr>
+<td>+=</td>
+<td>添加等号后面的值</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="makefile的模式规则"><a href="#makefile的模式规则" class="headerlink" title="makefile的模式规则"></a>makefile的模式规则</h2><p>在规则的目标定义使用%，在规则的依赖条件使用%。</p>
+<pre class=" language-lang-makefile"><code class="language-lang-makefile">obj = main.o sub.o add.o
+target = main
+
+$(target):$(obj)
+    gcc $(obj) -o $(target)
+
+%.o:%.c
+    gcc -c $< -o $@
+</code></pre>
+<p>%.o:%.c 相当于 main.o:main.c、sub.0:sub.c、add.o:add.c。模式规则会帮我们自动匹配上。</p>
+<h2 id="makefile自己维护的变量"><a href="#makefile自己维护的变量" class="headerlink" title="makefile自己维护的变量"></a>makefile自己维护的变量</h2><p>特征：通常变量名全大写</p>
+<p>CC：默认值为cc，cc其实也就是gcc。</p>
+<p>CPPFLAGS：预处理的时候使用的参数。例如：</p>
+<p><code>CPPFLAGS = -I</code>预处理的时候指定头文件路径。</p>
+<p>CFLAGS：编译的时候使用的参数。例如：</p>
+<p><code>CFLAGS = -Wall -g -c</code>编译的时候显示警告、加入调试信息、只编译</p>
+<p>LDFLAGS：链接库的时候使用的选项。</p>
+<p><code>LDFLAGS = -L -l</code>链接库的时候指定库路径、库名。</p>
+<pre class=" language-lang-makefile"><code class="language-lang-makefile">obj = main.o sub.o add.o
+target = main
+CC = gcc
+CPPFLAGS = -I
+$(target):$(obj)
+    $(CC) $(obj) -o $(target)
+
+%.o:%.c
+    $(CC) -c $< -o $@
+</code></pre>
+<h2 id="makefile的函数"><a href="#makefile的函数" class="headerlink" title="makefile的函数"></a>makefile的函数</h2><p>makefile中使用的所有函数都是有返回值的，函数名与参数通过空格分开，参数与参数之间通过逗号分开。</p>
+<p>$(wildcard <pattern>…)</p>
+<p>$(patsubst <pattern>,<replacement>,<text>)</p>
+<p>一般这两个函数结合使用。wildcard 通过通配符找到相关的.c源文件，返回它们的字符串，再通过 patsubst 模式替换将.c源文件的名称的字符串替换成对应的.o目标文件。</p>
+<pre class=" language-lang-makefile"><code class="language-lang-makefile">target = main
+src = $(wildcard ./*.c)
+obj = $(patsubst ./%.c, ./%.o, $(src))
+CC = gcc
+CPPFLAGS = -I
+$(target):$(obj)
+    $(CC) $(obj) -o $(target)
+
+%.o:%.c
+    $(CC) -c $< -o $@
+</code></pre>
+<h2 id="clean"><a href="#clean" class="headerlink" title="clean"></a>clean</h2><p>伪目标，没有依赖。用于删除所有被 make 创建的文件。</p>
+<pre class=" language-lang-makefile"><code class="language-lang-makefile">target = main
+src = $(wildcard ./*.c)
+obj = $(patsubst ./%.c, ./%.o, $(src))
+CC = gcc
+CPPFLAGS = -I
+$(target):$(obj)
+    $(CC) $(obj) -o $(target)
+
+%.o:%.c
+    $(CC) -c $< -o $@
+
+.PHONY:clean
+clean:
+    -rm $(target) $(obj) -f
+</code></pre>
+<p>-：如果出错，忽略当前命令，继续向下执行下面的命令。</p>
+<p>-f：强制执行，不管有没有对应的文件都删除。</p>
+<p>.PHONY:clean：声明clean为伪目标。</p>
+]]></content>
+      <categories>
+        <category>Makefile</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>Makefile</tag>
       </tags>
   </entry>
   <entry>
@@ -2979,6 +2267,653 @@ int main(void)
       </tags>
   </entry>
   <entry>
+    <title>多进程、线程并发服务器</title>
+    <url>/2021/07/05/multi-proc-pthread-server/</url>
+    <content><![CDATA[<h1 id="多进程、线程并发服务器"><a href="#多进程、线程并发服务器" class="headerlink" title="多进程、线程并发服务器"></a>多进程、线程并发服务器</h1><h2 id="多进程并发服务器"><a href="#多进程并发服务器" class="headerlink" title="多进程并发服务器"></a>多进程并发服务器</h2><h3 id="server-c"><a href="#server-c" class="headerlink" title="server.c"></a>server.c</h3><pre class=" language-lang-c"><code class="language-lang-c">#include <stdio.h>
+#include <arpa/inet.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <strings.h>
+#include <unistd.h>
+#include <signal.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+#include "wrap.h"
+#define SERV_PORT 8888
+
+void wait_chld(int signo)
+&#123;
+  while(waitpid(0, NULL, WNOHANG) > 0); // 0：回收属于同一进程组的所有子进程， WNOHANG：不阻塞
+  return;
+&#125;
+
+int main(void)
+&#123;
+        pid_t pid;
+        int i, n;
+        int lfd, cfd;
+        struct sockaddr_in serv_addr, clie_addr;
+        socklen_t clie_addr_len;
+        char buf[1024] = &#123;0&#125;;
+        char clientip[1024] = &#123;0&#125;;
+        lfd = Socket(AF_INET, SOCK_STREAM, 0);
+
+        bzero(&serv_addr, sizeof(serv_addr));
+
+        serv_addr.sin_family = AF_INET;
+        serv_addr.sin_port = htons(SERV_PORT);
+        serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+        //inet_pton(AF_INET, "192.168.10.100", &serv_addr.sin_addr.s_addr);
+        Bind(lfd, (const struct sockaddr *)&serv_addr, (socklen_t)sizeof(serv_addr));
+
+        Listen(lfd, 128); // 操作系统运行最大监听数为128
+
+        while(1)
+        &#123;
+                clie_addr_len = sizeof(clie_addr);
+                cfd = Accept(lfd, (struct sockaddr *)&clie_addr, &clie_addr_len);
+                printf("client ip:%s, port:%d\n", inet_ntop(AF_INET, &clie_addr.sin_addr.s_addr, clientip, sizeof(clientip)),
+                                ntohs(clie_addr.sin_port));
+
+                pid = fork();
+                if(pid < 0)
+                &#123;
+                        perror("fork error");
+                        exit(1);
+                &#125;
+                else if(pid == 0)
+                &#123;
+                        close(lfd);
+                        break;
+                &#125;
+                else
+                &#123;
+                        close(cfd);
+                        signal(SIGCHLD, wait_chld);
+                &#125;
+        &#125;
+
+        if(pid == 0)
+        &#123;
+                while(1)
+                &#123;
+                        n = Read(cfd, buf, sizeof(buf));
+                        if(n == 0) // 0表示对方连接断开
+                        &#123;
+                                close(cfd);
+                                return 0;
+                        &#125;
+                        else if(n == -1)
+                        &#123;
+                                perror("read error");
+                                exit(1);
+                        &#125;
+                        else
+                        &#123;
+                                for(i = 0; i < n; i++)
+                                &#123;
+                                        buf[i] = toupper(buf[i]);
+                                &#125;
+                                write(cfd, buf, n);
+                                write(STDOUT_FILENO, buf, n);
+                        &#125;
+                &#125;
+        &#125;
+        return 0;
+&#125;
+</code></pre>
+<h3 id="wrap-c"><a href="#wrap-c" class="headerlink" title="wrap.c"></a>wrap.c</h3><pre class=" language-lang-c"><code class="language-lang-c">#include <stdio.h>
+#include <wrap.h>
+#include <unistd.h>
+#include <errno.h>
+void err_sys(const char* x)
+&#123;
+    perror(x);
+    exit(1);
+&#125;
+
+int Socket(int domain, int type, int protocol)
+&#123;
+  int n;
+  if ((n = socket(domain, type, protocol)) < 0)
+    err_sys("socket error");
+  return (n);
+&#125;
+
+int Bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
+&#123;
+  int n;
+  if ((n = bind(sockfd, addr, addrlen)) < 0)
+    err_sys("bind error");
+  return (n);
+
+&#125;
+
+int Listen(int sockfd, int backlog)
+&#123;
+  int n;
+  if ((n = listen(sockfd, backlog)) < 0)
+    err_sys("listen error");
+  return (n);
+
+&#125;
+
+int Accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen)
+&#123;
+  int n;
+
+  do &#123;
+
+    if ((n = accept(sockfd, addr, addrlen)) < 0)
+    &#123;
+      if((errno == ECONNABORTED) || (errno == EINTR))
+      &#123;
+
+      &#125;
+      else
+      &#123;
+        err_sys("accept error");
+        break;
+      &#125;
+    &#125;
+  &#125; while(n < 0);
+  return (n);
+
+&#125;
+
+int Connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
+&#123;
+  int n;
+  if ((n = connect(sockfd, addr, addrlen)) < 0)
+    err_sys("connect error");
+  return (n);
+
+&#125;
+
+ssize_t Read(int fd, void *buf, size_t count)
+&#123;
+  ssize_t n;
+
+again:
+  if((n = read(fd, buf, count)) == -1)
+  &#123;
+    if(errno == EINTR)
+    &#123;
+      goto again;
+    &#125;
+    return -1;
+  &#125;
+
+  return n;
+&#125;
+
+ssize_t Write(int fd, const void *buf, size_t count)
+&#123;
+  ssize_t n;
+
+  do &#123;
+    if((n = write(fd, buf, count)) == -1)
+    &#123;
+      if(errno != EINTR)
+      &#123;
+        return -1;
+      &#125;
+    &#125;
+  &#125; while(n != -1);
+
+  return n;
+&#125;
+
+int Close(int fd)
+&#123;
+  int n;
+  if((n = close(fd)) == -1)
+      err_sys("connect error");
+  return n;
+&#125;
+
+ssize_t Readn(int fd, void *vptr, ssize_t n)
+&#123;
+  size_t nleft;   // unsigned int 剩余未读取的字节数
+  ssize_t nread;  // int 实际读到的字节数
+
+  const char *ptr = vptr;
+  nleft = n;      // n 未读取的字节数
+
+
+  while(nleft > 0)
+  &#123;
+    if((nread = read(fd, (void *)ptr, nleft)) < 0)
+    &#123;
+      if(errno == EINTR)
+        nread = 0;
+      else
+        return -1;
+    &#125;
+    else if(nread == 0)
+      break;
+
+    nleft -= nread;
+    ptr += nread;
+  &#125;
+
+  return n - nleft;
+&#125;
+
+ssize_t Writen(int fd, const void *vptr, size_t n)
+&#123;
+  size_t nleft;   // unsigned int 剩余未写出的字节数
+  ssize_t nwriten;  // int 实际写出的字节数
+
+  const char *ptr = vptr;
+  nleft = n;      // n 未写出的字节数
+
+
+  while(nleft > 0)
+  &#123;
+    if((nwriten = write(fd, ptr, nleft)) <= 0)
+    &#123;
+      if(errno == EINTR && nwriten < 0)
+        nwriten = 0;
+      else
+        return -1;
+    &#125;
+    else if(nwriten == 0)
+      break;
+
+    nleft -= nwriten;
+    ptr += nwriten;
+  &#125;
+
+  return n - nleft;
+
+&#125;
+</code></pre>
+<h3 id="wrap-h"><a href="#wrap-h" class="headerlink" title="wrap.h"></a>wrap.h</h3><pre class=" language-lang-c"><code class="language-lang-c">#ifndef __WRAP_H
+#define __WRAP_H
+
+#include <stdlib.h>
+#include <sys/types.h>          /* See NOTES */
+#include <sys/socket.h>
+
+#define offsetof(type, member) ((int)&((type *)0)->member)
+
+int Socket(int domain, int type, int protocol);
+int Bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
+int Listen(int sockfd, int backlog);
+int Accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
+int Connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
+ssize_t Read(int fd, void *buf, size_t count);
+ssize_t Write(int fd, const void *buf, size_t count);
+int Close(int fd);
+ssize_t Readn(int fd, void *vptr, ssize_t n);
+ssize_t Writen(int fd, const void *vptr, size_t n);
+
+#endif
+</code></pre>
+<h3 id="Makefile"><a href="#Makefile" class="headerlink" title="Makefile"></a>Makefile</h3><pre class=" language-lang-makefile"><code class="language-lang-makefile">all : server
+.PHONY : all
+
+src = $(wildcard ./*.c) # wildcard函数：显示指定路径下指定文件类型的所有文件
+obj = $(patsubst ./%.c, ./%.o, $(src)) # patsubst函数：.c 替换成 .o
+
+# LIBS := -lpthread
+CFLAGS = -I. -g -Wall
+CC = gcc
+CXX = g++
+
+server : $(obj)
+        $(CC) -o server $(obj) $(CFLAGS) $(LIBS)
+
+# $@  表示目标文件
+# $<  表示第一个依赖文件
+%.o : %.c
+        $(CC) -c $(CFLAGS) $< -o $@
+
+
+# -  即使出错也继续执行后面
+.PHONY : clean  # .PHONY 伪目标，有了这句，不管怎样都执行clean
+clean :
+        -$(RM) server  $(obj)
+</code></pre>
+<h2 id="多线程并发服务器"><a href="#多线程并发服务器" class="headerlink" title="多线程并发服务器"></a>多线程并发服务器</h2><h3 id="server-c-1"><a href="#server-c-1" class="headerlink" title="server.c"></a>server.c</h3><pre class=" language-lang-c"><code class="language-lang-c">#include <stdio.h>
+#include <arpa/inet.h>
+#include <ctype.h>
+#include <string.h>
+#include <unistd.h>
+#include <pthread.h>
+#include <fcntl.h>
+#include "wrap.h"
+
+#define MAXSIZE 8192
+#define SERV_PORT 8888
+// 定义i一个结构体，将结构体跟cfd捆绑
+struct s_info&#123;
+  struct sockaddr_in clieaddr;
+  int connfd;
+&#125;;
+
+
+void *dowork(void * arg)
+&#123;
+  int n, i;
+  struct s_info *ts = (struct s_info *)arg;
+  char buf[MAXSIZE] = &#123;0&#125;;
+  char str[INET_ADDRSTRLEN]; // #define INET_ADDRSRTLEN 16 可用"[+d"查看
+
+  while(1)
+  &#123;
+    n = Read(ts->connfd, buf, MAXSIZE);   // 读客户端
+    if(n == 0)
+    &#123;
+      printf("the client %d closed...\n", ts->connfd);
+      break; // 对端关闭连接
+    &#125;
+    printf("reaeived from %s at port %d",
+                    inet_ntop(AF_INET, &ts->clieaddr.sin_addr.s_addr, str, sizeof(str)),
+                    ntohs(ts->clieaddr.sin_port)); // 打印客户端信息
+
+    for(i = 0; i < n; i++)
+    &#123;
+      buf[i] = toupper(buf[i]);
+    &#125;
+
+    Write(STDOUT_FILENO, buf, n); // 打印到屏幕
+    Write(ts->connfd, buf, n);  // 回显给客户端
+
+  &#125;
+  Close(ts->connfd);
+  return (void *)0;
+&#125;
+
+int main(void)
+&#123;
+        int i;
+        int lfd, cfd;
+        struct sockaddr_in serv_addr, clie_addr;
+        socklen_t clie_addr_len;
+        pthread_t tid;
+        struct s_info ts[256]; // 根据最大线程数创建结数组
+        char clientip[256];
+
+        lfd = Socket(AF_INET, SOCK_STREAM, 0);
+
+        bzero(&serv_addr, sizeof(serv_addr));
+
+        serv_addr.sin_family = AF_INET;
+        serv_addr.sin_port = htons(SERV_PORT);
+        serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);  // 指定本地任意IP
+        //inet_pton(AF_INET, "192.168.10.100", &serv_addr.sin_addr.s_addr);
+        Bind(lfd, (const struct sockaddr *)&serv_addr, (socklen_t)sizeof(serv_addr));
+
+        Listen(lfd, 128); // 设置同一时刻连接服务器的上限，操作系统运行最大监听数为128
+
+        printf("Accepting client connect ...\n");
+        while(1)
+        &#123;
+                clie_addr_len = sizeof(clie_addr);
+                cfd = Accept(lfd, (struct sockaddr *)&clie_addr, &clie_addr_len); // 阻塞监听客户端连接请求
+                printf("client ip:%s, port:%d\n", inet_ntop(AF_INET, &clie_addr.sin_addr.s_addr, clientip, sizeof(clientip)),
+                                ntohs(clie_addr.sin_port));
+                ts[i].clieaddr = clie_addr;
+                ts[i].connfd = cfd;
+
+                /* 达到最大线程数时，pthread_create出错处理，增加系统服务稳定性*/
+                pthread_create(&tid, NULL, dowork, (void *)&ts[i]);
+                pthread_detach(tid); // 子线程分离，防止僵尸线程产生
+                i++;
+        &#125;
+        return 0;
+&#125;
+</code></pre>
+<h3 id="wrap-c-1"><a href="#wrap-c-1" class="headerlink" title="wrap.c"></a>wrap.c</h3><p>跟前面多进程版一致</p>
+<h3 id="wrap-h-1"><a href="#wrap-h-1" class="headerlink" title="wrap.h"></a>wrap.h</h3><p>跟前面多进程版一致</p>
+<h3 id="Makefile-1"><a href="#Makefile-1" class="headerlink" title="Makefile"></a>Makefile</h3><pre class=" language-lang-makefile"><code class="language-lang-makefile">all : server
+.PHONY : all
+
+src = $(wildcard ./*.c) # wildcard函数：显示指定路径下指定文件类型的所有文件
+obj = $(patsubst ./%.c, ./%.o, $(src)) # patsubst函数：.c 替换成 .o
+
+LIBS := -lpthread #相比多进程只是多了这一句，这句为链接线程库pthread
+CFLAGS = -I. -g -Wall
+CC = gcc
+CXX = g++
+
+server : $(obj)
+        $(CC) -o server $(obj) $(CFLAGS) $(LIBS)
+
+# $@  表示目标文件
+# $<  表示第一个依赖文件
+%.o : %.c
+        $(CC) -c $(CFLAGS) $< -o $@
+
+
+# -  即使出错也继续执行后面
+.PHONY : clean  # .PHONY 伪目标，有了这句，不管怎样都执行clean
+clean :
+        -$(RM) server  $(obj)
+</code></pre>
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>多线程</tag>
+        <tag>多进程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MYSQL数据库的基本操作</title>
+    <url>/2021/07/03/mysql/</url>
+    <content><![CDATA[<h1 id="MYSQL数据库的基本操作"><a href="#MYSQL数据库的基本操作" class="headerlink" title="MYSQL数据库的基本操作"></a>MYSQL数据库的基本操作</h1><h2 id="1、root登录mysql"><a href="#1、root登录mysql" class="headerlink" title="1、root登录mysql"></a>1、root登录mysql</h2><pre class=" language-lang-sql"><code class="language-lang-sql">mysql -uroot -p
+Enter password: *****
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 8
+Server version: 8.0.25 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2021, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+</code></pre>
+<h2 id="2、查看数据库"><a href="#2、查看数据库" class="headerlink" title="2、查看数据库"></a>2、查看数据库</h2><pre class=" language-lang-sql"><code class="language-lang-sql">mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+</code></pre>
+<h2 id="3、查看表"><a href="#3、查看表" class="headerlink" title="3、查看表"></a>3、查看表</h2><pre class=" language-lang-sql"><code class="language-lang-sql">mysql> use mysql
+Database changed
+mysql> show tables;
++------------------------------------------------------+
+| Tables_in_mysql                                      |
++------------------------------------------------------+
+| columns_priv                                         |
+| component                                            |
+| db                                                   |
+| default_roles                                        |
+| engine_cost                                          |
+| func                                                 |
+| general_log                                          |
+| global_grants                                        |
+| gtid_executed                                        |
+| help_category                                        |
+| help_keyword                                         |
+| help_relation                                        |
+| help_topic                                           |
+| innodb_index_stats                                   |
+| innodb_table_stats                                   |
+| password_history                                     |
+| plugin                                               |
+| procs_priv                                           |
+| proxies_priv                                         |
+| replication_asynchronous_connection_failover         |
+| replication_asynchronous_connection_failover_managed |
+| role_edges                                           |
+| server_cost                                          |
+| servers                                              |
+| slave_master_info                                    |
+| slave_relay_log_info                                 |
+| slave_worker_info                                    |
+| slow_log                                             |
+| tables_priv                                          |
+| time_zone                                            |
+| time_zone_leap_second                                |
+| time_zone_name                                       |
+| time_zone_transition                                 |
+| time_zone_transition_type                            |
+| user                                                 |
++------------------------------------------------------+
+</code></pre>
+<h2 id="4、退出数据库"><a href="#4、退出数据库" class="headerlink" title="4、退出数据库"></a>4、退出数据库</h2><pre class=" language-lang-sql"><code class="language-lang-sql">mysql> exit;
+Bye
+</code></pre>
+<h2 id="5、创建数据库"><a href="#5、创建数据库" class="headerlink" title="5、创建数据库"></a>5、创建数据库</h2><pre class=" language-lang-sql"><code class="language-lang-sql">mysql> create database mydb01;
+</code></pre>
+<h2 id="6、创建表"><a href="#6、创建表" class="headerlink" title="6、创建表"></a>6、创建表</h2><pre class=" language-lang-sql"><code class="language-lang-sql">mysql> create table employee(id int, name varchar(30), sex int, birthday date, salary double, entry_date date, resume text);
+</code></pre>
+<h2 id="7、创建表数据"><a href="#7、创建表数据" class="headerlink" title="7、创建表数据"></a>7、创建表数据</h2><pre class=" language-lang-sql"><code class="language-lang-sql">insert into employee values(1,'韩信',1,'1997-07-07',15000,'2020-02-02','突进刺客');
+insert into employee(id,name,sex,birthday,salary,entry_date,resume) values(2,'兰陵王',1,'1996-06-06',12000,'2020-01-01','脆皮刺客');
+insert into employee(id,name,sex,birthday,salary,entry_date,resume) values(3,'亚瑟',1,'1000-01-01',8000,'2020-10-01','前排坦克');
+</code></pre>
+<h2 id="查看表信息"><a href="#查看表信息" class="headerlink" title="查看表信息"></a>查看表信息</h2><pre class=" language-lang-sql"><code class="language-lang-sql">mysql> desc employee;
++------------+-------------+------+-----+---------+-------+
+| Field      | Type        | Null | Key | Default | Extra |
++------------+-------------+------+-----+---------+-------+
+| id         | int         | YES  |     | NULL    |       |
+| name       | varchar(30) | YES  |     | NULL    |       |
+| sex        | int         | YES  |     | NULL    |       |
+| birthday   | date        | YES  |     | NULL    |       |
+| salary     | double      | YES  |     | NULL    |       |
+| entry_date | date        | YES  |     | NULL    |       |
+| resume     | text        | YES  |     | NULL    |       |
++------------+-------------+------+-----+---------+-------+
+</code></pre>
+<h2 id="8、查看表数据"><a href="#8、查看表数据" class="headerlink" title="8、查看表数据"></a>8、查看表数据</h2><pre class=" language-lang-sql"><code class="language-lang-sql">mysql> select * from employee;
++------+--------+------+------------+--------+------------+----------+
+| id   | name   | sex  | birthday   | salary | entry_date | resume   |
++------+--------+------+------------+--------+------------+----------+
+|    1 | 韩信   |    1 | 1997-07-07 |  15000 | 2020-02-02 | 突进刺客 |
+|    2 | 兰陵王 |    1 | 1996-06-06 |  12000 | 2020-01-01 | 脆皮刺客 |
+|    3 | 亚瑟   |    1 | 1000-01-01 |   8000 | 2020-10-01 | 前排坦克 |
++------+--------+------+------------+--------+------------+----------+
+</code></pre>
+<h2 id="修改某个项的内容"><a href="#修改某个项的内容" class="headerlink" title="修改某个项的内容"></a>修改某个项的内容</h2><pre class=" language-lang-sql"><code class="language-lang-sql">mysql> update employee set resume='偷家小贼' where id=1;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> select * from employee;
++------+--------+------+------------+--------+------------+----------+
+| id   | name   | sex  | birthday   | salary | entry_date | resume   |
++------+--------+------+------------+--------+------------+----------+
+|    1 | 韩信   |    1 | 1997-07-07 |  15000 | 2020-02-02 | 偷家小贼 |
+|    2 | 兰陵王 |    1 | 1996-06-06 |  12000 | 2020-01-01 | 脆皮刺客 |
+|    3 | 亚瑟   |    1 | 1000-01-01 |   8000 | 2020-10-01 | 前排坦克 |
++------+--------+------+------------+--------+------------+----------+
+</code></pre>
+<h1 id="example"><a href="#example" class="headerlink" title="example"></a>example</h1><pre class=" language-lang-sql"><code class="language-lang-sql">create table students(id int, name varchar(20), chinese int, english int, math int);
+insert into students(id, name, chinese, english, math) values(1, '黄真', 80, 85, 90);
+insert into students(id, name, chinese, english, math) values(2, '归辛树', 90, 95, 95);
+insert into students(id, name, chinese, english, math) values(3, '李寻欢', 80, 96, 96);
+insert into students(id, name, chinese, english, math) values(4, '叶开', 81, 97, 85);
+insert into students(id, name, chinese, english, math) values(5, '袁承志', 85, 84, 90);
+insert into students(id, name, chinese, english, math) values(6, '何红药', 92, 85, 87);
+insert into students(id, name, chinese, english, math) values(7, '何铁手', 75, 81, 80);
+insert into students(id, name, chinese, english, math) values(8, '夏雪宜', 77, 80, 79);
+insert into students(id, name, chinese, english, math) values(9, '任我行', 95, 85, 85);
+insert into students(id, name, chinese, english, math) values(10, '岳不群', 94, 85, 84);
+
+
+增加一列：
+alter table students add class_id int;
+
+id <= 5 为1班， id > 5 为2班
+update students set class_id=1 where id <= 5;
+
+select ceil(id/5),id from students;
+
+update students set class_id=ceil(id/5);
+
+求平均
+select avg(english),class_id from students group by class_id;
+
+求和
+select sum(chinese+math+english), class_id from students group by class_id;
++---------------------------+----------+
+| sum(chinese+math+english) | class_id |
++---------------------------+----------+
+|                      1329 |        1 |
+|                      1264 |        2 |
++---------------------------+----------+
+
+找到总分大于1300的
+select sum(chinese+english+math), class_id from students group by class_id having sum(chinese+english+math)>1300;
++---------------------------+----------+
+| sum(chinese+english+math) | class_id |
++---------------------------+----------+
+|                      1329 |        1 |
++---------------------------+----------+
+
+查看当前时间
+select now() from dual;
++---------------------+
+| now()               |
++---------------------+
+| 2021-06-19 14:44:07 |
++---------------------+
+
+
+select now()-1,now(),now()+1 from dual;
++----------------+---------------------+----------------+
+| now()-1        | now()               | now()+1        |
++----------------+---------------------+----------------+
+| 20210619164648 | 2021-06-19 16:46:49 | 20210619164650 |
++----------------+---------------------+----------------+
+
+
+求今天、昨天、明天
+select date_add(now(), interval -1 day), now(), date_add(now(), interval 1 day) from dual;
++----------------------------------+---------------------+---------------------------------+
+| date_add(now(), interval -1 day) | now()               | date_add(now(), interval 1 day) |
++----------------------------------+---------------------+---------------------------------+
+| 2021-06-18 16:53:37              | 2021-06-19 16:53:37 | 2021-06-20 16:53:37             |
++----------------------------------+---------------------+---------------------------------+
+1 row in set (0.07 sec)
+
+select addtime(now(),'0:1:0'),now() from dual;
++------------------------+---------------------+
+| addtime(now(),'0:1:0') | now()               |
++------------------------+---------------------+
+| 2021-06-19 17:00:34    | 2021-06-19 16:59:34 |
++------------------------+---------------------+
+
+字符串
+select concat('hello ', 'mysql', 'yyds', '123.') from dual;
++-------------------------------------------+
+| concat('hello ', 'mysql', 'yyds', '123.') |
++-------------------------------------------+
+| hello mysqlyyds123.                       |
++-------------------------------------------+
+1 row in set (0.00 sec)
+</code></pre>
+]]></content>
+      <categories>
+        <category>MYSQL</category>
+      </categories>
+      <tags>
+        <tag>MYSQL</tag>
+        <tag>数据库</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>信号</title>
     <url>/2021/07/05/signal/</url>
     <content><![CDATA[<h1 id="信号"><a href="#信号" class="headerlink" title="信号"></a>信号</h1><h2 id="1、信号的概念"><a href="#1、信号的概念" class="headerlink" title="1、信号的概念"></a>1、信号的概念</h2><h3 id="共性"><a href="#共性" class="headerlink" title="共性"></a>共性</h3><ol>
@@ -3455,6 +3390,71 @@ int main(void)
       <tags>
         <tag>Linux</tag>
         <tag>信号</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>进程、线程</title>
+    <url>/2021/06/25/threadDescription/</url>
+    <content><![CDATA[<h1 id="进程、线程"><a href="#进程、线程" class="headerlink" title="进程、线程"></a>进程、线程</h1><hr>
+<h3 id="1、什么是进程、线程"><a href="#1、什么是进程、线程" class="headerlink" title="1、什么是进程、线程"></a>1、什么是进程、线程</h3><p>进程是一个程序被加载到内存执行的过程，它是一个动态的概念。线程是程序执行中一个单一的顺序控制流程，是程序执行流的最小单元。进程是操作系统分配资源的最小单位，线程是操作系统调度执行的最小单位。打个比喻，操作系统是好像一个大工厂，工厂里面的一条条流水线就是一个个的进程，然后流水线上的工人负责整个流水作业的全部或者一小部分，这就叫线程。进程是真正的“打工人”，干活的实体。</p>
+<hr>
+<h3 id="2、进程和线程的区别"><a href="#2、进程和线程的区别" class="headerlink" title="2、进程和线程的区别"></a>2、进程和线程的区别</h3><ul>
+<li>进程有自己独立的地址空间（每个进程都有拥有4GBytes的虚拟地址空间），多个线程共用同一个地址空间。</li>
+<li>同一进程内的每个线程共享代码段(.text)，堆区(heap)，全局数据区(.data.bss)，文件描述符表。</li>
+<li>同一进程内的每个线程独享自己的栈、寄存器。</li>
+</ul>
+<hr>
+<h3 id="3、进程线程的特点"><a href="#3、进程线程的特点" class="headerlink" title="3、进程线程的特点"></a>3、进程线程的特点</h3><ul>
+<li><p>进程</p>
+<ul>
+<li>进程拥有自己的地址空间，各进程间相互独立，一个进程挂死，不会影响到其他进程。</li>
+</ul>
+</li>
+<li><p>线程</p>
+<ul>
+<li><p>线程占更小的系统资源，线程的上下文切换比进程要快的多。</p>
+<blockquote>
+<p>上下文切换：进程 / 线程分时复用 CPU 时间片，在切换之前会将上一个任务的状态进行保存，下次切换回这个任务的时候，加载这个状态继续运行，任务从保存到再次加载这个过程就是一次上下文切换。</p>
+</blockquote>
+</li>
+<li><p>线程启动速度快，退出也快，对系统资源的冲击小。</p>
+</li>
+<li><p>一个进程内的某一个线程挂掉，那么整个进程就会挂掉。</p>
+</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="4、进程间的通讯方式"><a href="#4、进程间的通讯方式" class="headerlink" title="4、进程间的通讯方式"></a>4、进程间的通讯方式</h3><ol>
+<li>管道pipe。半双工，数据只能单向流动，而且只能在具有亲缘关系的进程间使用，常见于父子进程。</li>
+<li>有名管道FIFO。半双工，数据只能单向流动，允许无亲缘关系进程间的通信。</li>
+<li>消息队列MessageQueue。消息队列是由消息的链表，存放在内核中并由消息队列标识符标识。消息队列克服了信号传递信息少、管道只能承载无格式字节流以及缓冲区大小受限等缺点。</li>
+<li>信号量Semaphore：信号量是一个计数器，可以用来控制多个进程对共享资源的访问，防止多进程访问共享资源时产生竞争。是进程同步的一种手段。</li>
+<li>套接字Socket：用于不同机器间的进程通信，网络通信少不了它。</li>
+<li>信号 Signal： 段错误、kill -9 的时候就是这种信号。</li>
+</ol>
+<hr>
+<h3 id="5、线程间通信方式"><a href="#5、线程间通信方式" class="headerlink" title="5、线程间通信方式"></a>5、线程间通信方式</h3><blockquote>
+<p>线程间的通信目的主要是用于线程同步，所以线程没有像进程通信中的用于数据交换的通信机制。</p>
+</blockquote>
+<ol>
+<li>锁机制：包括互斥锁、条件变量、读写锁。<ul>
+<li>互斥锁提供了以排他方式防止数据结构被并发修改的方法，常用于多线程间对共享资源的访问保护。</li>
+<li>读写锁允许多个线程同时读共享数据，而对写操作是互斥的。</li>
+<li>条件变量可以以原子的方式阻塞进程，直到某个特定条件为真为止。对条件的测试是在互斥锁的保护下进行的。条件变量始终与互斥锁一起使用。</li>
+</ul>
+</li>
+<li>信号量机制(Semaphore)：信号量既是是进程同步的一种手段，也是线程同步的一种手段。</li>
+<li>信号机制(Signal)：类似进程间的信号处理。线程间的通信目的主要是用于线程同步，所以线程没有像进程通信中的用于数据交换的通信机制。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>线程进程</category>
+      </categories>
+      <tags>
+        <tag>线程进程</tag>
+        <tag>线程</tag>
+        <tag>进程</tag>
       </tags>
   </entry>
 </search>
