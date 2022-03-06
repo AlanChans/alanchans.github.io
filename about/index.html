@@ -33,7 +33,7 @@
     {% if theme.daovoice %}
     <script>(function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:' == document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/10e33a0c.js","daovoice")</script>
     daovoice('init', {
-        app_id: "{{theme.app_id}}"
+        app_id: "10e33a0c"
       });
     daovoice('update');
     </script>
@@ -603,7 +603,7 @@
                 type: 'pie',
                 radius: '50%',
                 color: ['#6772e5', '#ff9e0f', '#fa755a', '#3ecf8e', '#82d3f4', '#ab47bc', '#525f7f', '#f51c47', '#26A69A'],
-                data: [{"name":"Linux","value":4},{"name":"gdb","value":1},{"name":"Makefile","value":1},{"name":"线程进程","value":1},{"name":"MYSQL","value":1},{"name":"多路IO","value":1},{"name":"线程进程","value":1}],
+                data: [{"name":"gdb","value":1},{"name":"Linux","value":4},{"name":"Makefile","value":1},{"name":"多路IO","value":1},{"name":"MYSQL","value":1},{"name":"线程进程","value":1},{"name":"线程进程","value":1}],
                 itemStyle: {
                     emphasis: {
                         shadowBlur: 10,
@@ -627,7 +627,7 @@
         xAxis: [
             {
                 type: 'category',
-                data: ["Linux","线程进程","gdb","IPC","进程间通信","Makefile","多线程","多进程","MYSQL","数据库"]
+                data: ["Linux","线程进程","gdb","IPC","进程间通信","Makefile","多线程","多进程","并发","select"]
             }
         ],
         yAxis: [
@@ -760,12 +760,6 @@
             
             
             
-            <a href="/tags/%E7%BA%BF%E7%A8%8B%E8%BF%9B%E7%A8%8B/">
-                <span class="chip center-align waves-effect waves-light chip-default">线程进程</span>
-            </a>
-            
-            
-            
             <a href="/tags/gdb/">
                 <span class="chip center-align waves-effect waves-light chip-default">gdb</span>
             </a>
@@ -784,6 +778,12 @@
             
             
             
+            <a href="/tags/%E7%BA%BF%E7%A8%8B%E8%BF%9B%E7%A8%8B/">
+                <span class="chip center-align waves-effect waves-light chip-default">线程进程</span>
+            </a>
+            
+            
+            
             <a href="/tags/Makefile/">
                 <span class="chip center-align waves-effect waves-light chip-default">Makefile</span>
             </a>
@@ -798,18 +798,6 @@
             
             <a href="/tags/%E5%A4%9A%E8%BF%9B%E7%A8%8B/">
                 <span class="chip center-align waves-effect waves-light chip-default">多进程</span>
-            </a>
-            
-            
-            
-            <a href="/tags/MYSQL/">
-                <span class="chip center-align waves-effect waves-light chip-default">MYSQL</span>
-            </a>
-            
-            
-            
-            <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">
-                <span class="chip center-align waves-effect waves-light chip-default">数据库</span>
             </a>
             
             
@@ -834,6 +822,18 @@
             
             <a href="/tags/epoll/">
                 <span class="chip center-align waves-effect waves-light chip-default">epoll</span>
+            </a>
+            
+            
+            
+            <a href="/tags/MYSQL/">
+                <span class="chip center-align waves-effect waves-light chip-default">MYSQL</span>
+            </a>
+            
+            
+            
+            <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">
+                <span class="chip center-align waves-effect waves-light chip-default">数据库</span>
             </a>
             
             
